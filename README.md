@@ -10,18 +10,16 @@
 
 <div align="center">
 
-[Poimandres](https://github.com/drcmda/poimandres-theme) theme for [Obsidian](https://obsidian.md/)
+[Poimandres](https://github.com/drcmda/poimandres-theme) Extended theme for [Obsidian](https://obsidian.md/)
 
 <div align="center">
-  <img width="650" src="https://github.com/user-attachments/assets/6393d5f3-a8c2-499d-86eb-dcdedee674a6"" />
+  <img width="800" src="https://github.com/user-attachments/assets/fffaf1fb-8e16-4cda-8ae1-ff559644aa22"" />
 </div>
 <br />
 <a href="https://github.com/bastiangx/wordserve/releases/latest"><img src="https://img.shields.io/github/v/release/bastiangx/wordserve?sort=semver&display_name=tag&style=for-the-badge&labelColor=%23363A4F&color=%237390AA" alt="Latest Release"></a> <a href="https://github.com/bastiangx/wordserve/blob/main/LICENSE"><img src="https://img.shields.io/badge/MIT-black?style=for-the-badge&label=license&labelColor=%23363A4F&color=%23b7bdf8" alt="MIT License"></a>
 <br />
 <a href="https://github.com/bastiangx/wordserve-obsidian/issues/new?assignees=&labels=bug&template=BUG-REPORT.yml&title=%5BBug%5D%3A+">Report a Bug</a>
 </div>
-
-## Theme Features
 
 ### Variants
 
@@ -52,8 +50,26 @@
 
 </div>
 
+Poimandres Extended is a comprehensive color theme for Obsidian based on the popular [Poimandres](https://github.com/drcmda/poimandres-theme)
+
+> Poimandres is a minimal, frameless dark-theme inspired mostly by [blueberry](https://github.com/peymanslh/vscode-blueberry-dark-theme). This theme tries to focus on semantic meaning instead of color variety. You'll find that it colors things like errors, voids, throws and deletes in red, types are slighty darker so that the spotlight is on the code, green new's, etc.
+
 ## Installation
 
-Open the _themes_ tab in _Appearance_ settings, browse and search for `Poimandres Extended`
+Open the _themes_ tab in _Appearance_ settings, browse and search for **Poimandres Extended**
 
 ## Credits
+
+- Original theme by [drcmda](https://github.com/drcmda/poimandres-theme)
+- [poimandres-alacritty][poimandres-alacritty]: Alacritty version
+- [poimandres-iterm][poimandres-iterm]: Iterm version
+- [poimandres-kitty][poimandres-kitty]: Kitty version
+- [poimandres-nvim][poimandres-nvim]: Neovim version
+- [poimandres-jetbrains][poimandres-jetbrains]: JetBrains version
+- [obsidian-tokyonight](https://github.com/tcmmichaelb139/obsidian-tokyonight): Checkbox styles & options base
+
+[poimandres-alacritty]: https://github.com/z0al/poimandres-alacritty
+[poimandres-iterm]: https://github.com/alii/poimandres-iterm
+[poimandres-kitty]: https://github.com/guilhermedeandrade/poimandres-kitty
+[poimandres-nvim]: https://github.com/olivercederborg/poimandres.nvim
+[poimandres-jetbrains]: https://github.com/marko-mihajlovic/poimandres-jetbrains
