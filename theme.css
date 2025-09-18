@@ -240,12 +240,12 @@
   --code-normal: var(--fg);
   --code-background: var(--bg_highlight_dark);
   --code-comment: var(--fg_dark);
-  --code-function: var(--cyan);
+  --code-function: var(--blue);
   --code-important: var(--red1);
-  --code-keyword: var(--green0);
-  --code-operator: var(--cyan0);
-  --code-property: var(--fg);
-  --code-punctuation: var(--green0);
+  --code-keyword: var(--fg);
+  --code-operator: var(--blue);
+  --code-property: var(--blue);
+  --code-punctuation: var(--fg);
   --code-string: var(--green);
   --code-tag: var(--green);
   --code-value: var(--green);
@@ -321,11 +321,11 @@
 
   --code-background: rgba(var(--bg_highlight_x), 0.35);
   --code-comment: var(--fg_dark);
-  --code-keyword: var(--blue);
-  --code-function: var(--magenta);
+  --code-keyword: var(--fg);
+  --code-function: var(--blue);
   --code-operator: var(--blue);
   --code-property: var(--blue);
-  --code-punctuation: var(--blue);
+  --code-punctuation: var(--fg);
 }
 
 /* Dark theme selection background (match VSCode editor.selectionBackground) */
