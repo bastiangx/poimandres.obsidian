@@ -328,12 +328,10 @@
   --code-punctuation: var(--fg);
 }
 
-/* Dark theme selection background (match VSCode editor.selectionBackground) */
 .theme-dark {
   --text-selection: rgba(113, 124, 180, 0.15);
 }
 
-/* Rest of Tokyo Night structural styles (unchanged) */
 body:not(.heading-indicator-off)
   .markdown-rendered
   > :is(h1, h2, h3, h4, h5, h6),
@@ -489,29 +487,25 @@ body.h6-divider-on
   font-weight: 700;
 }
 
-/* Ensure system selection uses our variable */
 ::selection {
   background: var(--text-selection);
   color: inherit;
 }
 
-/* Minimal carryover: scrollbars, links, images, tables, notices, callouts, etc. */
-/* Keep Tokyo Night base behaviors; they will pick up new variables above. */
-
 ::-webkit-scrollbar {
   width: var(--scrollbar-width);
-  background-color: transparent !important;
+  background-color: transparent;
 }
 ::hover::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb-bg) !important;
+  background-color: var(--scrollbar-thumb-bg);
 }
 ::-webkit-scrollbar-thumb:hover,
 ::-webkit-scrollbar-thumb:active {
-  background-color: var(--scrollbar-active-thumb-bg) !important;
+  background-color: var(--scrollbar-active-thumb-bg);
 }
 ::-webkit-scrollbar:horizontal {
   height: 0;
-  background-color: transparent !important;
+  background-color: transparent;
 }
 
 .tooltip {
@@ -519,10 +513,10 @@ body.h6-divider-on
 }
 
 .cm-url {
-  filter: none !important;
+  filter: none;
 }
 .cm-string.cm-url.external-link {
-  filter: var(--link-external-filter) !important;
+  filter: var(--link-external-filter);
 }
 a.external-link {
   filter: none;
@@ -577,34 +571,34 @@ body {
   background-color: var(--code-background);
 }
 .cm-s-obsidian .cm-comment {
-  color: var(--code-comment) !important;
+  color: var(--code-comment);
 }
 .cm-s-obsidian .cm-keyword {
-  color: var(--code-keyword) !important;
+  color: var(--code-keyword);
 }
 .cm-s-obsidian .cm-operator {
-  color: var(--code-operator) !important;
+  color: var(--code-operator);
 }
 .cm-s-obsidian .cm-string {
-  color: var(--code-string) !important;
+  color: var(--code-string);
 }
 .cm-s-obsidian .cm-tag {
-  color: var(--code-tag) !important;
+  color: var(--code-tag);
 }
 .cm-s-obsidian .cm-property {
-  color: var(--code-property) !important;
+  color: var(--code-property);
 }
 .cm-s-obsidian .cm-punctuation {
-  color: var(--code-punctuation) !important;
+  color: var(--code-punctuation);
 }
 .cm-s-obsidian .cm-def {
-  color: var(--code-function) !important;
+  color: var(--code-function);
 }
 .cm-s-obsidian .cm-qualifier {
-  color: var(--code-value) !important;
+  color: var(--code-value);
 }
 .cm-s-obsidian .cm-error {
-  color: var(--code-important) !important;
+  color: var(--code-important);
 }
 
 .markdown-preview-view code,
@@ -658,7 +652,6 @@ body:not(.disable-alternative-checkboxes) li[data-task] > p > input {
   -webkit-mask-position: 50% 50%;
 }
 
-/* hide default checkmark for all custom icons */
 body:not(.disable-alternative-checkboxes) input[data-task="<"]:checked,
 body:not(.disable-alternative-checkboxes) li[data-task="<"] > input:checked,
 body:not(.disable-alternative-checkboxes) li[data-task="<"] > p > input:checked,
@@ -921,9 +914,6 @@ body:not(.disable-alternative-checkboxes)
   -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}</style></defs><rect class="cls-1" width="16" height="16"/><g><rect class="cls-1" width="16" height="16"/><path d="M9,1c0-.27-.11-.52-.29-.71-.19-.19-.44-.29-.71-.29s-.52,.11-.71,.29c-.19,.19-.29,.44-.29,.71v1c0,.27,.11,.52,.29,.71,.19,.19,.44,.29,.71,.29s.52-.11,.71-.29c.19-.19,.29-.44,.29-.71V1Zm4.66,2.76c.18-.19,.28-.44,.28-.7,0-.26-.11-.51-.29-.7s-.44-.29-.7-.29c-.26,0-.51,.1-.7,.28l-.71,.71c-.18,.19-.28,.44-.28,.7,0,.26,.11,.51,.29,.7s.44,.29,.7,.29c.26,0,.51-.1,.7-.28l.71-.71Zm2.34,4.24c0,.27-.11,.52-.29,.71-.19,.19-.44,.29-.71,.29h-1c-.27,0-.52-.11-.71-.29-.19-.19-.29-.44-.29-.71s.11-.52,.29-.71c.19-.19,.44-.29,.71-.29h1c.27,0,.52,.11,.71,.29,.19,.19,.29,.44,.29,.71ZM3.05,4.46c.09,.1,.2,.17,.32,.22,.12,.05,.25,.08,.39,.08,.13,0,.26-.02,.39-.07,.12-.05,.23-.12,.33-.22,.09-.09,.17-.21,.22-.33,.05-.12,.08-.25,.07-.39,0-.13-.03-.26-.08-.39-.05-.12-.13-.23-.22-.32l-.71-.71c-.19-.18-.44-.28-.7-.28-.26,0-.51,.11-.7,.29s-.29,.44-.29,.7c0,.26,.1,.51,.28,.7l.71,.71Zm-.05,3.54c0,.27-.11,.52-.29,.71-.19,.19-.44,.29-.71,.29H1c-.27,0-.52-.11-.71-.29-.19-.19-.29-.44-.29-.71s.11-.52,.29-.71c.19-.19,.44-.29,.71-.29h1c.27,0,.52,.11,.71,.29,.19,.19,.29,.44,.29,.71Zm3,6v-1h4v1c0,.53-.21,1.04-.59,1.41-.38,.38-.88,.59-1.41,.59s-1.04-.21-1.41-.59c-.38-.38-.59-.88-.59-1.41Zm4-2c.02-.34,.21-.65,.48-.86,.65-.51,1.13-1.22,1.36-2.02,.23-.8,.21-1.65-.06-2.43-.27-.79-.78-1.47-1.46-1.95-.68-.48-1.49-.74-2.32-.74s-1.64,.26-2.32,.74c-.68,.48-1.19,1.16-1.46,1.95-.27,.79-.29,1.64-.06,2.43,.23,.8,.71,1.5,1.36,2.02,.27,.21,.46,.52,.48,.86h4Z"/></g></svg>');
 }
 
-/* scheduling arrows already mapped via < and > */
-
-/* canceled (-) strikethrough and done (x) line-through */
 body:not(.disable-alternative-checkboxes)
   body:not(.tasks)
   .markdown-preview-view
