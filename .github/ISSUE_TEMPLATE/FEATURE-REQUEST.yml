@@ -1,0 +1,51 @@
+name: Feature Request
+description: Suggest an idea for this project
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature!
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of what the feature request is. Please include if your feature request is related to a problem.
+      placeholder: Describe the feature you'd like to see...
+    validations:
+      required: true
+  - type: textarea
+    id: preferred-solution
+    attributes:
+      label: Preferred Solution
+      description: A clear and concise description of what you want to happen.
+      placeholder: Describe your preferred solution...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: A concise description of any alternative solutions or features you've considered.
+      placeholder: Describe any alternatives you've considered...
+  - type: textarea
+    id: related-code
+    attributes:
+      label: Related Code
+      description: If you are able to illustrate the feature request with an example, please provide it here.
+      render: shell
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: List any other information that is relevant to your issue. Stack traces, related issues, suggestions on how to add, use case, screenshots, OS if applicable, etc.
+      placeholder: Add any other context about the feature request here.
+  - type: checkboxes
+    id: willing-to-contribute
+    attributes:
+      label: Contribution
+      description: If the feature request is approved, would you be willing to submit a PR?
+      options:
+        - label: Yes, I'm willing to submit a PR (help can be provided if needed)
+        - label: No, I'm not able to contribute code at this time
