@@ -16,9 +16,7 @@
   <img width="800" src="https://github.com/user-attachments/assets/fffaf1fb-8e16-4cda-8ae1-ff559644aa22"" />
 </div>
 <br />
-<a href="https://github.com/bastiangx/wordserve/releases/latest"><img src="https://img.shields.io/github/v/release/bastiangx/wordserve?sort=semver&display_name=tag&style=for-the-badge&labelColor=%23363A4F&color=%237390AA" alt="Latest Release"></a> <a href="https://github.com/bastiangx/wordserve/blob/main/LICENSE"><img src="https://img.shields.io/badge/MIT-black?style=for-the-badge&label=license&labelColor=%23363A4F&color=%23b7bdf8" alt="MIT License"></a>
-<br />
-<a href="https://github.com/bastiangx/wordserve-obsidian/issues/new?assignees=&labels=bug&template=BUG-REPORT.yml&title=%5BBug%5D%3A+">Report a Bug</a>
+<a href="https://github.com/bastiangx/poimandres.obsidian/issues/new?assignees=&labels=bug&template=BUG-REPORT.yml&title=%5BBug%5D%3A+">Report a Bug</a>
 </div>
 
 ### Variants
