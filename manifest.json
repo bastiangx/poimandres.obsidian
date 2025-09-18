@@ -3,7 +3,5 @@
   "version": "0.1.0",
   "minAppVersion": "1.0.0",
   "author": "bastiangx",
-  "authorUrl": "https://github.com/bastiangx",
-  "screenshot": "sc.png",
-  "modes": ["dark", "light"]
+  "authorUrl": "https://github.com/bastiangx"
 }
