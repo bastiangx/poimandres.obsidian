@@ -1,9 +1,9 @@
 <div align="center">
   <a href="https://github.com/bastiangx/poimandres.obsidian/">
  <picture>
-      <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/1382d6a3-b33b-47ff-86ad-82b246bfb09f">
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/b60b7e1a-29fa-4489-9476-b874e301dc78">
-      <img width="450" src="https://github.com/user-attachments/assets/b60b7e1a-29fa-4489-9476-b874e301dc78"/>
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/54a3dd8f-582f-4a1a-86af-0abe606cfcd9">
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/0a7125ee-316c-4c44-a38d-cc505e1f2675">
+      <img height="195" src="https://github.com/user-attachments/assets/0a7125ee-316c-4c44-a38d-cc505e1f2675"/>
     </picture>
   </a>
 </div>
