@@ -13,25 +13,25 @@
 [Poimandres](https://github.com/drcmda/poimandres-theme) Extended theme for [Obsidian](https://obsidian.md/)
 
 <div align="center">
-  <img width="800" src="https://github.com/user-attachments/assets/fffaf1fb-8e16-4cda-8ae1-ff559644aa22"" />
+  <img src="https://github.com/user-attachments/assets/fffaf1fb-8e16-4cda-8ae1-ff559644aa22"" />
 </div>
 <br />
-<a href="https://github.com/bastiangx/poimandres.obsidian/issues/new?assignees=&labels=bug&template=BUG-REPORT.yml&title=%5BBug%5D%3A+">Report a Bug</a>
-</div>
-
-### Variants
-
-<div align="center">
  <picture>
       <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/10c154ea-734e-4f4c-96dc-db4103b735ef">
       <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/52d416d6-3016-49f0-89b5-8a308a95b4a9">
-      <img width="650" src="https://github.com/user-attachments/assets/52d416d6-3016-49f0-89b5-8a308a95b4a9"/>
-    </picture>
+      <img src="https://github.com/user-attachments/assets/52d416d6-3016-49f0-89b5-8a308a95b4a9"/>
+</picture>
+<br />
+<br />
+<a href="https://github.com/bastiangx/poimandres.obsidian/issues/new?assignees=&labels=bug&template=BUG-REPORT.yml&title=%5BBug%5D%3A+">Report a Bug</a>
 </div>
+<br />
+<br />
 
-> Storm variant can be installed via toggling it using the [Style Settings plugin](https://www.obsidianstats.com/plugins/obsidian-style-settings)
 
-### Typography & Checkboxes
+Storm variant can be installed via toggling it using the [Style Settings plugin](https://www.obsidianstats.com/plugins/obsidian-style-settings)
+
+#### Typography & Checkboxes
 
 <div align="center">
  <picture>
@@ -45,10 +45,8 @@
       <img height="450" src="https://github.com/user-attachments/assets/e112e725-f42f-48ae-a5d9-fbab505b8bd1"/>
     </picture>
 </div>
+<br />
 
-</div>
-
-Poimandres Extended is a comprehensive color theme for Obsidian based on the popular [Poimandres](https://github.com/drcmda/poimandres-theme)
 
 > Poimandres is a minimal, frameless dark-theme inspired mostly by [blueberry](https://github.com/peymanslh/vscode-blueberry-dark-theme). This theme tries to focus on semantic meaning instead of color variety. You'll find that it colors things like errors, voids, throws and deletes in red, types are slighty darker so that the spotlight is on the code, green new's, etc.
 
@@ -65,9 +63,11 @@ Open the _themes_ tab in _Appearance_ settings, browse and search for **Poimandr
 - [poimandres-nvim][poimandres-nvim]: Neovim version
 - [poimandres-jetbrains][poimandres-jetbrains]: JetBrains version
 - [obsidian-tokyonight](https://github.com/tcmmichaelb139/obsidian-tokyonight): Checkbox styles & options base
+- [poimandres-obsidan](https://github.com/yoGhastly/poimandres-obsidian): Previous Poimandres Obsidian theme by _yoGhastly_
 
 [poimandres-alacritty]: https://github.com/z0al/poimandres-alacritty
 [poimandres-iterm]: https://github.com/alii/poimandres-iterm
 [poimandres-kitty]: https://github.com/guilhermedeandrade/poimandres-kitty
 [poimandres-nvim]: https://github.com/olivercederborg/poimandres.nvim
 [poimandres-jetbrains]: https://github.com/marko-mihajlovic/poimandres-jetbrains
+[poimandres-obsidian]: https://github.com/yoGhastly/poimandres-obsidian
