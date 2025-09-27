@@ -1,9 +1,3 @@
-/* Fonts */
-:root {
-  --default-font: '"JetBrains Mono", monospace, "Inter", sans-serif';
-  --font-monospace: '"JetBrains Mono", monospace, "Source Code Pro", monospace';
-}
-
 .theme-dark {
   color-scheme: dark;
   --accent-h: 200;
@@ -462,27 +456,6 @@ body.h6-divider-on
   );
 }
 
-.markdown-rendered h1,
-.markdown-preview-sizer > div > h1,
-.HyperMD-header-1,
-.markdown-rendered h2,
-.markdown-preview-sizer > div > h2,
-.HyperMD-header-2,
-.markdown-rendered h3,
-.markdown-preview-sizer > div > h3,
-.HyperMD-header-3,
-.markdown-rendered h4,
-.markdown-preview-sizer > div > h4,
-.HyperMD-header-4,
-.markdown-rendered h5,
-.markdown-preview-sizer > div > h5,
-.HyperMD-header-5,
-.markdown-rendered h6,
-.markdown-preview-sizer > div > h6,
-.HyperMD-header-6 {
-  font-family: Georgia, "Times New Roman", serif, var(--default-font);
-  font-weight: 700;
-}
 .inline-title {
   font-weight: 700;
 }
@@ -942,24 +915,26 @@ body:not(.disable-alternative-checkboxes)
   text-decoration: line-through solid var(--text-faint) 1px;
 }
 
-/* @settings
+/* Style Settings Plugin */
+/* https://github.com/mgmeyers/obsidian-style-settings */
 
-name: Poimandres Plus
-id: poimandres-plus
+/* @settings
+name: Poimandres Extended
+id: poimandres-extended
 settings:
   - id: section-variant
-    title: Variant
+    title: Variants
     type: heading
     level: 2
   - id: pm-variant-storm
     title: Storm
-    description: More vibrant palette [dark mode only]
+    description: More vibrant palette [dark mode]
     type: class-toggle
     class: pm-variant-storm
     default: false
 
   - id: section-headings
-    title: Headings
+    title: Dividers
     type: heading
     level: 2
   - id: h1-divider-on
@@ -994,7 +969,7 @@ settings:
     default: false
 
   - id: section-selection
-    title: Selection
+    title: Selection color
     type: heading
     level: 2
   - id: text-selection
