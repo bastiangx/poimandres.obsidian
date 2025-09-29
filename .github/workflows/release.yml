@@ -1,4 +1,4 @@
-name: Build
+name: Release
 
 on:
   push:
@@ -6,18 +6,22 @@ on:
       - "*"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  artifacts:
+  release:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - name: Upload theme artifacts
-        uses: actions/upload-artifact@v4
+      - name: Create Release with assets
+        uses: softprops/action-gh-release@v2
         with:
-          name: theme-files
-          path: |
+          files: |
             manifest.json
             theme.css
             CHANGELOG.md
-          if-no-files-found: error
+          draft: false
+          prerelease: false
+          generate_release_notes: true
