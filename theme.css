@@ -10,8 +10,8 @@
   --bg_dark: rgb(var(--bg_dark_x));
   --bg_x: 27, 30, 40;
   --bg: rgb(var(--bg_x));
-  --bg_highlight_x: 33, 36, 47;
-  --bg_highlight: rgb(var(--bg_highlight_x));
+  --bg_highlight_x: rgb(33, 36, 47);
+  --bg_highlight: var(--bg_highlight_x);
   --bg_highlight_dark_x: 32, 36, 48;
   --bg_highlight_dark: rgb(var(--bg_highlight_dark_x));
   --terminal_black_x: 48, 51, 64;
@@ -68,8 +68,8 @@
   --bg_dark: rgb(var(--bg_dark_x));
   --bg_x: 254, 254, 255;
   --bg: rgb(var(--bg_x));
-  --bg_highlight_x: 192, 208, 223;
-  --bg_highlight: rgb(var(--bg_highlight_x));
+  --bg_highlight_x: rgb(192, 208, 223);
+  --bg_highlight: var(--bg_highlight_x);
   --bg_highlight_dark_x: 255, 255, 255;
   --bg_highlight_dark: rgb(var(--bg_highlight_dark_x));
   --terminal_black_x: 59, 62, 72;
@@ -122,8 +122,8 @@
   --bg_dark: rgb(var(--bg_dark_x));
   --bg_x: 37, 43, 55;
   --bg: rgb(var(--bg_x));
-  --bg_highlight_x: 64, 67, 80;
-  --bg_highlight: rgb(var(--bg_highlight_x));
+  --bg_highlight_x: rgb(64, 67, 80);
+  --bg_highlight: var(--bg_highlight_x);
   --bg_highlight_dark_x: 16, 16, 16;
   --bg_highlight_dark: rgb(var(--bg_highlight_dark_x));
   --terminal_black_x: 16, 16, 16;
@@ -171,7 +171,7 @@
   --background-modifier-error-hover: var(--red);
   --background-modifier-cover: rgba(var(--bg_dark_x), 0.8);
   --background-modifier-hover: var(--bg_highlight);
-  --background-modifier-message: rgba(var(--bg_highlight_x), 0.9);
+  --background-modifier-message: color-mix(in srgb, var(--bg_highlight_x) 90%, transparent);
   --background-modifier-active-hover: var(--bg_highlight);
 
   --text-normal: var(--fg);
@@ -313,7 +313,7 @@
 
   --text-selection: rgba(113, 124, 180, 0.15);
 
-  --code-background: rgba(var(--bg_highlight_x), 0.35);
+  --code-background: color-mix(in srgb, var(--bg_highlight_x) 35%, transparent);
   --code-comment: var(--fg_dark);
   --code-keyword: var(--fg);
   --code-function: var(--blue);
