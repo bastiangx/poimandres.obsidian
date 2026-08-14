@@ -6,9 +6,9 @@
 
   --bg_dark2_x: 27, 31, 41;
   --bg_dark2: rgb(var(--bg_dark2_x));
-  --bg_dark_x: 22, 25, 33;
+  --bg_dark_x: 19, 20, 23;
   --bg_dark: rgb(var(--bg_dark_x));
-  --bg_x: 24, 27, 36;
+  --bg_x: 23, 25, 30;
   --bg: rgb(var(--bg_x));
   --bg_highlight_x: rgb(31, 35, 45);
   --bg_highlight: var(--bg_highlight_x);
@@ -20,7 +20,8 @@
   --fg: rgb(var(--fg_x));
   --fg_dark_x: 118, 124, 157;
   --fg_dark: rgb(var(--fg_dark_x));
-  --bold-color: rgba(var(--blue0_x), 0.65);
+  --bold-color: rgba(var(--green0_x), 0.65);
+  --bold-italic-color: rgba(var(--blue0_x), 0.65);
 
   --comment_x: 118, 124, 157;
   --comment: rgb(var(--comment_x));
@@ -53,8 +54,7 @@
   --red1: rgb(var(--red1_x));
   --unknown: #ffffff;
 
-  --link-external-filter: invert(35%) sepia(28%) saturate(681%)
-    hue-rotate(192deg) brightness(94%) contrast(85%);
+  --link-external-filter: none;
 }
 
 .theme-light {
@@ -64,7 +64,7 @@
 
   --bg_dark2_x: 192, 208, 223;
   --bg_dark2: rgb(var(--bg_dark2_x));
-  --bg_dark_x: 254, 254, 255;
+  --bg_dark_x: 230, 233, 239;
   --bg_dark: rgb(var(--bg_dark_x));
   --bg_x: 254, 254, 255;
   --bg: rgb(var(--bg_x));
@@ -76,9 +76,10 @@
   --terminal_black: rgb(var(--terminal_black_x));
   --fg_x: 59, 62, 72;
   --fg: rgb(var(--fg_x));
-  --fg_dark_x: 150, 156, 189;
+  --fg_dark_x: 108, 111, 133;
   --fg_dark: rgb(var(--fg_dark_x));
   --bold-color: rgba(var(--green0_x), 0.72);
+  --bold-italic-color: rgba(var(--blue0_x), 0.72);
   --comment_x: 192, 208, 223;
   --comment: rgb(var(--comment_x));
 
@@ -110,8 +111,7 @@
   --red1: rgb(var(--red1_x));
   --unknown: #000000;
 
-  --link-external-filter: invert(31%) sepia(96%) saturate(1412%)
-    hue-rotate(173deg) brightness(102%) contrast(104%);
+  --link-external-filter: none;
 }
 
 /* Variant: Storm */
@@ -130,10 +130,9 @@
   --terminal_black: rgb(var(--terminal_black_x));
   --fg_dark_x: 134, 140, 173;
   --fg_dark: rgb(var(--fg_dark_x));
-  --bold-color: rgba(var(--blue0_x), 0.65);
+  --bold-color: rgba(var(--green0_x), 0.65);
   --comment_x: 134, 140, 173;
   --comment: rgb(var(--comment_x));
-  --code-background: rgba(20, 24, 31, 0.88);
 }
 
 .theme-dark,
@@ -156,7 +155,7 @@
   --color-pink: var(--magenta);
 
   --background-primary: var(--bg);
-  --background-primary-alt: var(--bg);
+  --background-primary-alt: var(--bg_dark);
   --background-secondary: var(--bg_dark);
   --background-secondary-alt: var(--bg_dark);
 
@@ -184,6 +183,7 @@
   --text-selection: rgba(var(--blue0_x), 0.6);
   --text-on-accent: var(--bg);
   --text-highlight-bg: rgba(var(--orange_x), 0.25);
+  --caret-color: var(--orange);
 
   --interactive-normal: var(--bg_dark);
   --interactive-hover: var(--bg);
@@ -197,47 +197,44 @@
   --scrollbar-width: 7px;
 
   --h1-font: var(--font-text);
-  --h1-size: 2.0736em;
+  --h1-size: 2em;
   --h1-weight: 700;
+  --h1-line-height: 1.5;
   --h1-style: normal;
   --h1-color: var(--blue);
   --h2-font: var(--font-text);
-  --h2-size: 1.728em;
-  --h2-weight: 700;
+  --h2-size: 1.6em;
+  --h2-weight: 600;
+  --h2-line-height: 1.5;
   --h2-style: normal;
-  --h2-color: var(--blue0);
+  --h2-color: var(--blue);
   --h3-font: var(--font-text);
-  --h3-size: 1.44em;
-  --h3-weight: 650;
+  --h3-size: 1.37em;
+  --h3-weight: 600;
+  --h3-line-height: 1.5;
   --h3-style: normal;
-  --h3-color: var(--green);
+  --h3-color: var(--blue);
   --h4-font: var(--font-text);
-  --h4-size: 1.2em;
-  --h4-weight: 650;
+  --h4-size: 1.25em;
+  --h4-weight: 600;
+  --h4-line-height: 1.5;
   --h4-style: normal;
-  --h4-color: var(--green0);
+  --h4-color: var(--blue);
   --h5-font: var(--font-text);
-  --h5-size: 1em;
+  --h5-size: 1.12em;
   --h5-weight: 600;
+  --h5-line-height: var(--line-height-normal);
   --h5-style: normal;
-  --h5-color: var(--magenta);
+  --h5-color: var(--blue);
   --h6-font: var(--font-text);
-  --h6-size: 0.92em;
+  --h6-size: 1.12em;
   --h6-weight: 600;
+  --h6-line-height: var(--line-height-normal);
   --h6-style: normal;
-  --h6-color: var(--pink);
+  --h6-color: var(--blue);
   --heading-divider-opacity: 0.72;
   --heading-divider-height: 2px;
   --heading-divider-fade: 72%;
-  --pm-accent: var(--interactive-accent);
-  --pm-inline-code-color: var(--pm-accent);
-  --pm-inline-code-background: color-mix(
-    in srgb,
-    var(--bg_highlight_x) 92%,
-    transparent
-  );
-  --pm-inline-code-border: rgba(var(--fg_dark_x), 0.28);
-  --pm-ordered-list-marker-color: var(--pm-accent);
 
   --inline-title-color: var(--h1-color);
   --hr-color: var(--background-modifier-border);
@@ -250,10 +247,15 @@
   --tag-background-hover: rgba(var(--cyan_x), 0.15);
   --tag-radius: var(--radius-s);
 
-  --link-color: var(--cyan);
-  --link-color-hover: var(--orange);
-  --link-external-color: rgba(var(--green0_x), 0.85);
-  --link-external-color-hover: var(--blue);
+  --link-color: var(--interactive-accent);
+  --link-color-hover: color-mix(in srgb, var(--interactive-accent) 62%, var(--text-normal));
+  --link-decoration: none;
+  --link-decoration-hover: underline;
+  --link-decoration-thickness: 2px;
+  --link-external-color: var(--interactive-accent);
+  --link-external-color-hover: color-mix(in srgb, var(--interactive-accent) 62%, var(--text-normal));
+  --link-external-decoration: none;
+  --link-external-decoration-hover: underline;
 
   --checkbox-radius: var(--radius-s);
   --checkbox-color: var(--green);
@@ -267,8 +269,8 @@
 
   --flashing-background: rgba(var(--blue0_x), 0.3);
 
-  --code-normal: var(--fg);
-  --code-background: rgba(var(--bg_highlight_dark_x), 0.92);
+  --code-normal: var(--text-muted);
+  --code-background: var(--background-primary-alt);
   --code-comment: var(--fg_dark);
   --code-function: var(--blue);
   --code-important: var(--red1);
@@ -306,7 +308,7 @@
 
   --nav-item-color-hover: var(--fg);
   --nav-item-background-hover: var(--bg_highlight);
-  --nav-item-color-active: var(--red);
+  --nav-item-color-active: var(--interactive-accent);
   --nav-item-background-active: var(--bg_highlight);
   --nav-file-tag: rgba(var(--yellow_x), 0.9);
   --nav-indentation-guide-color: var(--bg_highlight);
@@ -340,17 +342,16 @@
 }
 
 .theme-light {
-  --h1-color: var(--blue);
-  --h2-color: var(--blue0);
-  --h3-color: var(--green);
+  --h1-color: var(--green0);
+  --h2-color: var(--green0);
+  --h3-color: var(--green0);
   --h4-color: var(--green0);
-  --h5-color: var(--magenta);
-  --h6-color: var(--pink);
+  --h5-color: var(--green0);
+  --h6-color: var(--green0);
   --heading-divider-opacity: 0.64;
 
   --text-selection: rgba(113, 124, 180, 0.15);
 
-  --code-background: color-mix(in srgb, var(--bg_highlight_x) 52%, transparent);
   --code-comment: var(--fg_dark);
   --code-keyword: var(--fg);
   --code-function: var(--blue);
@@ -369,6 +370,7 @@
   font-size: var(--h1-size);
   font-style: var(--h1-style);
   font-weight: var(--h1-weight);
+  line-height: var(--h1-line-height);
 }
 
 :is(.markdown-rendered h2, .HyperMD-header-2, .cm-header-2) {
@@ -377,6 +379,7 @@
   font-size: var(--h2-size);
   font-style: var(--h2-style);
   font-weight: var(--h2-weight);
+  line-height: var(--h2-line-height);
 }
 
 :is(.markdown-rendered h3, .HyperMD-header-3, .cm-header-3) {
@@ -385,6 +388,7 @@
   font-size: var(--h3-size);
   font-style: var(--h3-style);
   font-weight: var(--h3-weight);
+  line-height: var(--h3-line-height);
 }
 
 :is(.markdown-rendered h4, .HyperMD-header-4, .cm-header-4) {
@@ -393,6 +397,7 @@
   font-size: var(--h4-size);
   font-style: var(--h4-style);
   font-weight: var(--h4-weight);
+  line-height: var(--h4-line-height);
 }
 
 :is(.markdown-rendered h5, .HyperMD-header-5, .cm-header-5) {
@@ -401,6 +406,7 @@
   font-size: var(--h5-size);
   font-style: var(--h5-style);
   font-weight: var(--h5-weight);
+  line-height: var(--h5-line-height);
 }
 
 :is(.markdown-rendered h6, .HyperMD-header-6, .cm-header-6) {
@@ -409,6 +415,7 @@
   font-size: var(--h6-size);
   font-style: var(--h6-style);
   font-weight: var(--h6-weight);
+  line-height: var(--h6-line-height);
 }
 
 body:not(.heading-indicator-off)
@@ -556,6 +563,7 @@ body.h6-divider-on
   font-size: var(--h1-size);
   font-style: var(--h1-style);
   font-weight: var(--h1-weight);
+  line-height: var(--h1-line-height);
 }
 
 ::selection {
@@ -588,11 +596,6 @@ body.h6-divider-on
 }
 .cm-string.cm-url.external-link {
   filter: var(--link-external-filter);
-}
-a.external-link {
-  filter: none;
-  background-image: unset;
-  padding-right: 0;
 }
 
 .image-embed {
@@ -636,16 +639,6 @@ body {
   background-color: var(--scrollbar-active-thumb-bg);
 }
 
-.markdown-rendered code {
-  color: var(--pm-inline-code-color);
-  background-color: var(--pm-inline-code-background);
-  border: 1px solid var(--pm-inline-code-border);
-  border-radius: 0.4em;
-  font-family: var(--font-monospace);
-  font-weight: 600;
-  padding: 0.1em 0.35em;
-}
-
 .markdown-rendered pre {
   background-color: var(--code-background);
   border: 1px solid rgba(var(--fg_dark_x), 0.16);
@@ -661,14 +654,6 @@ body {
   padding: 0;
 }
 
-.cm-s-obsidian .cm-inline-code {
-  color: var(--pm-inline-code-color);
-  background-color: var(--pm-inline-code-background);
-  border: 1px solid var(--pm-inline-code-border);
-  border-radius: 0.4em;
-  font-family: var(--font-monospace);
-  font-weight: 600;
-}
 .cm-s-obsidian .cm-comment {
   color: var(--code-comment);
 }
@@ -704,11 +689,133 @@ body {
   color: var(--code-normal);
 }
 
-.markdown-rendered ol > li::marker,
-.markdown-rendered .list-number,
-.cm-formatting-list-ol {
-  color: var(--pm-ordered-list-marker-color);
-  font-weight: 600;
+/* Lists: no extra vertical padding on items */
+.markdown-source-view ol > li,
+.markdown-source-view ul > li,
+.markdown-preview-view ol > li,
+.markdown-preview-view ul > li,
+.markdown-rendered ul > li,
+.mod-cm6 .HyperMD-list-line.cm-line {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Strikethrough links keep their line-through in source mode */
+.cm-s-obsidian .cm-link.cm-strikethrough {
+  text-decoration: line-through;
+}
+
+/* Task formatting marks render in the code font */
+.cm-formatting.cm-formatting-task.cm-property {
+  font-family: var(--font-monospace);
+}
+
+/* Links are italic and follow the user's accent color */
+.markdown-rendered a.internal-link,
+.markdown-rendered a.external-link,
+.cm-s-obsidian .cm-hmd-internal-link,
+.cm-s-obsidian .cm-string.cm-url.external-link,
+.cm-s-obsidian .cm-link,
+.cm-s-obsidian .cm-url,
+.markdown-source-view.mod-cm6 .cm-link .cm-underline,
+.markdown-source-view.mod-cm6 .cm-url .cm-underline {
+  font-style: italic;
+}
+
+/* Links: underline only on hover, animated in source mode */
+.cm-s-obsidian .cm-formatting-link.cm-url,
+.cm-s-obsidian .cm-url,
+.cm-s-obsidian .cm-link,
+.cm-s-obsidian .cm-hmd-internal-link,
+.markdown-source-view.mod-cm6 .cm-link .cm-underline,
+.markdown-source-view.mod-cm6 .cm-url .cm-underline {
+  text-decoration-color: transparent;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+}
+
+.cm-s-obsidian .cm-formatting-link.cm-url:hover,
+.cm-s-obsidian .cm-url:hover,
+.cm-s-obsidian .cm-link:hover,
+.cm-s-obsidian .cm-hmd-internal-link:hover,
+.markdown-source-view.mod-cm6 .cm-link .cm-underline:hover,
+.markdown-source-view.mod-cm6 .cm-url .cm-underline:hover {
+  text-decoration-color: inherit;
+}
+
+/* Unresolved links: no underline */
+.markdown-source-view.mod-cm6 .is-unresolved .cm-underline {
+  text-decoration-line: none;
+}
+.markdown-source-view.mod-cm6 .is-unresolved:hover {
+  text-decoration-line: none;
+}
+
+/* Bold-italic: blue base (bold alone stays green via --bold-color) */
+.markdown-rendered strong em,
+.markdown-rendered em strong,
+.cm-s-obsidian span.cm-strong.cm-em,
+.cm-s-obsidian span.cm-strong span.cm-em,
+.cm-s-obsidian span.cm-em span.cm-strong {
+  color: var(--bold-italic-color);
+}
+
+.markdown-rendered mark,
+.cm-s-obsidian span.cm-formatting-highlight,
+.cm-s-obsidian span.cm-highlight {
+  background-color: var(--orange);
+  color: var(--text-on-accent);
+}
+
+.markdown-rendered mark em,
+.cm-s-obsidian span.cm-highlight.cm-em {
+  background-image: linear-gradient(
+    rgb(var(--green_x), 0.4),
+    rgb(var(--green_x), 0.6),
+    rgb(var(--green_x), 0.6)
+  );
+  color: var(--text-on-accent);
+  text-align: left;
+}
+
+.markdown-rendered mark strong,
+.cm-s-obsidian span.cm-highlight.cm-strong {
+  background-image: linear-gradient(
+    rgb(var(--blue0_x), 0.4),
+    rgb(var(--blue0_x), 0.6),
+    rgb(var(--blue0_x), 0.4)
+  );
+  color: var(--text-on-accent);
+}
+
+.markdown-rendered mark del,
+.cm-s-obsidian span.cm-highlight.cm-strikethrough {
+  background-image: linear-gradient(
+    rgb(var(--red_x), 0.4),
+    rgb(var(--red_x), 0.6),
+    rgb(var(--red_x), 0.4)
+  );
+  color: var(--text-on-accent);
+}
+
+/* Light mode: dark text on the bright highlight colors */
+.theme-light .markdown-rendered mark,
+.theme-light .cm-s-obsidian span.cm-formatting-highlight,
+.theme-light .cm-s-obsidian span.cm-highlight,
+.theme-light .markdown-rendered mark em,
+.theme-light .markdown-rendered mark strong,
+.theme-light .markdown-rendered mark del,
+.theme-light .cm-s-obsidian span.cm-highlight.cm-em,
+.theme-light .cm-s-obsidian span.cm-highlight.cm-strong,
+.theme-light .cm-s-obsidian span.cm-highlight.cm-strikethrough {
+  color: var(--fg);
+}
+
+/* Footnotes: green reference markers */
+.markdown-rendered .footnote-ref,
+.markdown-rendered .footnote-link,
+.cm-s-obsidian .cm-hmd-footnote {
+  color: var(--green0);
 }
 
 .token.comment,
@@ -1086,7 +1193,7 @@ settings:
     title: H1 font size
     description: Any CSS font-size value
     type: variable-text
-    default: '2.0736em'
+    default: '2em'
   - id: h1-weight
     title: H1 font weight
     description: 100-900, use 700 for bold
@@ -1102,7 +1209,7 @@ settings:
     type: variable-themed-color
     format: hex
     opacity: false
-    default-light: '#0EBFFF'
+    default-light: '#62AA9B'
     default-dark: '#ADD7FF'
   - id: level-2-heading
     title: H2
@@ -1122,12 +1229,12 @@ settings:
     title: H2 font size
     description: Any CSS font-size value
     type: variable-text
-    default: '1.728em'
+    default: '1.6em'
   - id: h2-weight
     title: H2 font weight
-    description: 100-900, use 700 for bold
+    description: 100-900, use 600 for bold
     type: variable-text
-    default: '700'
+    default: '600'
   - id: h2-style
     title: H2 font style
     description: normal or italic
@@ -1138,8 +1245,8 @@ settings:
     type: variable-themed-color
     format: hex
     opacity: false
-    default-light: '#8ABACD'
-    default-dark: '#89DDFF'
+    default-light: '#62AA9B'
+    default-dark: '#ADD7FF'
   - id: level-3-heading
     title: H3
     type: heading
@@ -1158,12 +1265,12 @@ settings:
     title: H3 font size
     description: Any CSS font-size value
     type: variable-text
-    default: '1.44em'
+    default: '1.37em'
   - id: h3-weight
     title: H3 font weight
-    description: 100-900, use 650-700 for bold
+    description: 100-900, use 600 for bold
     type: variable-text
-    default: '650'
+    default: '600'
   - id: h3-style
     title: H3 font style
     description: normal or italic
@@ -1174,8 +1281,8 @@ settings:
     type: variable-themed-color
     format: hex
     opacity: false
-    default-light: '#01DAB2'
-    default-dark: '#5DE4C7'
+    default-light: '#62AA9B'
+    default-dark: '#ADD7FF'
   - id: level-4-heading
     title: H4
     type: heading
@@ -1194,12 +1301,12 @@ settings:
     title: H4 font size
     description: Any CSS font-size value
     type: variable-text
-    default: '1.2em'
+    default: '1.25em'
   - id: h4-weight
     title: H4 font weight
-    description: 100-900, use 650-700 for bold
+    description: 100-900, use 600 for bold
     type: variable-text
-    default: '650'
+    default: '600'
   - id: h4-style
     title: H4 font style
     description: normal or italic
@@ -1211,7 +1318,7 @@ settings:
     format: hex
     opacity: false
     default-light: '#62AA9B'
-    default-dark: '#5FB3A1'
+    default-dark: '#ADD7FF'
   - id: level-5-heading
     title: H5
     type: heading
@@ -1230,7 +1337,7 @@ settings:
     title: H5 font size
     description: Any CSS font-size value
     type: variable-text
-    default: '1em'
+    default: '1.12em'
   - id: h5-weight
     title: H5 font weight
     description: 100-900, use 600 for bold-ish
@@ -1246,8 +1353,8 @@ settings:
     type: variable-themed-color
     format: hex
     opacity: false
-    default-light: '#EB8394'
-    default-dark: '#F087BD'
+    default-light: '#62AA9B'
+    default-dark: '#ADD7FF'
   - id: level-6-heading
     title: H6
     type: heading
@@ -1266,7 +1373,7 @@ settings:
     title: H6 font size
     description: Any CSS font-size value
     type: variable-text
-    default: '0.92em'
+    default: '1.12em'
   - id: h6-weight
     title: H6 font weight
     description: 100-900, use 600 for bold-ish
@@ -1282,8 +1389,8 @@ settings:
     type: variable-themed-color
     format: hex
     opacity: false
-    default-light: '#EB8394'
-    default-dark: '#F087BD'
+    default-light: '#62AA9B'
+    default-dark: '#ADD7FF'
 
   - id: section-selection
     title: Selection color
@@ -1308,8 +1415,8 @@ settings:
     type: variable-themed-color
     format: rgb
     opacity: true
-    default-light: 'rgb(192, 208, 223)'
-    default-dark: 'rgb(28, 32, 42)'
+    default-light: 'rgb(230, 233, 239)'
+    default-dark: 'rgb(22, 25, 33)'
 
   - id: section-links-tags
     title: Links & tags
@@ -1404,14 +1511,14 @@ settings:
     type: variable-themed-color
     format: rgb
     opacity: true
-    default-light: 'rgb(150, 156, 189)'
+    default-light: 'rgb(108, 111, 133)'
     default-dark: 'rgb(118, 124, 157)'
   - id: scrollbar-active-thumb-bg
     title: Thumb hover color
     type: variable-themed-color
     format: rgb
     opacity: true
-    default-light: 'rgb(150, 156, 189)'
+    default-light: 'rgb(108, 111, 133)'
     default-dark: 'rgb(118, 124, 157)'
 
 */
