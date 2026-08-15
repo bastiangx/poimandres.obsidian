@@ -170,7 +170,11 @@
   --background-modifier-error-hover: var(--red);
   --background-modifier-cover: rgba(var(--bg_dark_x), 0.8);
   --background-modifier-hover: var(--bg_highlight);
-  --background-modifier-message: color-mix(in srgb, var(--bg_highlight_x) 90%, transparent);
+  --background-modifier-message: color-mix(
+    in srgb,
+    var(--bg_highlight_x) 90%,
+    transparent
+  );
   --background-modifier-active-hover: var(--bg_highlight);
 
   --text-normal: var(--fg);
@@ -248,12 +252,20 @@
   --tag-radius: var(--radius-s);
 
   --link-color: var(--interactive-accent);
-  --link-color-hover: color-mix(in srgb, var(--interactive-accent) 62%, var(--text-normal));
+  --link-color-hover: color-mix(
+    in srgb,
+    var(--interactive-accent) 62%,
+    var(--text-normal)
+  );
   --link-decoration: none;
   --link-decoration-hover: underline;
   --link-decoration-thickness: 2px;
   --link-external-color: var(--interactive-accent);
-  --link-external-color-hover: color-mix(in srgb, var(--interactive-accent) 62%, var(--text-normal));
+  --link-external-color-hover: color-mix(
+    in srgb,
+    var(--interactive-accent) 62%,
+    var(--text-normal)
+  );
   --link-external-decoration: none;
   --link-external-decoration-hover: underline;
 
@@ -263,6 +275,9 @@
   --checkbox-marker-color: var(--bg);
   --checkbox-border-color: var(--comment);
   --checkbox-border-color-hover: var(--comment);
+  --checkbox-size: var(--font-text-size);
+  --checklist-done-decoration: line-through;
+  --checklist-done-color: var(--text-faint);
 
   --table-header-background: var(--bg_dark2);
   --table-header-background-hover: var(--bg_dark2);
@@ -270,7 +285,12 @@
   --flashing-background: rgba(var(--blue0_x), 0.3);
 
   --code-normal: var(--text-muted);
-  --code-background: var(--background-primary-alt);
+  /* Codeblock background/border are resolved per theme below so that
+     alternate codeblock themes can override them per mode. */
+  --code-background-light: var(--background-primary-alt);
+  --code-background-dark: var(--background-primary-alt);
+  --code-border-light: 1px solid rgba(var(--fg_dark_x), 0.16);
+  --code-border-dark: 1px solid rgba(var(--fg_dark_x), 0.16);
   --code-comment: var(--fg_dark);
   --code-function: var(--blue);
   --code-important: var(--red1);
@@ -287,20 +307,38 @@
   --mermaid-loopline: var(--blue);
 
   --blockquote-background-color: var(--bg_dark);
-  --callout-default: var(--blue_x);
-  --callout-info: var(--blue_x);
-  --callout-summary: var(--cyan_x);
-  --callout-tip: var(--cyan_x);
-  --callout-todo: var(--cyan_x);
-  --callout-bug: var(--red_x);
-  --callout-error: var(--red1_x);
-  --callout-fail: var(--red1_x);
-  --callout-example: var(--magenta_x);
-  --callout-important: var(--green_x);
-  --callout-success: var(--teal_x);
-  --callout-question: var(--yellow_x);
-  --callout-warning: var(--orange_x);
-  --callout-quote: var(--fg_dark_x);
+  --blockquote-padding: 8px;
+  /* Callout type colors must be full colors (Obsidian 1.4+ uses them
+     inside color-mix()); raw rgb triplets silently break callouts. */
+  --callout-default: rgb(var(--blue_x));
+  --callout-info: rgb(var(--blue_x));
+  --callout-summary: rgb(var(--cyan_x));
+  --callout-tip: rgb(var(--cyan_x));
+  --callout-todo: rgb(var(--cyan_x));
+  --callout-bug: rgb(var(--red_x));
+  --callout-error: rgb(var(--red1_x));
+  --callout-fail: rgb(var(--red1_x));
+  --callout-example: rgb(var(--magenta_x));
+  --callout-important: rgb(var(--green_x));
+  --callout-success: rgb(var(--teal_x));
+  --callout-question: rgb(var(--yellow_x));
+  --callout-warning: rgb(var(--orange_x));
+  --callout-quote: rgb(var(--fg_dark_x));
+
+  /* Callout structure (Border-style defaults, all customisable).
+     Customize stays borderless (--callout-border-width: 0) so the native
+     Obsidian renderer paints only the tinted --callout-color background. */
+  --callout-border-width: 0px;
+  --callout-border-opacity: 0.25;
+  --callout-padding: var(--size-4-3) var(--size-4-3) var(--size-4-3)
+    var(--size-4-6);
+  --callout-radius: var(--radius-s);
+  --callout-title-color: inherit;
+  --callout-title-padding: 0;
+  --callout-title-size: inherit;
+  --callout-content-padding: 0;
+  --callout-content-background: transparent;
+  --callout-content-radius: 0px;
 
   --icon-color-hover: var(--blue);
   --icon-color-focused: var(--magenta);
@@ -358,10 +396,16 @@
   --code-operator: var(--blue);
   --code-property: var(--blue);
   --code-punctuation: var(--fg);
+
+  --code-background: var(--code-background-light);
+  --code-border: var(--code-border-light);
 }
 
 .theme-dark {
   --text-selection: rgba(113, 124, 180, 0.15);
+
+  --code-background: var(--code-background-dark);
+  --code-border: var(--code-border-dark);
 }
 
 :is(.markdown-rendered h1, .HyperMD-header-1, .cm-header-1) {
@@ -605,6 +649,33 @@ body.h6-divider-on
 body {
   --table-width: 88cqw;
 }
+body:not(.table-width-obsidian-default)
+  .markdown-source-view.mod-cm6
+  .cm-table-widget
+  .table-wrapper,
+body:not(.table-width-obsidian-default)
+  :is(.markdown-rendered, .markdown-source-view.mod-cm6.is-live-preview)
+  table {
+  width: 100% !important;
+}
+
+.markdown-source-view,
+.markdown-reading-view {
+  container-type: inline-size;
+}
+
+.table-width-customized
+  .markdown-source-view.mod-cm6.is-live-preview
+  .cm-content
+  > .cm-table-widget,
+.table-width-customized
+  .markdown-rendered
+  .markdown-preview-sizer
+  > div:has(> table) {
+  overflow: auto;
+  width: var(--table-width) !important;
+  margin-left: calc((var(--table-width) - 100%) / -2) !important;
+}
 .theme-dark,
 .theme-light .markdown-rendered thead tr {
   background: var(--table-header-background);
@@ -639,10 +710,35 @@ body {
   background-color: var(--scrollbar-active-thumb-bg);
 }
 
+/* Codeblocks: background and border resolve from --code-background /
+   --code-border so alternate codeblock themes can swap them cleanly. */
+.cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.cm-s-obsidian div.HyperMD-codeblock-bg,
 .markdown-rendered pre {
-  background-color: var(--code-background);
-  border: 1px solid rgba(var(--fg_dark_x), 0.16);
-  border-radius: 0.7rem;
+  background: var(--code-background);
+}
+
+.cm-s-obsidian div.HyperMD-codeblock-begin-bg {
+  border-top: var(--code-border);
+}
+
+.cm-s-obsidian div.HyperMD-codeblock-end-bg {
+  border-bottom: var(--code-border);
+}
+
+.cm-s-obsidian div.HyperMD-codeblock-bg {
+  border-left: var(--code-border);
+  border-right: var(--code-border);
+}
+
+.markdown-rendered pre {
+  border: var(--code-border);
+  border-radius: var(--code-radius);
+}
+
+.cm-s-obsidian .HyperMD-codeblock {
+  caret-color: auto;
 }
 
 .markdown-rendered pre code {
@@ -654,39 +750,74 @@ body {
   padding: 0;
 }
 
-.cm-s-obsidian .cm-comment {
+/* Block-code token roles: map Obsidian's current semantic classes to the
+   --code-* roles, scoped to block code so ordinary editor/prose tokens
+   keep the Poimandres palette. Live preview uses CM6 .cm-* classes; the
+   reading-mode renderer emits the same .cm-* classes plus Prism-style
+   .token-* for language grammars. No generated .ͼ* assumptions. */
+.cm-s-obsidian .HyperMD-codeblock .cm-comment,
+.markdown-rendered pre .cm-comment,
+.markdown-rendered pre .token.comment {
   color: var(--code-comment);
 }
-.cm-s-obsidian .cm-keyword {
+.cm-s-obsidian .HyperMD-codeblock .cm-keyword,
+.markdown-rendered pre .cm-keyword,
+.markdown-rendered pre .token.keyword {
   color: var(--code-keyword);
 }
-.cm-s-obsidian .cm-operator {
+.cm-s-obsidian .HyperMD-codeblock .cm-operator,
+.markdown-rendered pre .cm-operator,
+.markdown-rendered pre .token.operator {
   color: var(--code-operator);
 }
-.cm-s-obsidian .cm-string {
+.cm-s-obsidian .HyperMD-codeblock .cm-string,
+.markdown-rendered pre .cm-string,
+.markdown-rendered pre .token.string,
+.markdown-rendered pre .token.attr-name {
   color: var(--code-string);
 }
-.cm-s-obsidian .cm-tag {
+.cm-s-obsidian .HyperMD-codeblock .cm-tag,
+.markdown-rendered pre .cm-tag,
+.markdown-rendered pre .token.tag {
   color: var(--code-tag);
 }
-.cm-s-obsidian .cm-property {
+.cm-s-obsidian .HyperMD-codeblock .cm-property,
+.cm-s-obsidian .HyperMD-codeblock .cm-propertyName,
+.markdown-rendered pre .cm-property,
+.markdown-rendered pre .cm-propertyName,
+.markdown-rendered pre .token.property {
   color: var(--code-property);
 }
-.cm-s-obsidian .cm-punctuation {
+.cm-s-obsidian .HyperMD-codeblock .cm-punctuation,
+.markdown-rendered pre .cm-punctuation,
+.markdown-rendered pre .token.punctuation {
   color: var(--code-punctuation);
 }
-.cm-s-obsidian .cm-def {
+.cm-s-obsidian .HyperMD-codeblock .cm-def,
+.cm-s-obsidian .HyperMD-codeblock .cm-function,
+.cm-s-obsidian .HyperMD-codeblock .cm-builtin,
+.markdown-rendered pre .cm-def,
+.markdown-rendered pre .cm-function,
+.markdown-rendered pre .cm-builtin,
+.markdown-rendered pre .token.function {
   color: var(--code-function);
 }
-.cm-s-obsidian .cm-qualifier {
+.cm-s-obsidian .HyperMD-codeblock .cm-number,
+.cm-s-obsidian .HyperMD-codeblock .cm-atom,
+.cm-s-obsidian .HyperMD-codeblock .cm-qualifier,
+.markdown-rendered pre .cm-number,
+.markdown-rendered pre .cm-atom,
+.markdown-rendered pre .cm-qualifier,
+.markdown-rendered pre .token.number,
+.markdown-rendered pre .token.value,
+.markdown-rendered pre .token.boolean {
   color: var(--code-value);
 }
-.cm-s-obsidian .cm-error {
+.cm-s-obsidian .HyperMD-codeblock .cm-error,
+.markdown-rendered pre .cm-error,
+.markdown-rendered pre .token.error,
+.markdown-rendered pre .token.important {
   color: var(--code-important);
-}
-
-.markdown-preview-view pre code {
-  color: var(--code-normal);
 }
 
 /* Lists: no extra vertical padding on items */
@@ -818,47 +949,1472 @@ body {
   color: var(--green0);
 }
 
-.token.comment,
-.cm-s-obsidian .ͼc {
-  color: var(--code-comment);
+/* Inline code: separate --inline-code-* variables (Border) so the
+   alternate codeblock themes, which only re-declare block-scoped --code-*
+   roles, can never recolor inline code. Inline code keeps the Poimandres
+   color and subtle background. */
+body {
+  --inline-code-normal: var(--color-pink);
+  --inline-code-background-light: var(--background-primary-alt);
+  --inline-code-background-dark: var(--background-primary-alt);
+  --code-white-space: pre-wrap;
+  --code-radius: var(--radius-s);
+  --code-size: 0.875em;
 }
 
-.token.function,
-.cm-s-obsidian .ͼf {
-  color: var(--code-function);
+.markdown-rendered :not(pre) > code,
+.cm-s-obsidian span.cm-inline-code {
+  color: var(--inline-code-normal);
 }
 
-.token.keyword,
-.cm-s-obsidian .ͼk {
-  color: var(--code-keyword);
+.theme-light
+  .cm-s-obsidian
+  span.cm-inline-code:not(.cm-formatting):not(.cm-hmd-indented-code):not(
+    .obsidian-search-match-highlight
+  ),
+.theme-light .cm-s-obsidian span.cm-inline-code,
+.theme-light :not(pre) > code {
+  background: var(--inline-code-background-light);
 }
 
-.token.operator {
-  color: var(--code-operator);
+.theme-dark
+  .cm-s-obsidian
+  span.cm-inline-code:not(.cm-formatting):not(.cm-hmd-indented-code):not(
+    .obsidian-search-match-highlight
+  ),
+.theme-dark .cm-s-obsidian span.cm-inline-code,
+.theme-dark :not(pre) > code {
+  background: var(--inline-code-background-dark);
 }
-.token.property {
-  color: var(--code-property);
+
+.theme-light
+  .cm-s-obsidian
+  span.cm-inline-code
+  span.cm-inline-code.cm-hmd-indented-code,
+.theme-dark
+  .cm-s-obsidian
+  span.cm-inline-code
+  span.cm-inline-code.cm-hmd-indented-code {
+  background: unset;
 }
-.token.punctuation {
-  color: var(--code-punctuation);
+
+/* ====== Alternate codeblock themes (opt-in) ====== */
+/* Selecting one below places its class on <body>. Each style defines only
+   *private* per-theme palette variables. The public --code-* roles that
+   the codeblock rules consume are then re-declared from that private
+   palette *locally on the block containers and their descendants*
+   (reading-mode <pre> and live-preview HyperMD-codeblock backgrounds /
+   lines), so any later saved Style Settings override on <body>/:root is
+   shadowed by the nearer declaration and cannot win. Default (no class)
+   keeps the Poimandres palette. Colors are the authentic opt-in theme
+   palettes and stay confined to these classes. */
+/* ------------------------- Dark themes ------------------------- */
+.codeblock-style-ayu-dark {
+  --alt-ayu-dark-code-background: #0b0e14;
+  --alt-ayu-dark-code-border: none;
+  --alt-ayu-dark-code-normal: #bfbdb6;
+  --alt-ayu-dark-code-comment: #5c6773;
+  --alt-ayu-dark-code-function: #ffb454;
+  --alt-ayu-dark-code-important: #ff8f40;
+  --alt-ayu-dark-code-keyword: #ff8f40;
+  --alt-ayu-dark-code-operator: #f29668;
+  --alt-ayu-dark-code-property: #59c2ff;
+  --alt-ayu-dark-code-punctuation: #bfbdb6;
+  --alt-ayu-dark-code-string: #aad94c;
+  --alt-ayu-dark-code-tag: #39bae6;
+  --alt-ayu-dark-code-value: #d2a6ff;
 }
-.token.string {
-  color: var(--code-string);
+
+.codeblock-style-ayu-mirage {
+  --alt-ayu-mirage-code-background: #1f2430;
+  --alt-ayu-mirage-code-border: none;
+  --alt-ayu-mirage-code-normal: #cccac2;
+  --alt-ayu-mirage-code-comment: #6e7c8f;
+  --alt-ayu-mirage-code-function: #ffd580;
+  --alt-ayu-mirage-code-important: #ffa759;
+  --alt-ayu-mirage-code-keyword: #ffa759;
+  --alt-ayu-mirage-code-operator: #f29e74;
+  --alt-ayu-mirage-code-property: #73d0ff;
+  --alt-ayu-mirage-code-punctuation: #cccac2;
+  --alt-ayu-mirage-code-string: #bae67e;
+  --alt-ayu-mirage-code-tag: #5ccfe6;
+  --alt-ayu-mirage-code-value: #dfbfff;
 }
-.token.tag {
-  color: var(--code-tag);
+
+.codeblock-style-catppuccin-frappe {
+  --alt-catppuccin-frappe-code-background: #303446;
+  --alt-catppuccin-frappe-code-border: none;
+  --alt-catppuccin-frappe-code-normal: #c6d0f5;
+  --alt-catppuccin-frappe-code-comment: #737994;
+  --alt-catppuccin-frappe-code-function: #8caaee;
+  --alt-catppuccin-frappe-code-important: #ef9f76;
+  --alt-catppuccin-frappe-code-keyword: #ca9ee6;
+  --alt-catppuccin-frappe-code-operator: #99d1db;
+  --alt-catppuccin-frappe-code-property: #8caaee;
+  --alt-catppuccin-frappe-code-punctuation: #c6d0f5;
+  --alt-catppuccin-frappe-code-string: #a6d189;
+  --alt-catppuccin-frappe-code-tag: #e78284;
+  --alt-catppuccin-frappe-code-value: #ef9f76;
 }
-.token.number,
-.token.value {
-  color: var(--code-value);
+
+.codeblock-style-catppuccin-macchiato {
+  --alt-catppuccin-macchiato-code-background: #24273a;
+  --alt-catppuccin-macchiato-code-border: none;
+  --alt-catppuccin-macchiato-code-normal: #cad3f5;
+  --alt-catppuccin-macchiato-code-comment: #6e738d;
+  --alt-catppuccin-macchiato-code-function: #8aadf4;
+  --alt-catppuccin-macchiato-code-important: #f5a97f;
+  --alt-catppuccin-macchiato-code-keyword: #c6a0f6;
+  --alt-catppuccin-macchiato-code-operator: #91d7e3;
+  --alt-catppuccin-macchiato-code-property: #8aadf4;
+  --alt-catppuccin-macchiato-code-punctuation: #cad3f5;
+  --alt-catppuccin-macchiato-code-string: #a6da95;
+  --alt-catppuccin-macchiato-code-tag: #ed8796;
+  --alt-catppuccin-macchiato-code-value: #f5a97f;
+}
+
+.codeblock-style-catppuccin-mocha {
+  --alt-catppuccin-mocha-code-background: #1e1e2e;
+  --alt-catppuccin-mocha-code-border: none;
+  --alt-catppuccin-mocha-code-normal: #cdd6f4;
+  --alt-catppuccin-mocha-code-comment: #6c7086;
+  --alt-catppuccin-mocha-code-function: #89b4fa;
+  --alt-catppuccin-mocha-code-important: #fab387;
+  --alt-catppuccin-mocha-code-keyword: #cba6f7;
+  --alt-catppuccin-mocha-code-operator: #89dceb;
+  --alt-catppuccin-mocha-code-property: #89b4fa;
+  --alt-catppuccin-mocha-code-punctuation: #cdd6f4;
+  --alt-catppuccin-mocha-code-string: #a6e3a1;
+  --alt-catppuccin-mocha-code-tag: #f38ba8;
+  --alt-catppuccin-mocha-code-value: #fab387;
+}
+
+.codeblock-style-dracula {
+  --alt-dracula-code-background: #282a36;
+  --alt-dracula-code-border: none;
+  --alt-dracula-code-normal: #f8f8f2;
+  --alt-dracula-code-comment: #6272a4;
+  --alt-dracula-code-function: #f1fa8c;
+  --alt-dracula-code-important: #ffb86c;
+  --alt-dracula-code-keyword: #ff79c6;
+  --alt-dracula-code-operator: #ff5555;
+  --alt-dracula-code-property: #8be9fd;
+  --alt-dracula-code-punctuation: #f8f8f2;
+  --alt-dracula-code-string: #50fa7b;
+  --alt-dracula-code-tag: #ff5555;
+  --alt-dracula-code-value: #bd93f9;
+}
+
+.codeblock-style-everforest-dark {
+  --alt-everforest-dark-code-background: #2d353b;
+  --alt-everforest-dark-code-border: none;
+  --alt-everforest-dark-code-normal: #d3c6aa;
+  --alt-everforest-dark-code-comment: #859289;
+  --alt-everforest-dark-code-function: #a7c080;
+  --alt-everforest-dark-code-important: #e69875;
+  --alt-everforest-dark-code-keyword: #e67e80;
+  --alt-everforest-dark-code-operator: #e69875;
+  --alt-everforest-dark-code-property: #7fbbb3;
+  --alt-everforest-dark-code-punctuation: #9da9a0;
+  --alt-everforest-dark-code-string: #83c092;
+  --alt-everforest-dark-code-tag: #e69875;
+  --alt-everforest-dark-code-value: #d699b6;
+}
+
+.codeblock-style-github-dark {
+  --alt-github-dark-code-background: #0d1117;
+  --alt-github-dark-code-border: none;
+  --alt-github-dark-code-normal: #e6edf3;
+  --alt-github-dark-code-comment: #8b949e;
+  --alt-github-dark-code-function: #d2a8ff;
+  --alt-github-dark-code-important: #79c0ff;
+  --alt-github-dark-code-keyword: #ff7b72;
+  --alt-github-dark-code-operator: #ff7b72;
+  --alt-github-dark-code-property: #79c0ff;
+  --alt-github-dark-code-punctuation: #e6edf3;
+  --alt-github-dark-code-string: #a5d6ff;
+  --alt-github-dark-code-tag: #7ee787;
+  --alt-github-dark-code-value: #79c0ff;
+}
+
+.codeblock-style-gruvbox-dark {
+  --alt-gruvbox-dark-code-background: #282828;
+  --alt-gruvbox-dark-code-border: none;
+  --alt-gruvbox-dark-code-normal: #ebdbb2;
+  --alt-gruvbox-dark-code-comment: #928374;
+  --alt-gruvbox-dark-code-function: #b8bb26;
+  --alt-gruvbox-dark-code-important: #fe8019;
+  --alt-gruvbox-dark-code-keyword: #fb4934;
+  --alt-gruvbox-dark-code-operator: #ebdbb2;
+  --alt-gruvbox-dark-code-property: #83a598;
+  --alt-gruvbox-dark-code-punctuation: #ebdbb2;
+  --alt-gruvbox-dark-code-string: #b8bb26;
+  --alt-gruvbox-dark-code-tag: #8ec07c;
+  --alt-gruvbox-dark-code-value: #d3869b;
+}
+
+.codeblock-style-kanagawa-dragon {
+  --alt-kanagawa-dragon-code-background: #181616;
+  --alt-kanagawa-dragon-code-border: none;
+  --alt-kanagawa-dragon-code-normal: #c5c9c5;
+  --alt-kanagawa-dragon-code-comment: #737c73;
+  --alt-kanagawa-dragon-code-function: #8ba4b0;
+  --alt-kanagawa-dragon-code-important: #b6927b;
+  --alt-kanagawa-dragon-code-keyword: #8992a7;
+  --alt-kanagawa-dragon-code-operator: #c4746e;
+  --alt-kanagawa-dragon-code-property: #8ea4a2;
+  --alt-kanagawa-dragon-code-punctuation: #9e9b93;
+  --alt-kanagawa-dragon-code-string: #8a9a7b;
+  --alt-kanagawa-dragon-code-tag: #c4746e;
+  --alt-kanagawa-dragon-code-value: #a292a3;
+}
+
+.codeblock-style-kanagawa-wave {
+  --alt-kanagawa-wave-code-background: #1f1f28;
+  --alt-kanagawa-wave-code-border: none;
+  --alt-kanagawa-wave-code-normal: #dcd7ba;
+  --alt-kanagawa-wave-code-comment: #727169;
+  --alt-kanagawa-wave-code-function: #7e9cd8;
+  --alt-kanagawa-wave-code-important: #ffa066;
+  --alt-kanagawa-wave-code-keyword: #957fb8;
+  --alt-kanagawa-wave-code-operator: #c0a36e;
+  --alt-kanagawa-wave-code-property: #7fb4ca;
+  --alt-kanagawa-wave-code-punctuation: #9cabca;
+  --alt-kanagawa-wave-code-string: #98bb6c;
+  --alt-kanagawa-wave-code-tag: #e46876;
+  --alt-kanagawa-wave-code-value: #d27e99;
+}
+
+.codeblock-style-monokai {
+  --alt-monokai-code-background: #272822;
+  --alt-monokai-code-border: none;
+  --alt-monokai-code-normal: #f8f8f2;
+  --alt-monokai-code-comment: #75715e;
+  --alt-monokai-code-function: #a6e22e;
+  --alt-monokai-code-important: #fd971f;
+  --alt-monokai-code-keyword: #f92672;
+  --alt-monokai-code-operator: #f92672;
+  --alt-monokai-code-property: #a6e22e;
+  --alt-monokai-code-punctuation: #f8f8f2;
+  --alt-monokai-code-string: #e6db74;
+  --alt-monokai-code-tag: #f92672;
+  --alt-monokai-code-value: #ae81ff;
+}
+
+.codeblock-style-night-owl {
+  --alt-night-owl-code-background: #011627;
+  --alt-night-owl-code-border: none;
+  --alt-night-owl-code-normal: #d6deeb;
+  --alt-night-owl-code-comment: #637777;
+  --alt-night-owl-code-function: #82aaff;
+  --alt-night-owl-code-important: #f78c6c;
+  --alt-night-owl-code-keyword: #c792ea;
+  --alt-night-owl-code-operator: #7fdbca;
+  --alt-night-owl-code-property: #c5e478;
+  --alt-night-owl-code-punctuation: #d6deeb;
+  --alt-night-owl-code-string: #ecc48d;
+  --alt-night-owl-code-tag: #7fdbca;
+  --alt-night-owl-code-value: #f78c6c;
+}
+
+.codeblock-style-nord {
+  --alt-nord-code-background: #2e3440;
+  --alt-nord-code-border: none;
+  --alt-nord-code-normal: #d8dee9;
+  --alt-nord-code-comment: #4c566a;
+  --alt-nord-code-function: #88c0d0;
+  --alt-nord-code-important: #ebcb8b;
+  --alt-nord-code-keyword: #81a1c1;
+  --alt-nord-code-operator: #81a1c1;
+  --alt-nord-code-property: #8fbcbb;
+  --alt-nord-code-punctuation: #d8dee9;
+  --alt-nord-code-string: #a3be8c;
+  --alt-nord-code-tag: #81a1c1;
+  --alt-nord-code-value: #b48ead;
+}
+
+.codeblock-style-one-dark {
+  --alt-one-dark-code-background: #282c34;
+  --alt-one-dark-code-border: none;
+  --alt-one-dark-code-normal: #abb2bf;
+  --alt-one-dark-code-comment: #5c6370;
+  --alt-one-dark-code-function: #e5c07b;
+  --alt-one-dark-code-important: #d19a66;
+  --alt-one-dark-code-keyword: #e06c75;
+  --alt-one-dark-code-operator: #be5046;
+  --alt-one-dark-code-property: #56b6c2;
+  --alt-one-dark-code-punctuation: #abb2bf;
+  --alt-one-dark-code-string: #98c379;
+  --alt-one-dark-code-tag: #be5046;
+  --alt-one-dark-code-value: #c678dd;
+}
+
+.codeblock-style-one-dark-pro {
+  --alt-one-dark-pro-code-background: #282c34;
+  --alt-one-dark-pro-code-border: none;
+  --alt-one-dark-pro-code-normal: #abb2bf;
+  --alt-one-dark-pro-code-comment: #5c6370;
+  --alt-one-dark-pro-code-function: #61afef;
+  --alt-one-dark-pro-code-important: #d19a66;
+  --alt-one-dark-pro-code-keyword: #c678dd;
+  --alt-one-dark-pro-code-operator: #56b6c2;
+  --alt-one-dark-pro-code-property: #e06c75;
+  --alt-one-dark-pro-code-punctuation: #abb2bf;
+  --alt-one-dark-pro-code-string: #98c379;
+  --alt-one-dark-pro-code-tag: #e06c75;
+  --alt-one-dark-pro-code-value: #d19a66;
+}
+
+.codeblock-style-rose-pine {
+  --alt-rose-pine-code-background: #191724;
+  --alt-rose-pine-code-border: none;
+  --alt-rose-pine-code-normal: #e0def4;
+  --alt-rose-pine-code-comment: #6e6a86;
+  --alt-rose-pine-code-function: #31748f;
+  --alt-rose-pine-code-important: #f6c177;
+  --alt-rose-pine-code-keyword: #c4a7e7;
+  --alt-rose-pine-code-operator: #908caa;
+  --alt-rose-pine-code-property: #9ccfd8;
+  --alt-rose-pine-code-punctuation: #908caa;
+  --alt-rose-pine-code-string: #f6c177;
+  --alt-rose-pine-code-tag: #eb6f92;
+  --alt-rose-pine-code-value: #f6c177;
+}
+
+.codeblock-style-rose-pine-moon {
+  --alt-rose-pine-moon-code-background: #232136;
+  --alt-rose-pine-moon-code-border: none;
+  --alt-rose-pine-moon-code-normal: #e0def4;
+  --alt-rose-pine-moon-code-comment: #6e6a86;
+  --alt-rose-pine-moon-code-function: #3e8fb0;
+  --alt-rose-pine-moon-code-important: #f6c177;
+  --alt-rose-pine-moon-code-keyword: #c4a7e7;
+  --alt-rose-pine-moon-code-operator: #908caa;
+  --alt-rose-pine-moon-code-property: #9ccfd8;
+  --alt-rose-pine-moon-code-punctuation: #908caa;
+  --alt-rose-pine-moon-code-string: #f6c177;
+  --alt-rose-pine-moon-code-tag: #eb6f92;
+  --alt-rose-pine-moon-code-value: #f6c177;
+}
+
+.codeblock-style-solarized-dark {
+  --alt-solarized-dark-code-background: #002b36;
+  --alt-solarized-dark-code-border: none;
+  --alt-solarized-dark-code-normal: #839496;
+  --alt-solarized-dark-code-comment: #586e75;
+  --alt-solarized-dark-code-function: #268bd2;
+  --alt-solarized-dark-code-important: #cb4b16;
+  --alt-solarized-dark-code-keyword: #859900;
+  --alt-solarized-dark-code-operator: #93a1a1;
+  --alt-solarized-dark-code-property: #2aa198;
+  --alt-solarized-dark-code-punctuation: #839496;
+  --alt-solarized-dark-code-string: #2aa198;
+  --alt-solarized-dark-code-tag: #dc322f;
+  --alt-solarized-dark-code-value: #d33682;
+}
+
+.codeblock-style-tokyo-night {
+  --alt-tokyo-night-code-background: #1a1b26;
+  --alt-tokyo-night-code-border: none;
+  --alt-tokyo-night-code-normal: #c0caf5;
+  --alt-tokyo-night-code-comment: #565f89;
+  --alt-tokyo-night-code-function: #7aa2f7;
+  --alt-tokyo-night-code-important: #ff9e64;
+  --alt-tokyo-night-code-keyword: #bb9af7;
+  --alt-tokyo-night-code-operator: #89ddff;
+  --alt-tokyo-night-code-property: #7dcfff;
+  --alt-tokyo-night-code-punctuation: #a9b1d6;
+  --alt-tokyo-night-code-string: #9ece6a;
+  --alt-tokyo-night-code-tag: #f7768e;
+  --alt-tokyo-night-code-value: #ff9e64;
+}
+
+.codeblock-style-tokyo-night-storm {
+  --alt-tokyo-night-storm-code-background: #24283b;
+  --alt-tokyo-night-storm-code-border: none;
+  --alt-tokyo-night-storm-code-normal: #c0caf5;
+  --alt-tokyo-night-storm-code-comment: #565f89;
+  --alt-tokyo-night-storm-code-function: #7aa2f7;
+  --alt-tokyo-night-storm-code-important: #ff9e64;
+  --alt-tokyo-night-storm-code-keyword: #bb9af7;
+  --alt-tokyo-night-storm-code-operator: #89ddff;
+  --alt-tokyo-night-storm-code-property: #7dcfff;
+  --alt-tokyo-night-storm-code-punctuation: #a9b1d6;
+  --alt-tokyo-night-storm-code-string: #9ece6a;
+  --alt-tokyo-night-storm-code-tag: #f7768e;
+  --alt-tokyo-night-storm-code-value: #ff9e64;
+}
+
+/* ------------------------- Light themes ------------------------- */
+.codeblock-style-atom-one-light {
+  --alt-atom-one-light-code-background: #fafafa;
+  --alt-atom-one-light-code-border: none;
+  --alt-atom-one-light-code-normal: #383a42;
+  --alt-atom-one-light-code-comment: #a0a1a7;
+  --alt-atom-one-light-code-function: #4078f2;
+  --alt-atom-one-light-code-important: #986801;
+  --alt-atom-one-light-code-keyword: #a626a4;
+  --alt-atom-one-light-code-operator: #383a42;
+  --alt-atom-one-light-code-property: #e45649;
+  --alt-atom-one-light-code-punctuation: #383a42;
+  --alt-atom-one-light-code-string: #50a14f;
+  --alt-atom-one-light-code-tag: #e45649;
+  --alt-atom-one-light-code-value: #986801;
+}
+
+.codeblock-style-ayu-light {
+  --alt-ayu-light-code-background: #fafafa;
+  --alt-ayu-light-code-border: none;
+  --alt-ayu-light-code-normal: #5c6773;
+  --alt-ayu-light-code-comment: #abb0b6;
+  --alt-ayu-light-code-function: #f2ae49;
+  --alt-ayu-light-code-important: #fa8d3e;
+  --alt-ayu-light-code-keyword: #fa8d3e;
+  --alt-ayu-light-code-operator: #ed9366;
+  --alt-ayu-light-code-property: #399ee6;
+  --alt-ayu-light-code-punctuation: #5c6773;
+  --alt-ayu-light-code-string: #86b300;
+  --alt-ayu-light-code-tag: #55b4d4;
+  --alt-ayu-light-code-value: #a37acc;
+}
+
+.codeblock-style-catppuccin-latte {
+  --alt-catppuccin-latte-code-background: #eff1f5;
+  --alt-catppuccin-latte-code-border: none;
+  --alt-catppuccin-latte-code-normal: #4c4f69;
+  --alt-catppuccin-latte-code-comment: #9ca0b0;
+  --alt-catppuccin-latte-code-function: #1e66f5;
+  --alt-catppuccin-latte-code-important: #fe640b;
+  --alt-catppuccin-latte-code-keyword: #8839ef;
+  --alt-catppuccin-latte-code-operator: #04a5e5;
+  --alt-catppuccin-latte-code-property: #1e66f5;
+  --alt-catppuccin-latte-code-punctuation: #4c4f69;
+  --alt-catppuccin-latte-code-string: #40a02b;
+  --alt-catppuccin-latte-code-tag: #d20f39;
+  --alt-catppuccin-latte-code-value: #fe640b;
+}
+
+.codeblock-style-everforest-light {
+  --alt-everforest-light-code-background: #fdf6e3;
+  --alt-everforest-light-code-border: none;
+  --alt-everforest-light-code-normal: #5c6a72;
+  --alt-everforest-light-code-comment: #939f91;
+  --alt-everforest-light-code-function: #8da101;
+  --alt-everforest-light-code-important: #f57d26;
+  --alt-everforest-light-code-keyword: #f85552;
+  --alt-everforest-light-code-operator: #f57d26;
+  --alt-everforest-light-code-property: #3a94c5;
+  --alt-everforest-light-code-punctuation: #829181;
+  --alt-everforest-light-code-string: #35a77c;
+  --alt-everforest-light-code-tag: #f57d26;
+  --alt-everforest-light-code-value: #df69ba;
+}
+
+.codeblock-style-github-light {
+  --alt-github-light-code-background: #ffffff;
+  --alt-github-light-code-border: none;
+  --alt-github-light-code-normal: #1f2328;
+  --alt-github-light-code-comment: #6e7781;
+  --alt-github-light-code-function: #8250df;
+  --alt-github-light-code-important: #0550ae;
+  --alt-github-light-code-keyword: #cf222e;
+  --alt-github-light-code-operator: #cf222e;
+  --alt-github-light-code-property: #0550ae;
+  --alt-github-light-code-punctuation: #1f2328;
+  --alt-github-light-code-string: #0a3069;
+  --alt-github-light-code-tag: #116329;
+  --alt-github-light-code-value: #0550ae;
+}
+
+.codeblock-style-gruvbox-light {
+  --alt-gruvbox-light-code-background: #fbf1c7;
+  --alt-gruvbox-light-code-border: none;
+  --alt-gruvbox-light-code-normal: #3c3836;
+  --alt-gruvbox-light-code-comment: #928374;
+  --alt-gruvbox-light-code-function: #79740e;
+  --alt-gruvbox-light-code-important: #af3a03;
+  --alt-gruvbox-light-code-keyword: #9d0006;
+  --alt-gruvbox-light-code-operator: #3c3836;
+  --alt-gruvbox-light-code-property: #076678;
+  --alt-gruvbox-light-code-punctuation: #3c3836;
+  --alt-gruvbox-light-code-string: #79740e;
+  --alt-gruvbox-light-code-tag: #427b58;
+  --alt-gruvbox-light-code-value: #8f3f71;
+}
+
+.codeblock-style-kanagawa-lotus {
+  --alt-kanagawa-lotus-code-background: #f2ecbc;
+  --alt-kanagawa-lotus-code-border: none;
+  --alt-kanagawa-lotus-code-normal: #545464;
+  --alt-kanagawa-lotus-code-comment: #8a8980;
+  --alt-kanagawa-lotus-code-function: #4d699b;
+  --alt-kanagawa-lotus-code-important: #cc6d00;
+  --alt-kanagawa-lotus-code-keyword: #624c83;
+  --alt-kanagawa-lotus-code-operator: #836f4a;
+  --alt-kanagawa-lotus-code-property: #6693bf;
+  --alt-kanagawa-lotus-code-punctuation: #4e8ca2;
+  --alt-kanagawa-lotus-code-string: #6f894e;
+  --alt-kanagawa-lotus-code-tag: #c84053;
+  --alt-kanagawa-lotus-code-value: #b35b79;
+}
+
+.codeblock-style-rose-pine-dawn {
+  --alt-rose-pine-dawn-code-background: #faf4ed;
+  --alt-rose-pine-dawn-code-border: none;
+  --alt-rose-pine-dawn-code-normal: #575279;
+  --alt-rose-pine-dawn-code-comment: #9893a5;
+  --alt-rose-pine-dawn-code-function: #286983;
+  --alt-rose-pine-dawn-code-important: #ea9d34;
+  --alt-rose-pine-dawn-code-keyword: #907aa9;
+  --alt-rose-pine-dawn-code-operator: #797593;
+  --alt-rose-pine-dawn-code-property: #56949f;
+  --alt-rose-pine-dawn-code-punctuation: #797593;
+  --alt-rose-pine-dawn-code-string: #ea9d34;
+  --alt-rose-pine-dawn-code-tag: #b4637a;
+  --alt-rose-pine-dawn-code-value: #ea9d34;
+}
+
+.codeblock-style-solarized-light {
+  --alt-solarized-light-code-background: #fdf6e3;
+  --alt-solarized-light-code-border: none;
+  --alt-solarized-light-code-normal: #657b83;
+  --alt-solarized-light-code-comment: #93a1a1;
+  --alt-solarized-light-code-function: #b58900;
+  --alt-solarized-light-code-important: #cb4b16;
+  --alt-solarized-light-code-keyword: #d33682;
+  --alt-solarized-light-code-operator: #dc322f;
+  --alt-solarized-light-code-property: #2aa198;
+  --alt-solarized-light-code-punctuation: #657b83;
+  --alt-solarized-light-code-string: #859900;
+  --alt-solarized-light-code-tag: #dc322f;
+  --alt-solarized-light-code-value: #6c71c4;
+}
+
+.codeblock-style-tokyo-night-light {
+  --alt-tokyo-night-light-code-background: #e6e7ed;
+  --alt-tokyo-night-light-code-border: none;
+  --alt-tokyo-night-light-code-normal: #343b58;
+  --alt-tokyo-night-light-code-comment: #6c6e75;
+  --alt-tokyo-night-light-code-function: #2959aa;
+  --alt-tokyo-night-light-code-important: #965027;
+  --alt-tokyo-night-light-code-keyword: #5a3e8e;
+  --alt-tokyo-night-light-code-operator: #006c86;
+  --alt-tokyo-night-light-code-property: #0f4b6e;
+  --alt-tokyo-night-light-code-punctuation: #343b58;
+  --alt-tokyo-night-light-code-string: #385f0d;
+  --alt-tokyo-night-light-code-tag: #8c4351;
+  --alt-tokyo-night-light-code-value: #965027;
+}
+
+/* Map each private palette onto the public --code-* roles locally on
+   every block-code container and its descendants. Because these
+   declarations sit on the consuming elements themselves, they shadow any
+   saved Style Settings customization declared on <body>/:root. Reading
+   mode targets <pre> and its descendant tokens/code; live preview targets
+   the HyperMD-codeblock background containers and content lines. */
+.codeblock-style-ayu-dark .markdown-rendered pre,
+.codeblock-style-ayu-dark .markdown-rendered pre *,
+.codeblock-style-ayu-dark .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-ayu-dark .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-ayu-dark .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-ayu-dark .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-ayu-dark .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-ayu-dark-code-background);
+  --code-border: var(--alt-ayu-dark-code-border);
+  --code-normal: var(--alt-ayu-dark-code-normal);
+  --code-comment: var(--alt-ayu-dark-code-comment);
+  --code-function: var(--alt-ayu-dark-code-function);
+  --code-important: var(--alt-ayu-dark-code-important);
+  --code-keyword: var(--alt-ayu-dark-code-keyword);
+  --code-operator: var(--alt-ayu-dark-code-operator);
+  --code-property: var(--alt-ayu-dark-code-property);
+  --code-punctuation: var(--alt-ayu-dark-code-punctuation);
+  --code-string: var(--alt-ayu-dark-code-string);
+  --code-tag: var(--alt-ayu-dark-code-tag);
+  --code-value: var(--alt-ayu-dark-code-value);
+}
+
+.codeblock-style-ayu-mirage .markdown-rendered pre,
+.codeblock-style-ayu-mirage .markdown-rendered pre *,
+.codeblock-style-ayu-mirage .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-ayu-mirage .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-ayu-mirage .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-ayu-mirage .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-ayu-mirage .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-ayu-mirage-code-background);
+  --code-border: var(--alt-ayu-mirage-code-border);
+  --code-normal: var(--alt-ayu-mirage-code-normal);
+  --code-comment: var(--alt-ayu-mirage-code-comment);
+  --code-function: var(--alt-ayu-mirage-code-function);
+  --code-important: var(--alt-ayu-mirage-code-important);
+  --code-keyword: var(--alt-ayu-mirage-code-keyword);
+  --code-operator: var(--alt-ayu-mirage-code-operator);
+  --code-property: var(--alt-ayu-mirage-code-property);
+  --code-punctuation: var(--alt-ayu-mirage-code-punctuation);
+  --code-string: var(--alt-ayu-mirage-code-string);
+  --code-tag: var(--alt-ayu-mirage-code-tag);
+  --code-value: var(--alt-ayu-mirage-code-value);
+}
+
+.codeblock-style-catppuccin-frappe .markdown-rendered pre,
+.codeblock-style-catppuccin-frappe .markdown-rendered pre *,
+.codeblock-style-catppuccin-frappe .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-catppuccin-frappe .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-catppuccin-frappe .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-catppuccin-frappe .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-catppuccin-frappe .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-catppuccin-frappe-code-background);
+  --code-border: var(--alt-catppuccin-frappe-code-border);
+  --code-normal: var(--alt-catppuccin-frappe-code-normal);
+  --code-comment: var(--alt-catppuccin-frappe-code-comment);
+  --code-function: var(--alt-catppuccin-frappe-code-function);
+  --code-important: var(--alt-catppuccin-frappe-code-important);
+  --code-keyword: var(--alt-catppuccin-frappe-code-keyword);
+  --code-operator: var(--alt-catppuccin-frappe-code-operator);
+  --code-property: var(--alt-catppuccin-frappe-code-property);
+  --code-punctuation: var(--alt-catppuccin-frappe-code-punctuation);
+  --code-string: var(--alt-catppuccin-frappe-code-string);
+  --code-tag: var(--alt-catppuccin-frappe-code-tag);
+  --code-value: var(--alt-catppuccin-frappe-code-value);
+}
+
+.codeblock-style-catppuccin-macchiato .markdown-rendered pre,
+.codeblock-style-catppuccin-macchiato .markdown-rendered pre *,
+.codeblock-style-catppuccin-macchiato .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-catppuccin-macchiato .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-catppuccin-macchiato .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-catppuccin-macchiato .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-catppuccin-macchiato .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-catppuccin-macchiato-code-background);
+  --code-border: var(--alt-catppuccin-macchiato-code-border);
+  --code-normal: var(--alt-catppuccin-macchiato-code-normal);
+  --code-comment: var(--alt-catppuccin-macchiato-code-comment);
+  --code-function: var(--alt-catppuccin-macchiato-code-function);
+  --code-important: var(--alt-catppuccin-macchiato-code-important);
+  --code-keyword: var(--alt-catppuccin-macchiato-code-keyword);
+  --code-operator: var(--alt-catppuccin-macchiato-code-operator);
+  --code-property: var(--alt-catppuccin-macchiato-code-property);
+  --code-punctuation: var(--alt-catppuccin-macchiato-code-punctuation);
+  --code-string: var(--alt-catppuccin-macchiato-code-string);
+  --code-tag: var(--alt-catppuccin-macchiato-code-tag);
+  --code-value: var(--alt-catppuccin-macchiato-code-value);
+}
+
+.codeblock-style-catppuccin-mocha .markdown-rendered pre,
+.codeblock-style-catppuccin-mocha .markdown-rendered pre *,
+.codeblock-style-catppuccin-mocha .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-catppuccin-mocha .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-catppuccin-mocha .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-catppuccin-mocha .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-catppuccin-mocha .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-catppuccin-mocha-code-background);
+  --code-border: var(--alt-catppuccin-mocha-code-border);
+  --code-normal: var(--alt-catppuccin-mocha-code-normal);
+  --code-comment: var(--alt-catppuccin-mocha-code-comment);
+  --code-function: var(--alt-catppuccin-mocha-code-function);
+  --code-important: var(--alt-catppuccin-mocha-code-important);
+  --code-keyword: var(--alt-catppuccin-mocha-code-keyword);
+  --code-operator: var(--alt-catppuccin-mocha-code-operator);
+  --code-property: var(--alt-catppuccin-mocha-code-property);
+  --code-punctuation: var(--alt-catppuccin-mocha-code-punctuation);
+  --code-string: var(--alt-catppuccin-mocha-code-string);
+  --code-tag: var(--alt-catppuccin-mocha-code-tag);
+  --code-value: var(--alt-catppuccin-mocha-code-value);
+}
+
+.codeblock-style-dracula .markdown-rendered pre,
+.codeblock-style-dracula .markdown-rendered pre *,
+.codeblock-style-dracula .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-dracula .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-dracula .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-dracula .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-dracula .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-dracula-code-background);
+  --code-border: var(--alt-dracula-code-border);
+  --code-normal: var(--alt-dracula-code-normal);
+  --code-comment: var(--alt-dracula-code-comment);
+  --code-function: var(--alt-dracula-code-function);
+  --code-important: var(--alt-dracula-code-important);
+  --code-keyword: var(--alt-dracula-code-keyword);
+  --code-operator: var(--alt-dracula-code-operator);
+  --code-property: var(--alt-dracula-code-property);
+  --code-punctuation: var(--alt-dracula-code-punctuation);
+  --code-string: var(--alt-dracula-code-string);
+  --code-tag: var(--alt-dracula-code-tag);
+  --code-value: var(--alt-dracula-code-value);
+}
+
+.codeblock-style-everforest-dark .markdown-rendered pre,
+.codeblock-style-everforest-dark .markdown-rendered pre *,
+.codeblock-style-everforest-dark .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-everforest-dark .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-everforest-dark .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-everforest-dark .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-everforest-dark .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-everforest-dark-code-background);
+  --code-border: var(--alt-everforest-dark-code-border);
+  --code-normal: var(--alt-everforest-dark-code-normal);
+  --code-comment: var(--alt-everforest-dark-code-comment);
+  --code-function: var(--alt-everforest-dark-code-function);
+  --code-important: var(--alt-everforest-dark-code-important);
+  --code-keyword: var(--alt-everforest-dark-code-keyword);
+  --code-operator: var(--alt-everforest-dark-code-operator);
+  --code-property: var(--alt-everforest-dark-code-property);
+  --code-punctuation: var(--alt-everforest-dark-code-punctuation);
+  --code-string: var(--alt-everforest-dark-code-string);
+  --code-tag: var(--alt-everforest-dark-code-tag);
+  --code-value: var(--alt-everforest-dark-code-value);
+}
+
+.codeblock-style-github-dark .markdown-rendered pre,
+.codeblock-style-github-dark .markdown-rendered pre *,
+.codeblock-style-github-dark .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-github-dark .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-github-dark .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-github-dark .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-github-dark .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-github-dark-code-background);
+  --code-border: var(--alt-github-dark-code-border);
+  --code-normal: var(--alt-github-dark-code-normal);
+  --code-comment: var(--alt-github-dark-code-comment);
+  --code-function: var(--alt-github-dark-code-function);
+  --code-important: var(--alt-github-dark-code-important);
+  --code-keyword: var(--alt-github-dark-code-keyword);
+  --code-operator: var(--alt-github-dark-code-operator);
+  --code-property: var(--alt-github-dark-code-property);
+  --code-punctuation: var(--alt-github-dark-code-punctuation);
+  --code-string: var(--alt-github-dark-code-string);
+  --code-tag: var(--alt-github-dark-code-tag);
+  --code-value: var(--alt-github-dark-code-value);
+}
+
+.codeblock-style-gruvbox-dark .markdown-rendered pre,
+.codeblock-style-gruvbox-dark .markdown-rendered pre *,
+.codeblock-style-gruvbox-dark .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-gruvbox-dark .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-gruvbox-dark .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-gruvbox-dark .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-gruvbox-dark .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-gruvbox-dark-code-background);
+  --code-border: var(--alt-gruvbox-dark-code-border);
+  --code-normal: var(--alt-gruvbox-dark-code-normal);
+  --code-comment: var(--alt-gruvbox-dark-code-comment);
+  --code-function: var(--alt-gruvbox-dark-code-function);
+  --code-important: var(--alt-gruvbox-dark-code-important);
+  --code-keyword: var(--alt-gruvbox-dark-code-keyword);
+  --code-operator: var(--alt-gruvbox-dark-code-operator);
+  --code-property: var(--alt-gruvbox-dark-code-property);
+  --code-punctuation: var(--alt-gruvbox-dark-code-punctuation);
+  --code-string: var(--alt-gruvbox-dark-code-string);
+  --code-tag: var(--alt-gruvbox-dark-code-tag);
+  --code-value: var(--alt-gruvbox-dark-code-value);
+}
+
+.codeblock-style-kanagawa-dragon .markdown-rendered pre,
+.codeblock-style-kanagawa-dragon .markdown-rendered pre *,
+.codeblock-style-kanagawa-dragon .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-kanagawa-dragon .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-kanagawa-dragon .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-kanagawa-dragon .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-kanagawa-dragon .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-kanagawa-dragon-code-background);
+  --code-border: var(--alt-kanagawa-dragon-code-border);
+  --code-normal: var(--alt-kanagawa-dragon-code-normal);
+  --code-comment: var(--alt-kanagawa-dragon-code-comment);
+  --code-function: var(--alt-kanagawa-dragon-code-function);
+  --code-important: var(--alt-kanagawa-dragon-code-important);
+  --code-keyword: var(--alt-kanagawa-dragon-code-keyword);
+  --code-operator: var(--alt-kanagawa-dragon-code-operator);
+  --code-property: var(--alt-kanagawa-dragon-code-property);
+  --code-punctuation: var(--alt-kanagawa-dragon-code-punctuation);
+  --code-string: var(--alt-kanagawa-dragon-code-string);
+  --code-tag: var(--alt-kanagawa-dragon-code-tag);
+  --code-value: var(--alt-kanagawa-dragon-code-value);
+}
+
+.codeblock-style-kanagawa-wave .markdown-rendered pre,
+.codeblock-style-kanagawa-wave .markdown-rendered pre *,
+.codeblock-style-kanagawa-wave .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-kanagawa-wave .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-kanagawa-wave .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-kanagawa-wave .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-kanagawa-wave .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-kanagawa-wave-code-background);
+  --code-border: var(--alt-kanagawa-wave-code-border);
+  --code-normal: var(--alt-kanagawa-wave-code-normal);
+  --code-comment: var(--alt-kanagawa-wave-code-comment);
+  --code-function: var(--alt-kanagawa-wave-code-function);
+  --code-important: var(--alt-kanagawa-wave-code-important);
+  --code-keyword: var(--alt-kanagawa-wave-code-keyword);
+  --code-operator: var(--alt-kanagawa-wave-code-operator);
+  --code-property: var(--alt-kanagawa-wave-code-property);
+  --code-punctuation: var(--alt-kanagawa-wave-code-punctuation);
+  --code-string: var(--alt-kanagawa-wave-code-string);
+  --code-tag: var(--alt-kanagawa-wave-code-tag);
+  --code-value: var(--alt-kanagawa-wave-code-value);
+}
+
+.codeblock-style-monokai .markdown-rendered pre,
+.codeblock-style-monokai .markdown-rendered pre *,
+.codeblock-style-monokai .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-monokai .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-monokai .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-monokai .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-monokai .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-monokai-code-background);
+  --code-border: var(--alt-monokai-code-border);
+  --code-normal: var(--alt-monokai-code-normal);
+  --code-comment: var(--alt-monokai-code-comment);
+  --code-function: var(--alt-monokai-code-function);
+  --code-important: var(--alt-monokai-code-important);
+  --code-keyword: var(--alt-monokai-code-keyword);
+  --code-operator: var(--alt-monokai-code-operator);
+  --code-property: var(--alt-monokai-code-property);
+  --code-punctuation: var(--alt-monokai-code-punctuation);
+  --code-string: var(--alt-monokai-code-string);
+  --code-tag: var(--alt-monokai-code-tag);
+  --code-value: var(--alt-monokai-code-value);
+}
+
+.codeblock-style-night-owl .markdown-rendered pre,
+.codeblock-style-night-owl .markdown-rendered pre *,
+.codeblock-style-night-owl .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-night-owl .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-night-owl .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-night-owl .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-night-owl .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-night-owl-code-background);
+  --code-border: var(--alt-night-owl-code-border);
+  --code-normal: var(--alt-night-owl-code-normal);
+  --code-comment: var(--alt-night-owl-code-comment);
+  --code-function: var(--alt-night-owl-code-function);
+  --code-important: var(--alt-night-owl-code-important);
+  --code-keyword: var(--alt-night-owl-code-keyword);
+  --code-operator: var(--alt-night-owl-code-operator);
+  --code-property: var(--alt-night-owl-code-property);
+  --code-punctuation: var(--alt-night-owl-code-punctuation);
+  --code-string: var(--alt-night-owl-code-string);
+  --code-tag: var(--alt-night-owl-code-tag);
+  --code-value: var(--alt-night-owl-code-value);
+}
+
+.codeblock-style-nord .markdown-rendered pre,
+.codeblock-style-nord .markdown-rendered pre *,
+.codeblock-style-nord .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-nord .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-nord .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-nord .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-nord .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-nord-code-background);
+  --code-border: var(--alt-nord-code-border);
+  --code-normal: var(--alt-nord-code-normal);
+  --code-comment: var(--alt-nord-code-comment);
+  --code-function: var(--alt-nord-code-function);
+  --code-important: var(--alt-nord-code-important);
+  --code-keyword: var(--alt-nord-code-keyword);
+  --code-operator: var(--alt-nord-code-operator);
+  --code-property: var(--alt-nord-code-property);
+  --code-punctuation: var(--alt-nord-code-punctuation);
+  --code-string: var(--alt-nord-code-string);
+  --code-tag: var(--alt-nord-code-tag);
+  --code-value: var(--alt-nord-code-value);
+}
+
+.codeblock-style-one-dark .markdown-rendered pre,
+.codeblock-style-one-dark .markdown-rendered pre *,
+.codeblock-style-one-dark .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-one-dark .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-one-dark .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-one-dark .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-one-dark .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-one-dark-code-background);
+  --code-border: var(--alt-one-dark-code-border);
+  --code-normal: var(--alt-one-dark-code-normal);
+  --code-comment: var(--alt-one-dark-code-comment);
+  --code-function: var(--alt-one-dark-code-function);
+  --code-important: var(--alt-one-dark-code-important);
+  --code-keyword: var(--alt-one-dark-code-keyword);
+  --code-operator: var(--alt-one-dark-code-operator);
+  --code-property: var(--alt-one-dark-code-property);
+  --code-punctuation: var(--alt-one-dark-code-punctuation);
+  --code-string: var(--alt-one-dark-code-string);
+  --code-tag: var(--alt-one-dark-code-tag);
+  --code-value: var(--alt-one-dark-code-value);
+}
+
+.codeblock-style-one-dark-pro .markdown-rendered pre,
+.codeblock-style-one-dark-pro .markdown-rendered pre *,
+.codeblock-style-one-dark-pro .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-one-dark-pro .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-one-dark-pro .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-one-dark-pro .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-one-dark-pro .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-one-dark-pro-code-background);
+  --code-border: var(--alt-one-dark-pro-code-border);
+  --code-normal: var(--alt-one-dark-pro-code-normal);
+  --code-comment: var(--alt-one-dark-pro-code-comment);
+  --code-function: var(--alt-one-dark-pro-code-function);
+  --code-important: var(--alt-one-dark-pro-code-important);
+  --code-keyword: var(--alt-one-dark-pro-code-keyword);
+  --code-operator: var(--alt-one-dark-pro-code-operator);
+  --code-property: var(--alt-one-dark-pro-code-property);
+  --code-punctuation: var(--alt-one-dark-pro-code-punctuation);
+  --code-string: var(--alt-one-dark-pro-code-string);
+  --code-tag: var(--alt-one-dark-pro-code-tag);
+  --code-value: var(--alt-one-dark-pro-code-value);
+}
+
+.codeblock-style-rose-pine .markdown-rendered pre,
+.codeblock-style-rose-pine .markdown-rendered pre *,
+.codeblock-style-rose-pine .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-rose-pine .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-rose-pine .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-rose-pine .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-rose-pine .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-rose-pine-code-background);
+  --code-border: var(--alt-rose-pine-code-border);
+  --code-normal: var(--alt-rose-pine-code-normal);
+  --code-comment: var(--alt-rose-pine-code-comment);
+  --code-function: var(--alt-rose-pine-code-function);
+  --code-important: var(--alt-rose-pine-code-important);
+  --code-keyword: var(--alt-rose-pine-code-keyword);
+  --code-operator: var(--alt-rose-pine-code-operator);
+  --code-property: var(--alt-rose-pine-code-property);
+  --code-punctuation: var(--alt-rose-pine-code-punctuation);
+  --code-string: var(--alt-rose-pine-code-string);
+  --code-tag: var(--alt-rose-pine-code-tag);
+  --code-value: var(--alt-rose-pine-code-value);
+}
+
+.codeblock-style-rose-pine-moon .markdown-rendered pre,
+.codeblock-style-rose-pine-moon .markdown-rendered pre *,
+.codeblock-style-rose-pine-moon .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-rose-pine-moon .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-rose-pine-moon .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-rose-pine-moon .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-rose-pine-moon .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-rose-pine-moon-code-background);
+  --code-border: var(--alt-rose-pine-moon-code-border);
+  --code-normal: var(--alt-rose-pine-moon-code-normal);
+  --code-comment: var(--alt-rose-pine-moon-code-comment);
+  --code-function: var(--alt-rose-pine-moon-code-function);
+  --code-important: var(--alt-rose-pine-moon-code-important);
+  --code-keyword: var(--alt-rose-pine-moon-code-keyword);
+  --code-operator: var(--alt-rose-pine-moon-code-operator);
+  --code-property: var(--alt-rose-pine-moon-code-property);
+  --code-punctuation: var(--alt-rose-pine-moon-code-punctuation);
+  --code-string: var(--alt-rose-pine-moon-code-string);
+  --code-tag: var(--alt-rose-pine-moon-code-tag);
+  --code-value: var(--alt-rose-pine-moon-code-value);
+}
+
+.codeblock-style-solarized-dark .markdown-rendered pre,
+.codeblock-style-solarized-dark .markdown-rendered pre *,
+.codeblock-style-solarized-dark .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-solarized-dark .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-solarized-dark .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-solarized-dark .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-solarized-dark .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-solarized-dark-code-background);
+  --code-border: var(--alt-solarized-dark-code-border);
+  --code-normal: var(--alt-solarized-dark-code-normal);
+  --code-comment: var(--alt-solarized-dark-code-comment);
+  --code-function: var(--alt-solarized-dark-code-function);
+  --code-important: var(--alt-solarized-dark-code-important);
+  --code-keyword: var(--alt-solarized-dark-code-keyword);
+  --code-operator: var(--alt-solarized-dark-code-operator);
+  --code-property: var(--alt-solarized-dark-code-property);
+  --code-punctuation: var(--alt-solarized-dark-code-punctuation);
+  --code-string: var(--alt-solarized-dark-code-string);
+  --code-tag: var(--alt-solarized-dark-code-tag);
+  --code-value: var(--alt-solarized-dark-code-value);
+}
+
+.codeblock-style-tokyo-night .markdown-rendered pre,
+.codeblock-style-tokyo-night .markdown-rendered pre *,
+.codeblock-style-tokyo-night .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-tokyo-night .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-tokyo-night .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-tokyo-night .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-tokyo-night .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-tokyo-night-code-background);
+  --code-border: var(--alt-tokyo-night-code-border);
+  --code-normal: var(--alt-tokyo-night-code-normal);
+  --code-comment: var(--alt-tokyo-night-code-comment);
+  --code-function: var(--alt-tokyo-night-code-function);
+  --code-important: var(--alt-tokyo-night-code-important);
+  --code-keyword: var(--alt-tokyo-night-code-keyword);
+  --code-operator: var(--alt-tokyo-night-code-operator);
+  --code-property: var(--alt-tokyo-night-code-property);
+  --code-punctuation: var(--alt-tokyo-night-code-punctuation);
+  --code-string: var(--alt-tokyo-night-code-string);
+  --code-tag: var(--alt-tokyo-night-code-tag);
+  --code-value: var(--alt-tokyo-night-code-value);
+}
+
+.codeblock-style-tokyo-night-storm .markdown-rendered pre,
+.codeblock-style-tokyo-night-storm .markdown-rendered pre *,
+.codeblock-style-tokyo-night-storm .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-tokyo-night-storm .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-tokyo-night-storm .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-tokyo-night-storm .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-tokyo-night-storm .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-tokyo-night-storm-code-background);
+  --code-border: var(--alt-tokyo-night-storm-code-border);
+  --code-normal: var(--alt-tokyo-night-storm-code-normal);
+  --code-comment: var(--alt-tokyo-night-storm-code-comment);
+  --code-function: var(--alt-tokyo-night-storm-code-function);
+  --code-important: var(--alt-tokyo-night-storm-code-important);
+  --code-keyword: var(--alt-tokyo-night-storm-code-keyword);
+  --code-operator: var(--alt-tokyo-night-storm-code-operator);
+  --code-property: var(--alt-tokyo-night-storm-code-property);
+  --code-punctuation: var(--alt-tokyo-night-storm-code-punctuation);
+  --code-string: var(--alt-tokyo-night-storm-code-string);
+  --code-tag: var(--alt-tokyo-night-storm-code-tag);
+  --code-value: var(--alt-tokyo-night-storm-code-value);
+}
+
+.codeblock-style-atom-one-light .markdown-rendered pre,
+.codeblock-style-atom-one-light .markdown-rendered pre *,
+.codeblock-style-atom-one-light .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-atom-one-light .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-atom-one-light .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-atom-one-light .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-atom-one-light .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-atom-one-light-code-background);
+  --code-border: var(--alt-atom-one-light-code-border);
+  --code-normal: var(--alt-atom-one-light-code-normal);
+  --code-comment: var(--alt-atom-one-light-code-comment);
+  --code-function: var(--alt-atom-one-light-code-function);
+  --code-important: var(--alt-atom-one-light-code-important);
+  --code-keyword: var(--alt-atom-one-light-code-keyword);
+  --code-operator: var(--alt-atom-one-light-code-operator);
+  --code-property: var(--alt-atom-one-light-code-property);
+  --code-punctuation: var(--alt-atom-one-light-code-punctuation);
+  --code-string: var(--alt-atom-one-light-code-string);
+  --code-tag: var(--alt-atom-one-light-code-tag);
+  --code-value: var(--alt-atom-one-light-code-value);
+}
+
+.codeblock-style-ayu-light .markdown-rendered pre,
+.codeblock-style-ayu-light .markdown-rendered pre *,
+.codeblock-style-ayu-light .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-ayu-light .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-ayu-light .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-ayu-light .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-ayu-light .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-ayu-light-code-background);
+  --code-border: var(--alt-ayu-light-code-border);
+  --code-normal: var(--alt-ayu-light-code-normal);
+  --code-comment: var(--alt-ayu-light-code-comment);
+  --code-function: var(--alt-ayu-light-code-function);
+  --code-important: var(--alt-ayu-light-code-important);
+  --code-keyword: var(--alt-ayu-light-code-keyword);
+  --code-operator: var(--alt-ayu-light-code-operator);
+  --code-property: var(--alt-ayu-light-code-property);
+  --code-punctuation: var(--alt-ayu-light-code-punctuation);
+  --code-string: var(--alt-ayu-light-code-string);
+  --code-tag: var(--alt-ayu-light-code-tag);
+  --code-value: var(--alt-ayu-light-code-value);
+}
+
+.codeblock-style-catppuccin-latte .markdown-rendered pre,
+.codeblock-style-catppuccin-latte .markdown-rendered pre *,
+.codeblock-style-catppuccin-latte .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-catppuccin-latte .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-catppuccin-latte .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-catppuccin-latte .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-catppuccin-latte .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-catppuccin-latte-code-background);
+  --code-border: var(--alt-catppuccin-latte-code-border);
+  --code-normal: var(--alt-catppuccin-latte-code-normal);
+  --code-comment: var(--alt-catppuccin-latte-code-comment);
+  --code-function: var(--alt-catppuccin-latte-code-function);
+  --code-important: var(--alt-catppuccin-latte-code-important);
+  --code-keyword: var(--alt-catppuccin-latte-code-keyword);
+  --code-operator: var(--alt-catppuccin-latte-code-operator);
+  --code-property: var(--alt-catppuccin-latte-code-property);
+  --code-punctuation: var(--alt-catppuccin-latte-code-punctuation);
+  --code-string: var(--alt-catppuccin-latte-code-string);
+  --code-tag: var(--alt-catppuccin-latte-code-tag);
+  --code-value: var(--alt-catppuccin-latte-code-value);
+}
+
+.codeblock-style-everforest-light .markdown-rendered pre,
+.codeblock-style-everforest-light .markdown-rendered pre *,
+.codeblock-style-everforest-light .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-everforest-light .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-everforest-light .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-everforest-light .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-everforest-light .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-everforest-light-code-background);
+  --code-border: var(--alt-everforest-light-code-border);
+  --code-normal: var(--alt-everforest-light-code-normal);
+  --code-comment: var(--alt-everforest-light-code-comment);
+  --code-function: var(--alt-everforest-light-code-function);
+  --code-important: var(--alt-everforest-light-code-important);
+  --code-keyword: var(--alt-everforest-light-code-keyword);
+  --code-operator: var(--alt-everforest-light-code-operator);
+  --code-property: var(--alt-everforest-light-code-property);
+  --code-punctuation: var(--alt-everforest-light-code-punctuation);
+  --code-string: var(--alt-everforest-light-code-string);
+  --code-tag: var(--alt-everforest-light-code-tag);
+  --code-value: var(--alt-everforest-light-code-value);
+}
+
+.codeblock-style-github-light .markdown-rendered pre,
+.codeblock-style-github-light .markdown-rendered pre *,
+.codeblock-style-github-light .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-github-light .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-github-light .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-github-light .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-github-light .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-github-light-code-background);
+  --code-border: var(--alt-github-light-code-border);
+  --code-normal: var(--alt-github-light-code-normal);
+  --code-comment: var(--alt-github-light-code-comment);
+  --code-function: var(--alt-github-light-code-function);
+  --code-important: var(--alt-github-light-code-important);
+  --code-keyword: var(--alt-github-light-code-keyword);
+  --code-operator: var(--alt-github-light-code-operator);
+  --code-property: var(--alt-github-light-code-property);
+  --code-punctuation: var(--alt-github-light-code-punctuation);
+  --code-string: var(--alt-github-light-code-string);
+  --code-tag: var(--alt-github-light-code-tag);
+  --code-value: var(--alt-github-light-code-value);
+}
+
+.codeblock-style-gruvbox-light .markdown-rendered pre,
+.codeblock-style-gruvbox-light .markdown-rendered pre *,
+.codeblock-style-gruvbox-light .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-gruvbox-light .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-gruvbox-light .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-gruvbox-light .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-gruvbox-light .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-gruvbox-light-code-background);
+  --code-border: var(--alt-gruvbox-light-code-border);
+  --code-normal: var(--alt-gruvbox-light-code-normal);
+  --code-comment: var(--alt-gruvbox-light-code-comment);
+  --code-function: var(--alt-gruvbox-light-code-function);
+  --code-important: var(--alt-gruvbox-light-code-important);
+  --code-keyword: var(--alt-gruvbox-light-code-keyword);
+  --code-operator: var(--alt-gruvbox-light-code-operator);
+  --code-property: var(--alt-gruvbox-light-code-property);
+  --code-punctuation: var(--alt-gruvbox-light-code-punctuation);
+  --code-string: var(--alt-gruvbox-light-code-string);
+  --code-tag: var(--alt-gruvbox-light-code-tag);
+  --code-value: var(--alt-gruvbox-light-code-value);
+}
+
+.codeblock-style-kanagawa-lotus .markdown-rendered pre,
+.codeblock-style-kanagawa-lotus .markdown-rendered pre *,
+.codeblock-style-kanagawa-lotus .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-kanagawa-lotus .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-kanagawa-lotus .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-kanagawa-lotus .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-kanagawa-lotus .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-kanagawa-lotus-code-background);
+  --code-border: var(--alt-kanagawa-lotus-code-border);
+  --code-normal: var(--alt-kanagawa-lotus-code-normal);
+  --code-comment: var(--alt-kanagawa-lotus-code-comment);
+  --code-function: var(--alt-kanagawa-lotus-code-function);
+  --code-important: var(--alt-kanagawa-lotus-code-important);
+  --code-keyword: var(--alt-kanagawa-lotus-code-keyword);
+  --code-operator: var(--alt-kanagawa-lotus-code-operator);
+  --code-property: var(--alt-kanagawa-lotus-code-property);
+  --code-punctuation: var(--alt-kanagawa-lotus-code-punctuation);
+  --code-string: var(--alt-kanagawa-lotus-code-string);
+  --code-tag: var(--alt-kanagawa-lotus-code-tag);
+  --code-value: var(--alt-kanagawa-lotus-code-value);
+}
+
+.codeblock-style-rose-pine-dawn .markdown-rendered pre,
+.codeblock-style-rose-pine-dawn .markdown-rendered pre *,
+.codeblock-style-rose-pine-dawn .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-rose-pine-dawn .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-rose-pine-dawn .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-rose-pine-dawn .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-rose-pine-dawn .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-rose-pine-dawn-code-background);
+  --code-border: var(--alt-rose-pine-dawn-code-border);
+  --code-normal: var(--alt-rose-pine-dawn-code-normal);
+  --code-comment: var(--alt-rose-pine-dawn-code-comment);
+  --code-function: var(--alt-rose-pine-dawn-code-function);
+  --code-important: var(--alt-rose-pine-dawn-code-important);
+  --code-keyword: var(--alt-rose-pine-dawn-code-keyword);
+  --code-operator: var(--alt-rose-pine-dawn-code-operator);
+  --code-property: var(--alt-rose-pine-dawn-code-property);
+  --code-punctuation: var(--alt-rose-pine-dawn-code-punctuation);
+  --code-string: var(--alt-rose-pine-dawn-code-string);
+  --code-tag: var(--alt-rose-pine-dawn-code-tag);
+  --code-value: var(--alt-rose-pine-dawn-code-value);
+}
+
+.codeblock-style-solarized-light .markdown-rendered pre,
+.codeblock-style-solarized-light .markdown-rendered pre *,
+.codeblock-style-solarized-light .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-solarized-light .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-solarized-light .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-solarized-light .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-solarized-light .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-solarized-light-code-background);
+  --code-border: var(--alt-solarized-light-code-border);
+  --code-normal: var(--alt-solarized-light-code-normal);
+  --code-comment: var(--alt-solarized-light-code-comment);
+  --code-function: var(--alt-solarized-light-code-function);
+  --code-important: var(--alt-solarized-light-code-important);
+  --code-keyword: var(--alt-solarized-light-code-keyword);
+  --code-operator: var(--alt-solarized-light-code-operator);
+  --code-property: var(--alt-solarized-light-code-property);
+  --code-punctuation: var(--alt-solarized-light-code-punctuation);
+  --code-string: var(--alt-solarized-light-code-string);
+  --code-tag: var(--alt-solarized-light-code-tag);
+  --code-value: var(--alt-solarized-light-code-value);
+}
+
+.codeblock-style-tokyo-night-light .markdown-rendered pre,
+.codeblock-style-tokyo-night-light .markdown-rendered pre *,
+.codeblock-style-tokyo-night-light .cm-s-obsidian div.HyperMD-codeblock-begin-bg,
+.codeblock-style-tokyo-night-light .cm-s-obsidian div.HyperMD-codeblock-end-bg,
+.codeblock-style-tokyo-night-light .cm-s-obsidian div.HyperMD-codeblock-bg,
+.codeblock-style-tokyo-night-light .cm-s-obsidian .HyperMD-codeblock,
+.codeblock-style-tokyo-night-light .cm-s-obsidian .HyperMD-codeblock * {
+  --code-background: var(--alt-tokyo-night-light-code-background);
+  --code-border: var(--alt-tokyo-night-light-code-border);
+  --code-normal: var(--alt-tokyo-night-light-code-normal);
+  --code-comment: var(--alt-tokyo-night-light-code-comment);
+  --code-function: var(--alt-tokyo-night-light-code-function);
+  --code-important: var(--alt-tokyo-night-light-code-important);
+  --code-keyword: var(--alt-tokyo-night-light-code-keyword);
+  --code-operator: var(--alt-tokyo-night-light-code-operator);
+  --code-property: var(--alt-tokyo-night-light-code-property);
+  --code-punctuation: var(--alt-tokyo-night-light-code-punctuation);
+  --code-string: var(--alt-tokyo-night-light-code-string);
+  --code-tag: var(--alt-tokyo-night-light-code-tag);
+  --code-value: var(--alt-tokyo-night-light-code-value);
+}
+
+/* Selection and chrome follow the active alternate's --code-normal:
+   shaded selection inside block code and code-header/copy controls use
+   the alternate text color (Border behavior). Not applied while the
+   Style Settings "Customize" option is selected. */
+.css-settings-manager:not(.codeblock-style-customize)
+  .cm-s-obsidian
+  .HyperMD-codeblock
+  ::selection,
+.css-settings-manager:not(.codeblock-style-customize)
+  .markdown-rendered
+  pre
+  ::selection,
+.css-settings-manager:not(.codeblock-style-customize)
+  .markdown-source-view.mod-cm6
+  .code-block-flair:hover,
+.css-settings-manager:not(.codeblock-style-customize)
+  .markdown-rendered
+  button.copy-code-button:hover {
+  background-color: hsl(from var(--code-normal) h s l / 20%);
+}
+
+.markdown-source-view.mod-cm6 .code-block-flair,
+.markdown-rendered button.copy-code-button {
+  color: var(--code-normal);
+}
+
+/* ====== Callouts ====== */
+/* Native Obsidian rendering. Obsidian 1.4+ consumes the per-type
+   --callout-color (Poimandres) plus the structural --callout-* defaults
+   above to draw the title, icon, chevron, tinted background, and border,
+   so no custom element styling is layered on top. Customize (default) is
+   borderless; the alternate styles below follow Border. */
+
+/* Border alternate callout styles 1-4. Each applies globally via the
+   Style Settings body class (.callout-style-N) or per block via metadata
+   (e.g. > [!info style-1]). Metadata is matched token-exactly (~=), so a
+   block tagged style-10 (or style-11 … style-19) never selects style-1.
+   Content panels reproduce Border's flat light #FFFFFFBF / dark #00000040
+   so folded and expanded callouts stay coherent in both modes. */
+
+/* style 1 */
+.callout-style-1 .callout,
+.callout[data-callout-metadata~="style-1"],
+.callout[data-callout~="style-1"] {
+  --callout-border-width: 1px;
+  --callout-border-opacity: 0.25;
+  --callout-padding: 0;
+  --callout-radius: var(--radius-s);
+  --callout-title-color: inherit;
+  --callout-title-padding: 8px 16px;
+  --callout-title-size: inherit;
+  --callout-content-padding: 0 16px;
+  --callout-content-radius: 0px;
+}
+.theme-light
+  .callout:is([data-callout-metadata~="style-1"], [data-callout~="style-1"]),
+.callout-style-1.theme-light {
+  --callout-content-background: #ffffffbf;
+}
+.theme-dark
+  .callout:is([data-callout-metadata~="style-1"], [data-callout~="style-1"]),
+.callout-style-1.theme-dark {
+  --callout-content-background: #00000040;
+}
+
+/* style 2 */
+.callout-style-2 .callout,
+.callout[data-callout-metadata~="style-2"],
+.callout[data-callout~="style-2"] {
+  --callout-border-width: 1px;
+  --callout-border-opacity: 0.25;
+  --callout-padding: 0 6px 6px;
+  --callout-radius: var(--radius-s);
+  --callout-title-color: inherit;
+  --callout-title-padding: 8px 16px;
+  --callout-title-size: inherit;
+  --callout-content-padding: 0 16px;
+  --callout-content-radius: 4px;
+}
+.theme-light
+  .callout:is([data-callout-metadata~="style-2"], [data-callout~="style-2"]),
+.callout-style-2.theme-light {
+  --callout-content-background: #ffffffbf;
+}
+.theme-dark
+  .callout:is([data-callout-metadata~="style-2"], [data-callout~="style-2"]),
+.callout-style-2.theme-dark {
+  --callout-content-background: #00000040;
+}
+
+/* style 3 */
+.callout-style-3 .callout,
+.callout[data-callout-metadata~="style-3"],
+.callout[data-callout~="style-3"] {
+  --callout-border-width: 0 0 0 4px;
+  --callout-border-opacity: 1;
+  --callout-padding: var(--size-4-3) var(--size-4-3) var(--size-4-3)
+    var(--size-4-6);
+  --callout-radius: var(--radius-s);
+  --callout-title-color: inherit;
+  --callout-title-padding: 0;
+  --callout-title-size: inherit;
+  --callout-content-padding: 0;
+  --callout-content-background: transparent;
+  --callout-content-radius: 0px;
+}
+
+/* style 4 */
+.callout-style-4 .callout,
+.callout[data-callout-metadata~="style-4"],
+.callout[data-callout~="style-4"] {
+  --callout-border-width: 0 0 0 4px;
+  --callout-border-opacity: 1;
+  --callout-padding: 0;
+  --callout-radius: var(--radius-s);
+  --callout-title-color: inherit;
+  --callout-title-padding: 8px 16px;
+  --callout-title-size: inherit;
+  --callout-content-padding: 0 16px;
+  --callout-content-radius: 0px;
+}
+.theme-light
+  .callout:is([data-callout-metadata~="style-4"], [data-callout~="style-4"]),
+.callout-style-4.theme-light {
+  --callout-content-background: #ffffffbf;
+}
+.theme-dark
+  .callout:is([data-callout-metadata~="style-4"], [data-callout~="style-4"]),
+.callout-style-4.theme-dark {
+  --callout-content-background: #00000040;
+}
+
+/* Hide per-mode / structural "Customize" controls when an alternate
+   callout or codeblock theme is active (same behaviour as Border). */
+body:not(.codeblock-style-customize)
+  .setting-item:is(
+    [data-id="code-background-light"],
+    [data-id="code-background-dark"],
+    [data-id="code-border-light"],
+    [data-id="code-border-dark"],
+    [data-id="code-normal"],
+    [data-id="code-comment"],
+    [data-id="code-function"],
+    [data-id="code-important"],
+    [data-id="code-keyword"],
+    [data-id="code-operator"],
+    [data-id="code-property"],
+    [data-id="code-punctuation"],
+    [data-id="code-string"],
+    [data-id="code-tag"],
+    [data-id="code-value"],
+    [data-id="inline-code-normal"],
+    [data-id="inline-code-background-light"],
+    [data-id="inline-code-background-dark"]
+  ),
+body:not(.callout-style-customize)
+  .setting-item:is(
+    [data-id="callout-border-width"],
+    [data-id="callout-border-opacity"],
+    [data-id="callout-padding"],
+    [data-id="callout-radius"],
+    [data-id="callout-title-color"],
+    [data-id="callout-title-padding"],
+    [data-id="callout-title-size"],
+    [data-id="callout-content-padding"],
+    [data-id="callout-content-background"],
+    [data-id="callout-content-radius"]
+  ) {
+  display: none;
+}
+
+/* Callout structural consumers (Border) */
+.callout-content {
+  border-radius: var(--callout-content-radius);
+}
+
+/* Hide the custom table width setting unless "Custom width" is active */
+body:not(.table-width-customized) .setting-item[data-id="table-width"] {
+  display: none;
+}
+
+/* Hide the line-indicator settings when the feature is turned off, so the
+   Style Settings pane layout stays stable (display, not row-height). */
+body.line-hover-indicator-off
+  .setting-item:is(
+    [data-id="hover-indicator-color"],
+    [data-id="focus-indicator-list-level"],
+    [data-id="focus-indicator-codeblock-line-number"]
+  ) {
+  display: none;
+}
+
+/* ====== Checkboxes (base) ====== */
+@media (hover: hover) {
+  input[type="checkbox"]:checked:hover {
+    filter: brightness(1.075);
+  }
+
+  input[type="checkbox"]:hover {
+    outline-offset: 2px;
+    outline: 2px solid var(--background-modifier-border-hover);
+  }
+}
+
+input[type="checkbox"] {
+  transition:
+    box-shadow var(--anim-duration-moderate) var(--anim-motion-swing),
+    filter var(--anim-duration-moderate) var(--anim-motion-smooth);
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked:after {
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3e%3cg clip-path='url(%23a)'%3e%3cpath fill='black' d='M15.53 2.41a1.5 1.5 0 0 1 .06 2.12l-8.5 9a1.501 1.501 0 0 1-2.15.03l-4.5-4.5a1.5 1.5 0 0 1 2.12-2.12l3.41 3.408 7.44-7.878a1.5 1.5 0 0 1 2.12-.06Z'/%3e%3c/g%3e%3cdefs%3e%3cclipPath id='a'%3e%3cpath fill='white' d='M0 0h16v16H0z'/%3e%3c/clipPath%3e%3c/defs%3e%3c/svg%3e");
 }
 
 /* Alternative task checkboxes (credit: Tokyo Night) */
 body:not(.disable-alternative-checkboxes) input[data-task],
 body:not(.disable-alternative-checkboxes) li[data-task] > input,
 body:not(.disable-alternative-checkboxes) li[data-task] > p > input {
-  mask-size: var(--checkbox-icon);
-  -webkit-mask-size: var(--checkbox-icon);
+  mask-size: var(--checkbox-size);
+  -webkit-mask-size: var(--checkbox-size);
   mask-position: 50% 50%;
   -webkit-mask-position: 50% 50%;
 }
@@ -928,8 +2484,8 @@ body:not(.disable-alternative-checkboxes)
   border: none;
   border-radius: 0;
   background-color: currentColor;
-  mask-size: var(--checkbox-icon);
-  -webkit-mask-size: var(--checkbox-icon);
+  mask-size: var(--checkbox-size);
+  -webkit-mask-size: var(--checkbox-size);
   mask-position: 50% 50%;
   -webkit-mask-position: 50% 50%;
 }
@@ -943,7 +2499,7 @@ body:not(.disable-alternative-checkboxes)
   > input:checked {
   --checkbox-color-hover: var(--color-orange);
   color: var(--color-orange);
-  -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}.cls-2{fill-rule:evenodd;}</style></defs><rect class="cls-1" width="16" height="16"/><path class="cls-2" d="M8,16c4.42,0,8-3.58,8-8S12.42,0,8,0,0,3.58,0,8s3.58,8,8,8ZM6.07,3.55c-.08,.29-.09,.6-.03,.9l.86,4.56c.05,.28,.2,.52,.42,.7,.22,.18,.49,.28,.77,.28s.55-.1,.77-.28c.22-.18,.36-.43,.42-.7l.86-4.56c.06-.3,.04-.61-.03-.9-.08-.29-.22-.57-.41-.8-.19-.23-.44-.42-.71-.55-.28-.13-.58-.2-.88-.2s-.61,.07-.88,.2c-.28,.13-.52,.32-.71,.55-.19,.23-.34,.51-.41,.8Zm3.07,10.01c.28-.28,.44-.66,.44-1.06s-.16-.78-.44-1.06c-.28-.28-.66-.44-1.06-.44s-.78,.16-1.06,.44c-.28,.28-.44,.66-.44,1.06s.16,.78,.44,1.06c.28,.28,.66,.44,1.06,.44s.78-.16,1.06-.44Z"/></svg>');
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3e%3cpath fill='black' fill-rule='evenodd' d='M8 0a2.463 2.463 0 0 0-2.43 2.864v.002L6.686 9.55a1.334 1.334 0 0 0 2.63 0l1.114-6.685v-.002A2.463 2.463 0 0 0 8 0Zm0 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' clip-rule='evenodd'/%3e%3c/svg%3e");
 }
 
 /* question */
@@ -955,7 +2511,7 @@ body:not(.disable-alternative-checkboxes)
   > input:checked {
   --checkbox-color-hover: var(--color-pink);
   color: var(--color-pink);
-  -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}.cls-2{fill-rule:evenodd;}</style></defs><rect class="cls-1" width="16" height="16"/><path class="cls-2" d="M8,16c4.42,0,8-3.58,8-8S12.42,0,8,0,0,3.58,0,8s3.58,8,8,8ZM4.84,3.66c-.32,.48-.09,1.14,.44,1.37,.23,.1,.49,.1,.72,0,.17-.07,.31-.18,.41-.34,.31-.49,.82-.89,1.6-.89,1.72,0,2.06,1.61,1.45,2.47-.36,.51-.87,.91-1.33,1.37-.28,.28-.55,.58-.74,.93-.19,.33-.27,.69-.31,1.03-.04,.31,.08,.59,.28,.79,.18,.18,.43,.29,.71,.29,.49,0,.89-.38,.95-.87,.04-.3,.1-.45,.2-.63,.41-.76,1.18-1.12,1.98-2.3,.72-1.07,.45-2.5-.02-3.27-.55-.89-1.62-1.61-3.19-1.61-1.43,0-2.51,.7-3.15,1.66Zm3.16,11.01c.73,0,1.33-.6,1.33-1.33s-.6-1.33-1.33-1.33-1.33,.6-1.33,1.33,.6,1.33,1.33,1.33Z"/></svg>');
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3e%3cpath fill='black' d='M12.871 3.692c0 3.56-3.956 3.319-3.956 5.78v.014c0 .284-.23.514-.514.514H6.243a.514.514 0 0 1-.515-.514V9.34c0-3.803 3.473-3.56 3.473-5.341 0-.77-.571-1.23-1.517-1.23-.768 0-1.554.335-2.268 1.022a.512.512 0 0 1-.67.031l-1.419-1.11a.513.513 0 0 1-.056-.76C4.457.731 5.997 0 8.036 0c3.23 0 4.835 1.736 4.835 3.692ZM9.355 14c0 1.099-.88 2-2 2-1.1 0-2-.901-2-2s.9-2 2-2c1.12 0 2 .901 2 2Z'/%3e%3c/svg%3e");
 }
 
 /* star */
@@ -979,8 +2535,8 @@ body:not(.disable-alternative-checkboxes)
   > input:checked {
   --checkbox-color-hover: var(--color-cyan);
   color: var(--color-cyan);
-  -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}</style></defs><rect class="cls-1" width="16" height="16"/><g><rect class="cls-1" width="16" height="16"/><path d="M10.67,13v-1.67c0-.1-.03-.18-.09-.24s-.14-.09-.24-.09h-1V5.67c0-.1-.03-.18-.09-.24s-.14-.09-.24-.09h-3.33c-.1,0-.18,.03-.24,.09s-.09,.14-.09,.24v1.67c0,.1,.03,.18,.09,.24s.14,.09,.24,.09h1v3.33h-1c-.1,0-.18,.03-.24,.09s-.09,.14-.09,.24v1.67c0,.1,.03,.18,.09,.24s.14,.09,.24,.09h4.67c.1,0,.18-.03,.24-.09s.09-.14,.09-.24Zm-1.33-9.33v-1.67c0-.1-.03-.18-.09-.24s-.14-.09-.24-.09h-2c-.1,0-.18,.03-.24,.09s-.09,.14-.09,.24v1.67c0,.1,.03,.18,.09,.24s.14,.09,.24,.09h2c.1,0,.18-.03,.24-.09s.09-.14,.09-.24Z"/></g></svg>');
-  mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}</style></defs><rect class="cls-1" width="16" height="16"/><g><rect class="cls-1" width="16" height="16"/><path d="M10.67,13v-1.67c0-.1-.03-.18-.09-.24s-.14-.09-.24-.09h-1V5.67c0-.1-.03-.18-.09-.24s-.14-.09-.24-.09h-3.33c-.1,0-.18,.03-.24,.09s-.09,.14-.09,.24v1.67c0,.1,.03,.18,.09,.24s.14,.09,.24,.09h1v3.33h-1c-.1,0-.18,.03-.24,.09s-.09,.14-.09,.24v1.67c0,.1,.03,.18,.09,.24s.14,.09,.24,.09h4.67c.1,0,.18-.03,.24-.09s.09-.14,.09-.24Zm-1.33-9.33v-1.67c0-.1-.03-.18-.09-.24s-.14-.09-.24-.09h-2c-.1,0-.18,.03-.24,.09s-.09,.14-.09,.24v1.67c0,.1,.03,.18,.09,.24s.14,.09,.24,.09h2c.1,0,.18-.03,.24-.09s.09-.14,.09-.24Z"/></g></svg>');
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3e%3cpath fill='black' d='M10.34 14.025c-.007.002-.56.186-1.04.186-.265 0-.372-.055-.406-.08-.168-.116-.48-.335.054-1.4l1-1.993c.593-1.184.681-2.33.245-3.226-.356-.733-1.039-1.236-1.92-1.416A5 5 0 0 0 7.315 6C5.466 6 4.221 7.08 4.17 7.125a.5.5 0 0 0 .493.848c.005-.002.559-.187 1.04-.187.262 0 .368.055.401.078.17.119.482.34-.05 1.403l-1.001 1.995c-.594 1.185-.681 2.33-.245 3.225.356.733 1.038 1.236 1.921 1.416.314.063.636.097.954.097 1.85 0 3.096-1.08 3.148-1.126a.5.5 0 0 0-.49-.85ZM9.5 5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z'/%3e%3c/svg%3e");
+  mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3e%3cpath fill='black' d='M10.34 14.025c-.007.002-.56.186-1.04.186-.265 0-.372-.055-.406-.08-.168-.116-.48-.335.054-1.4l1-1.993c.593-1.184.681-2.33.245-3.226-.356-.733-1.039-1.236-1.92-1.416A5 5 0 0 0 7.315 6C5.466 6 4.221 7.08 4.17 7.125a.5.5 0 0 0 .493.848c.005-.002.559-.187 1.04-.187.262 0 .368.055.401.078.17.119.482.34-.05 1.403l-1.001 1.995c-.594 1.185-.681 2.33-.245 3.225.356.733 1.038 1.236 1.921 1.416.314.063.636.097.954.097 1.85 0 3.096-1.08 3.148-1.126a.5.5 0 0 0-.49-.85ZM9.5 5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z'/%3e%3c/svg%3e");
 }
 
 /* incomplete (/) */
@@ -992,8 +2548,13 @@ body:not(.disable-alternative-checkboxes)
   > input:checked {
   --checkbox-color-hover: var(--color-yellow);
   color: var(--color-yellow);
-  -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}.cls-2{fill-rule:evenodd;}</style></defs><rect class="cls-1" width="16" height="16"/><path class="cls-2" d="M13.66,13.66c-1.45,1.45-3.45,2.34-5.66,2.34C3.58,16,0,12.42,0,8S3.58,0,8,0c2.17,0,4.15,.87,5.59,2.28,.06,.06,.12,.12,.18,.18,1.37,1.43,2.22,3.36,2.23,5.5,0,.03,0,.07,0,.1-.01,2.19-.91,4.17-2.34,5.6Zm-1.41-1.41c-1.09,1.09-2.59,1.76-4.24,1.76-3.31,0-6-2.69-6-6S4.69,2,8,2v6l4.24,4.24Z"/></svg>');
-  mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}.cls-2{fill-rule:evenodd;}</style></defs><rect class="cls-1" width="16" height="16"/><path class="cls-2" d="M13.66,13.66c-1.45,1.45-3.45,2.34-5.66,2.34C3.58,16,0,12.42,0,8S3.58,0,8,0c2.17,0,4.15,.87,5.59,2.28,.06,.06,.12,.12,.18,.18,1.37,1.43,2.22,3.36,2.23,5.5,0,.03,0,.07,0,.1-.01,2.19-.91,4.17-2.34,5.6Zm-1.41-1.41c-1.09,1.09-2.59,1.76-4.24,1.76-3.31,0-6-2.69-6-6S4.69,2,8,2v6l4.24,4.24Z"/></svg>');
+  border: 2px var(--color-yellow) solid;
+  background: conic-gradient(
+    var(--color-yellow) 0% 37.5%,
+    transparent 37.5% 100%
+  );
+  background-color: rgba(0, 0, 0, 0);
+  -webkit-mask-image: none;
 }
 
 /* savings */
@@ -1005,7 +2566,7 @@ body:not(.disable-alternative-checkboxes)
   > input:checked {
   --checkbox-color-hover: var(--color-green);
   color: var(--color-green);
-  -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}.cls-2{fill-rule:evenodd;}</style></defs><rect class="cls-1" width="16" height="16"/><path d="M6.43,5.42c.15-.1,.35-.2,.57-.27v1.7c-.2-.06-.39-.15-.57-.27-.36-.24-.43-.47-.43-.58s.07-.34,.43-.58Zm2.57,5.43v-1.7c.22,.07,.41,.16,.57,.27,.36,.24,.43,.47,.43,.58s-.07,.34-.43,.58c-.18,.11-.37,.2-.57,.27Z"/><path class="cls-2" d="M8,16c2.12,0,4.16-.84,5.66-2.34,1.5-1.5,2.34-3.54,2.34-5.66s-.84-4.16-2.34-5.66c-1.5-1.5-3.54-2.34-5.66-2.34S3.84,.84,2.34,2.34C.84,3.84,0,5.88,0,8s.84,4.16,2.34,5.66c1.5,1.5,3.54,2.34,5.66,2.34Zm1-13c0-.27-.11-.52-.29-.71-.19-.19-.44-.29-.71-.29s-.52,.11-.71,.29c-.19,.19-.29,.44-.29,.71v.09c-.6,.11-1.17,.33-1.68,.66-.72,.48-1.32,1.25-1.32,2.25s.6,1.76,1.32,2.25c.48,.32,1.05,.55,1.68,.66v1.94c-.39-.13-.68-.32-.84-.5-.08-.1-.19-.19-.31-.25-.12-.06-.25-.1-.38-.11s-.27,0-.4,.05c-.13,.04-.25,.11-.35,.2-.1,.09-.18,.19-.24,.32-.06,.12-.09,.25-.1,.38,0,.13,.01,.27,.06,.39,.05,.13,.12,.24,.21,.34,.56,.65,1.41,1.08,2.35,1.25v.09c0,.27,.11,.52,.29,.71,.19,.19,.44,.29,.71,.29s.52-.11,.71-.29c.19-.19,.29-.44,.29-.71v-.09c.6-.11,1.17-.33,1.68-.66,.72-.48,1.32-1.26,1.32-2.25s-.6-1.77-1.32-2.25c-.51-.33-1.08-.56-1.68-.66v-1.94c.39,.13,.68,.32,.84,.5,.09,.1,.19,.18,.31,.25,.12,.06,.25,.1,.38,.11,.13,.01,.26,0,.39-.05,.13-.04,.24-.11,.34-.19,.1-.09,.18-.19,.24-.31,.06-.12,.09-.25,.1-.38,0-.13,0-.26-.05-.39-.04-.13-.11-.24-.2-.34-.56-.65-1.41-1.08-2.35-1.25v-.09Z"/></svg>');
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3e%3cpath fill='black' d='M12.781 8.34c-.84-.665-2.146-1.247-3.354-1.715V4.396a28.48 28.48 0 0 1 2.123.772c.096.04.209.006.265-.082l1.193-1.805a.219.219 0 0 0-.079-.314c-.68-.365-2.072-.93-3.502-1.293V.366a.27.27 0 0 0-.27-.271H6.985a.271.271 0 0 0-.271.271v.973c-2.014.092-3.38.795-4.166 2.147-.616 1.06-.613 2.255.004 3.118.645.922 1.699 1.332 3.031 1.851l.172.066c.309.118.634.239.959.359v2.715c-1.41-.335-2.736-1.023-2.98-1.189a.218.218 0 0 0-.296.048l-1.444 1.883a.211.211 0 0 0-.043.163.22.22 0 0 0 .086.145c.874.648 2.145 1.266 3.403 1.654a12.4 12.4 0 0 0 1.275.316v1.018c0 .148.121.27.271.27h2.173a.27.27 0 0 0 .27-.27v-.845c1.928-.16 3.368-.997 4.192-2.45.793-1.402.49-2.858-.839-3.998ZM6.712 4.014v1.643c-.624-.2-.993-.394-.953-.872.04-.49.51-.69.954-.771Zm2.716 5.875c.458.205.806.42.927.689.069.152.063.326-.016.533-.14.364-.502.553-.912.649V9.889Z'/%3e%3c/svg%3e");
 }
 
 /* arrows up/down */
@@ -1052,6 +2613,18 @@ body:not(.disable-alternative-checkboxes)
   -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}</style></defs><rect class="cls-1" width="16" height="16"/><path d="M2.75,15.5H13.25c.83,0,1.5-.67,1.5-1.5V3.5c0-.83-.67-1.5-1.5-1.5h-1.5V.5h-1.5v1.5H5.75V.5h-1.5v1.5h-1.5c-.83,0-1.5,.67-1.5,1.5V14c0,.83,.67,1.5,1.5,1.5Zm0-11.25H13.25v1.5H2.75v-1.5Z"/></svg>');
 }
 
+/* note */
+body:not(.disable-alternative-checkboxes) input[data-task="n"]:checked,
+body:not(.disable-alternative-checkboxes) li[data-task="n"] > input:checked,
+body:not(.disable-alternative-checkboxes)
+  li[data-task="n"]
+  > p
+  > input:checked {
+  --checkbox-color-hover: var(--color-cyan);
+  color: var(--color-cyan);
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}</style></defs><rect class="cls-1" width="16" height="16"/><path d="M2.75,14.75c-.41,0-.77-.15-1.06-.44-.29-.29-.44-.65-.44-1.06V2.75c0-.41,.15-.77,.44-1.06,.29-.29,.65-.44,1.06-.44H13.25c.41,0,.77,.15,1.06,.44,.29,.29,.44,.65,.44,1.06v7.5l-4.5,4.5H2.75Zm4.5-5.25c.21,0,.39-.07,.53-.22,.14-.14,.22-.32,.22-.53s-.07-.39-.22-.53c-.14-.14-.32-.22-.53-.22h-2.25c-.21,0-.39,.07-.53,.22-.14,.14-.22,.32-.22,.53s.07,.39,.22,.53c.14,.14,.32,.22,.53,.22h2.25Zm3.75-3c.21,0,.39-.07,.53-.22,.14-.14,.22-.32,.22-.53s-.07-.39-.22-.53c-.14-.14-.32-.22-.53-.22H5c-.21,0-.39,.07-.53,.22-.14,.14-.22,.32-.22,.53s.07,.39,.22,.53,.32,.22,.53,.22h6Zm-1.5,6.75l3.75-3.75h-3c-.21,0-.39,.07-.53,.22s-.22,.32-.22,.53v3Z"/></svg>');
+}
+
 /* bookmark */
 body:not(.disable-alternative-checkboxes) input[data-task="b"]:checked,
 body:not(.disable-alternative-checkboxes) li[data-task="b"] > input:checked,
@@ -1062,6 +2635,18 @@ body:not(.disable-alternative-checkboxes)
   --checkbox-color-hover: var(--color-blue);
   color: var(--color-blue);
   -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}.cls-2{fill-rule:evenodd;}</style></defs><rect class="cls-1" width="16" height="16"/><path class="cls-2" d="M4.25,.5c-.6,0-1.17,.24-1.59,.66-.42,.42-.66,.99-.66,1.59V14.1c0,.2,.05,.39,.15,.56,.1,.17,.24,.31,.41,.41,.17,.1,.36,.15,.56,.15,.2,0,.39-.05,.56-.15l3.94-2.25c.11-.06,.24-.1,.37-.1s.26,.03,.37,.1l3.95,2.25c.17,.1,.36,.15,.56,.15,.2,0,.39-.05,.56-.15,.17-.1,.31-.24,.41-.41s.15-.36,.15-.56V2.75c0-.6-.24-1.17-.66-1.59-.42-.42-.99-.66-1.59-.66H4.25Z"/></svg>');
+}
+
+/* minus */
+body:not(.disable-alternative-checkboxes) input[data-task="-"]:checked,
+body:not(.disable-alternative-checkboxes) li[data-task="-"] > input:checked,
+body:not(.disable-alternative-checkboxes)
+  li[data-task="-"]
+  > p
+  > input:checked {
+  --checkbox-color: var(--text-faint);
+  --checkbox-color-hover: var(--text-faint);
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3e%3cpath fill='black' fill-rule='evenodd' d='M0 8a1.5 1.5 0 0 1 1.5-1.5h13a1.5 1.5 0 0 1 0 3h-13A1.5 1.5 0 0 1 0 8Z' clip-rule='evenodd'/%3e%3c/svg%3e");
 }
 
 /* location */
@@ -1125,32 +2710,2109 @@ body:not(.disable-alternative-checkboxes)
   -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:none;}</style></defs><rect class="cls-1" width="16" height="16"/><g><rect class="cls-1" width="16" height="16"/><path d="M9,1c0-.27-.11-.52-.29-.71-.19-.19-.44-.29-.71-.29s-.52,.11-.71,.29c-.19,.19-.29,.44-.29,.71v1c0,.27,.11,.52,.29,.71,.19,.19,.44,.29,.71,.29s.52-.11,.71-.29c.19-.19,.29-.44,.29-.71V1Zm4.66,2.76c.18-.19,.28-.44,.28-.7,0-.26-.11-.51-.29-.7s-.44-.29-.7-.29c-.26,0-.51,.1-.7,.28l-.71,.71c-.18,.19-.28,.44-.28,.7,0,.26,.11,.51,.29,.7s.44,.29,.7,.29c.26,0,.51-.1,.7-.28l.71-.71Zm2.34,4.24c0,.27-.11,.52-.29,.71-.19,.19-.44,.29-.71,.29h-1c-.27,0-.52-.11-.71-.29-.19-.19-.29-.44-.29-.71s.11-.52,.29-.71c.19-.19,.44-.29,.71-.29h1c.27,0,.52,.11,.71,.29,.19,.19,.29,.44,.29,.71ZM3.05,4.46c.09,.1,.2,.17,.32,.22,.12,.05,.25,.08,.39,.08,.13,0,.26-.02,.39-.07,.12-.05,.23-.12,.33-.22,.09-.09,.17-.21,.22-.33,.05-.12,.08-.25,.07-.39,0-.13-.03-.26-.08-.39-.05-.12-.13-.23-.22-.32l-.71-.71c-.19-.18-.44-.28-.7-.28-.26,0-.51,.11-.7,.29s-.29,.44-.29,.7c0,.26,.1,.51,.28,.7l.71,.71Zm-.05,3.54c0,.27-.11,.52-.29,.71-.19,.19-.44,.29-.71,.29H1c-.27,0-.52-.11-.71-.29-.19-.19-.29-.44-.29-.71s.11-.52,.29-.71c.19-.19,.44-.29,.71-.29h1c.27,0,.52,.11,.71,.29,.19,.19,.29,.44,.29,.71Zm3,6v-1h4v1c0,.53-.21,1.04-.59,1.41-.38,.38-.88,.59-1.41,.59s-1.04-.21-1.41-.59c-.38-.38-.59-.88-.59-1.41Zm4-2c.02-.34,.21-.65,.48-.86,.65-.51,1.13-1.22,1.36-2.02,.23-.8,.21-1.65-.06-2.43-.27-.79-.78-1.47-1.46-1.95-.68-.48-1.49-.74-2.32-.74s-1.64,.26-2.32,.74c-.68,.48-1.19,1.16-1.46,1.95-.27,.79-.29,1.64-.06,2.43,.23,.8,.71,1.5,1.36,2.02,.27,.21,.46,.52,.48,.86h4Z"/></g></svg>');
 }
 
-body:not(.disable-alternative-checkboxes)
-  body:not(.tasks)
+body:not(.disable-alternative-checkboxes):not(.tasks)
   .markdown-preview-view
   ul
-  li[data-task="x"].task-list-item.is-checked,
-body:not(.disable-alternative-checkboxes)
-  body:not(.tasks)
-  .markdown-source-view.mod-cm6
-  .HyperMD-task-line[data-task]:is([data-task="x"]),
-body:not(.disable-alternative-checkboxes)
-  body:not(.tasks)
-  li[data-task="x"].task-list-item.is-checked,
-body:not(.disable-alternative-checkboxes)
-  body:not(.tasks)
-  .markdown-preview-view
-  ul
-  li[data-task="-"][class~="task-list-item"][class~="is-checked"],
-body:not(.disable-alternative-checkboxes)
-  body:not(.tasks)
+  li[data-task="-"].task-list-item.is-checked,
+body:not(.disable-alternative-checkboxes):not(.tasks)
   .markdown-source-view.mod-cm6
   .HyperMD-task-line[data-task]:is([data-task="-"]),
-body:not(.disable-alternative-checkboxes)
-  body:not(.tasks)
-  li[data-task="-"][class~="task-list-item"][class~="is-checked"] {
+body:not(.disable-alternative-checkboxes):not(.tasks)
+  li[data-task="-"].task-list-item.is-checked {
   color: var(--text-faint);
   text-decoration: line-through solid var(--text-faint) 1px;
+}
+
+/* ====== Auto hide & New tab prerequisites ====== */
+body {
+  --anim-speed: 1;
+  --anim-duration-superfast: calc(75ms / var(--anim-speed));
+  --anim-duration-fast: calc(150ms / var(--anim-speed));
+  --anim-duration-moderate: calc(300ms / var(--anim-speed));
+  --anim-duration-slow: calc(600ms / var(--anim-speed));
+  --anim-in: var(--anim-duration-fast) var(--anim-duration-superfast)
+    var(--anim-motion-swing);
+  --anim-out: var(--anim-duration-moderate) var(--anim-duration-slow)
+    var(--anim-motion-swing);
+
+  --workspace-divider-color: var(--divider-color);
+
+  /*height for the vertical resize-handle dividers between panes; spans the
+  pane column below the tab header (falls back to full viewport height)*/
+  --divider-vertical-height: calc(100vh - var(--header-height, 0px));
+
+  --icon-color: var(--text-muted);
+}
+
+.workspace-leaf-content[data-type="empty"] {
+  --cursor-link: pointer;
+  --raised-background: var(--interactive-normal);
+  --raised-blur: blur(20px);
+  --raised-shadow: 0 4px 20px rgba(var(--fg_dark_x), 0.3);
+  --raised-mask-border-width: 2px;
+}
+
+/* ====== autohide ===== */
+
+/*workspace backdrop: create and position the pane surface the tab/ribbon
+autohide transitions move. Geometry resolves from Poimandres variables.*/
+body:not(.is-mobile) .workspace::before {
+  content: " ";
+  width: calc(100% - 44px);
+  height: calc(100% - 44px);
+  border-radius: calc(var(--card-border-radius-light, 8px) - 1px);
+  background-color: transparent;
+  box-shadow: var(--card-shadow-light);
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+}
+
+body:not(.is-mobile).theme-dark .workspace::before {
+  border-radius: calc(var(--card-border-radius-dark, 8px) - 1px);
+  box-shadow: var(
+    --card-shadow-dark,
+    0 0 0 1px var(--background-modifier-border)
+  );
+}
+
+/*popout window takes the full width, only the top tab area is hidden*/
+body:not(.is-mobile).is-popout-window .workspace::before {
+  width: 100% !important;
+  height: calc(100% - 44px);
+}
+
+/*no ribbon (or show-ribbon off): backdrop spans full width*/
+body:not(.is-mobile):not(.show-ribbon) .workspace::before {
+  width: 100%;
+}
+
+/*divider baseline: alias used by the tab reveal box-shadow and shared with
+resize handles (card mode overrides it to transparent later).*/
+.workspace-leaf-resize-handle {
+  border-color: var(--workspace-divider-color);
+}
+
+.workspace-split.mod-vertical > * > .workspace-leaf-resize-handle,
+.workspace-split.mod-left-split > .workspace-leaf-resize-handle,
+.workspace-split.mod-right-split > .workspace-leaf-resize-handle {
+  height: calc(var(--divider-vertical-height) - 4px);
+}
+
+.is-hidden-frameless
+  .workspace-split.mod-vertical
+  > *
+  > .workspace-leaf-resize-handle,
+.is-hidden-frameless
+  .workspace-split.mod-left-split
+  > .workspace-leaf-resize-handle,
+.is-hidden-frameless
+  .workspace-split.mod-right-split
+  > .workspace-leaf-resize-handle {
+  height: calc(var(--divider-vertical-height) - var(--header-height) - 4px);
+}
+
+/*panes without top tabs keep full-height dividers regardless of autohide*/
+.workspace-split.mod-vertical:not(:has(.mod-top))
+  > *
+  > .workspace-leaf-resize-handle {
+  height: 100% !important;
+}
+
+/*autohide transition*/
+body:not(.is-mobile) .workspace::before {
+  transition:
+    width var(--anim-out),
+    height var(--anim-out);
+}
+
+body:not(.is-mobile)
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace::before,
+body:not(.is-mobile)
+  > .app-container
+  > .horizontal-main-container:has(~ .status-bar:hover)
+  > .workspace::before,
+body:not(.is-mobile)
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )::before {
+  transition:
+    width var(--anim-out),
+    height var(--anim-in);
+}
+
+body:not(.is-mobile)
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(> .workspace-ribbon.side-dock-ribbon:hover)::before {
+  transition:
+    width var(--anim-in),
+    height var(--anim-out);
+}
+
+/*tab autohide*/
+
+body:not(.is-mobile).tab-autohide .workspace-tabs {
+  gap: 0px;
+  transition: gap var(--anim-out);
+}
+
+body:not(.is-mobile).tab-autohide
+  .workspace-tabs:has(> .workspace-tab-header-container:hover) {
+  gap: 4px;
+  transition: gap var(--anim-in);
+}
+
+body:not(.is-mobile).tab-autohide .workspace-tab-header-container {
+  height: 16px;
+  opacity: 0;
+  transition:
+    height var(--anim-out),
+    opacity var(--anim-out);
+}
+
+body:not(.is-mobile).tab-autohide .workspace-tab-header-container:hover {
+  height: 40px;
+  opacity: 1;
+  transition:
+    height var(--anim-in),
+    opacity var(--anim-in);
+}
+
+body:not(.is-mobile).tab-autohide .workspace-tab-header-container-inner {
+  transform: translateY(-22px);
+  opacity: 0;
+  transition:
+    transform var(--anim-out),
+    opacity var(--anim-out);
+}
+
+body:not(.is-mobile).tab-autohide
+  .workspace-tab-header-container:hover
+  .workspace-tab-header-container-inner,
+body:not(.is-mobile).tab-autohide
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace
+  .mod-top
+  .workspace-tab-header-container-inner,
+body:not(.is-mobile).tab-autohide
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )
+  .mod-top
+  .workspace-tab-header-container-inner {
+  transform: translateY(0px);
+  opacity: 1;
+  transition:
+    transform var(--anim-in),
+    opacity var(--anim-in);
+}
+
+body:not(.is-mobile).tab-autohide:not(.card-layout-open-light).theme-light
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container
+  > .workspace-leaf,
+body:not(.is-mobile).tab-autohide:not(.card-layout-open-dark).theme-dark
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container
+  > .workspace-leaf {
+  box-shadow: inset 0px 1px 0px transparent;
+  transition: box-shadow var(--anim-out);
+}
+
+body:not(.is-mobile).tab-autohide:not(.card-layout-open-light).theme-light
+  .workspace-tabs:not(.mod-top):has(> .workspace-tab-header-container:hover)
+  > .workspace-tab-container
+  > .workspace-leaf,
+body:not(.is-mobile).tab-autohide:not(.card-layout-open-dark).theme-dark
+  .workspace-tabs:not(.mod-top):has(> .workspace-tab-header-container:hover)
+  > .workspace-tab-container
+  > .workspace-leaf {
+  box-shadow: inset 0px 1px 0px var(--workspace-divider-color);
+  transition: box-shadow var(--anim-in);
+}
+
+body:not(.is-mobile).tab-autohide.is-hidden-frameless .titlebar-button {
+  height: 100%;
+}
+
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  > .titlebar:hover
+  .titlebar-button,
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  > .titlebar:has(
+    ~ .app-container
+      > .horizontal-main-container
+      > .workspace
+      > .workspace-split
+      .mod-top
+      > .workspace-tab-header-container:hover
+  )
+  .titlebar-button {
+  height: 44px;
+}
+
+/*tab autohide mod-top*/
+
+body:not(.is-mobile).tab-autohide
+  .workspace-split.mod-vertical
+  > *
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide
+  .workspace-split:is(.mod-left-split, .mod-right-split)
+  > .workspace-leaf-resize-handle {
+  height: calc(var(--divider-vertical-height) + 24px);
+  transition:
+    height var(--anim-out),
+    background-color 200ms ease-in-out,
+    border-color 200ms ease-in-out,
+    opacity 200ms ease-in-out;
+}
+
+body:not(.is-mobile).tab-autohide.status-bar-autohide
+  > .app-container
+  > .horizontal-main-container:has(~ .status-bar:hover)
+  > .workspace
+  .workspace-split.mod-vertical
+  > *
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide.status-bar-autohide
+  > .app-container
+  > .horizontal-main-container:has(~ .status-bar:hover)
+  > .workspace
+  > .workspace-split:is(.mod-left-split, .mod-right-split)
+  > .workspace-leaf-resize-handle {
+  transition:
+    height var(--anim-in),
+    background-color 200ms ease-in-out,
+    border-color 200ms ease-in-out,
+    opacity 200ms ease-in-out;
+}
+
+body:not(.is-mobile).tab-autohide
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace
+  .workspace-split.mod-vertical
+  > *
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )
+  .workspace-split.mod-vertical
+  > *
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace
+  > .workspace-split:is(.mod-left-split, .mod-right-split)
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )
+  > .workspace-split:is(.mod-left-split, .mod-right-split)
+  > .workspace-leaf-resize-handle {
+  height: calc(var(--divider-vertical-height) - 4px);
+  transition:
+    height var(--anim-in),
+    background-color 200ms ease-in-out,
+    border-color 200ms ease-in-out,
+    opacity 200ms ease-in-out;
+}
+
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  .workspace-split.mod-vertical
+  > *
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  .workspace-split:is(.mod-left-split, .mod-right-split)
+  > .workspace-leaf-resize-handle {
+  height: calc(var(--divider-vertical-height) - 16px);
+  transition:
+    height var(--anim-out),
+    background-color 200ms ease-in-out,
+    border-color 200ms ease-in-out,
+    opacity 200ms ease-in-out;
+}
+
+body:not(.is-mobile).tab-autohide.status-bar-autohide.is-hidden-frameless
+  > .app-container
+  > .horizontal-main-container:has(~ .status-bar:hover)
+  > .workspace
+  .workspace-split.mod-vertical
+  > *
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide.status-bar-autohide.is-hidden-frameless
+  > .app-container
+  > .horizontal-main-container:has(~ .status-bar:hover)
+  > .workspace
+  > .workspace-split:is(.mod-left-split, .mod-right-split)
+  > .workspace-leaf-resize-handle {
+  transition:
+    height var(--anim-in),
+    background-color 200ms ease-in-out,
+    border-color 200ms ease-in-out,
+    opacity 200ms ease-in-out;
+}
+
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace
+  .workspace-split.mod-vertical
+  > *
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )
+  .workspace-split.mod-vertical
+  > *
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace
+  > .workspace-split:is(.mod-left-split, .mod-right-split)
+  > .workspace-leaf-resize-handle,
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )
+  > .workspace-split:is(.mod-left-split, .mod-right-split)
+  > .workspace-leaf-resize-handle {
+  height: calc(var(--divider-vertical-height) - var(--header-height) - 4px);
+  transition:
+    height var(--anim-in),
+    background-color 200ms ease-in-out,
+    border-color 200ms ease-in-out,
+    opacity 200ms ease-in-out;
+}
+
+/*---*/
+
+body:not(.is-mobile).tab-autohide .workspace-tabs.mod-top {
+  gap: 0px;
+  transition: gap var(--anim-out);
+}
+
+body:not(.is-mobile).tab-autohide.status-bar-autohide
+  > .app-container
+  > .horizontal-main-container:has(~ .status-bar:hover)
+  > .workspace
+  .workspace-tabs.mod-top {
+  transition: gap var(--anim-in);
+}
+
+body:not(.is-mobile).tab-autohide
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace
+  .workspace-tabs.mod-top,
+body:not(.is-mobile).tab-autohide
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )
+  .workspace-tabs.mod-top {
+  gap: 4px;
+  transition: gap var(--anim-in);
+}
+
+body:not(.is-mobile).tab-autohide .workspace::before {
+  height: calc(100% - 16px);
+}
+
+body:not(.is-mobile).tab-autohide
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace::before,
+body:not(.is-mobile).tab-autohide
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )::before {
+  height: calc(100% - 44px);
+}
+
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  .titlebar-button-container,
+body:not(.is-mobile).tab-autohide .mod-top .workspace-tab-header-container {
+  height: 16px;
+  opacity: 0;
+  transition:
+    height var(--anim-out),
+    opacity var(--anim-out);
+}
+
+body:not(.is-mobile).tab-autohide
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace
+  .mod-top
+  .workspace-tab-header-container,
+body:not(.is-mobile).tab-autohide
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )
+  .mod-top
+  .workspace-tab-header-container {
+  height: 40px;
+  opacity: 1;
+  transition:
+    height var(--anim-in),
+    opacity var(--anim-in);
+}
+
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  > .titlebar:hover
+  .titlebar-button-container,
+body:not(.is-mobile).tab-autohide.is-hidden-frameless
+  > .titlebar:has(
+    ~ .app-container
+      > .horizontal-main-container
+      > .workspace
+      > .workspace-split
+      .mod-top
+      > .workspace-tab-header-container:hover
+  )
+  .titlebar-button-container {
+  height: 44px;
+  opacity: 1;
+  transition:
+    height var(--anim-in),
+    opacity var(--anim-in);
+}
+
+body:not(.is-mobile).tab-autohide.status-bar-autohide.is-hidden-frameless
+  > .titlebar:has(~ .app-container > .status-bar:hover)
+  .titlebar-button-container,
+body:not(.is-mobile).tab-autohide.status-bar-autohide
+  > .app-container
+  > .horizontal-main-container:has(~ .status-bar:hover)
+  > .workspace
+  .mod-top
+  .workspace-tab-header-container {
+  transition:
+    height var(--anim-in),
+    opacity var(--anim-in);
+}
+
+/*status bar autohide*/
+body:not(.is-mobile).status-bar-autohide .status-bar {
+  opacity: 0;
+  height: 16px;
+  transition:
+    height var(--anim-out),
+    opacity var(--anim-out);
+}
+
+body:not(.is-mobile).status-bar-autohide .status-bar:hover {
+  opacity: 1;
+  height: 24px;
+  transition:
+    height var(--anim-in),
+    opacity var(--anim-in);
+}
+
+body:not(.is-mobile).status-bar-autohide .horizontal-main-container {
+  padding-bottom: 16px;
+  transition: padding-bottom var(--anim-out);
+}
+
+body:not(.is-mobile).status-bar-autohide
+  > .app-container
+  > .horizontal-main-container:has(~ .status-bar:hover) {
+  padding-bottom: 24px;
+  transition: padding-bottom var(--anim-in);
+}
+
+/*ribbon autohide*/
+body:not(.is-mobile).ribbon-autohide.show-ribbon
+  .workspace-ribbon.side-dock-ribbon.mod-left {
+  --ribbon-width: 16px;
+  transition: all var(--anim-out);
+}
+
+body:not(.is-mobile).ribbon-autohide.show-ribbon
+  .workspace-ribbon.side-dock-ribbon.mod-left:hover {
+  --ribbon-width: 44px;
+  transition: all var(--anim-in);
+}
+
+body:not(.is-mobile).ribbon-autohide.show-ribbon
+  .workspace-ribbon.side-dock-ribbon.mod-left
+  > * {
+  opacity: 0;
+  transition: all var(--anim-out);
+}
+
+body:not(.is-mobile).ribbon-autohide.show-ribbon
+  .workspace-ribbon.side-dock-ribbon.mod-left:hover
+  > * {
+  opacity: 1;
+  transition: all var(--anim-in);
+}
+
+body:not(.is-mobile).ribbon-autohide.show-ribbon .workspace::before {
+  width: calc(100% - 16px);
+}
+
+body:not(.is-mobile).ribbon-autohide.show-ribbon
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(> .workspace-ribbon.side-dock-ribbon:hover)::before {
+  width: calc(100% - 44px);
+}
+
+/* macos autohide fix*/
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).ribbon-autohide.show-ribbon.mod-macos.is-hidden-frameless:not(
+    .is-fullscreen
+  )
+  .mod-left-split
+  .mod-top-left-space
+  .workspace-tab-header-container,
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).ribbon-autohide.show-ribbon.mod-macos.is-hidden-frameless:not(
+    .is-fullscreen
+  )
+  .workspace:not(.is-left-sidedock-open)
+  .sidebar-toggle-button.mod-left {
+  margin-left: 28px;
+}
+
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).ribbon-autohide.show-ribbon.mod-macos.is-hidden-frameless:not(
+    .is-fullscreen
+  )
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(> .workspace-ribbon.side-dock-ribbon:hover)
+  > .mod-left-split
+  .mod-top-left-space
+  .workspace-tab-header-container,
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).ribbon-autohide.show-ribbon.mod-macos.is-hidden-frameless:not(
+    .is-fullscreen
+  )
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(> .workspace-ribbon.side-dock-ribbon:hover):not(
+    .is-left-sidedock-open
+  )
+  .sidebar-toggle-button.mod-left {
+  margin-left: 0px;
+}
+
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).ribbon-autohide.show-ribbon.mod-macos.is-hidden-frameless:not(
+    .is-fullscreen
+  )
+  .mod-left-split
+  .mod-top-left-space
+  .workspace-tab-header-container,
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).ribbon-autohide.show-ribbon.mod-macos.is-hidden-frameless:not(
+    .is-fullscreen
+  )
+  .workspace:not(.is-left-sidedock-open)
+  .sidebar-toggle-button.mod-left,
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).tab-autohide.mod-macos.is-hidden-frameless:not(.is-fullscreen)
+  .mod-left-split
+  .mod-top-left-space
+  .workspace-tab-header-container,
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).tab-autohide.mod-macos.is-hidden-frameless:not(.is-fullscreen)
+  .workspace:not(.is-left-sidedock-open)
+  .sidebar-toggle-button.mod-left {
+  transition:
+    height var(--anim-out),
+    opacity var(--anim-out),
+    margin-left var(--anim-out);
+}
+
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).ribbon-autohide.show-ribbon.mod-macos.is-hidden-frameless:not(
+    .is-fullscreen
+  )
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(> .workspace-ribbon.side-dock-ribbon:hover)
+  > .mod-left-split
+  .mod-top-left-space
+  .workspace-tab-header-container,
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).ribbon-autohide.show-ribbon.mod-macos.is-hidden-frameless:not(
+    .is-fullscreen
+  )
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(> .workspace-ribbon.side-dock-ribbon:hover):not(
+    .is-left-sidedock-open
+  )
+  .sidebar-toggle-button.mod-left {
+  transition:
+    height var(--anim-out),
+    opacity var(--anim-out),
+    margin-left var(--anim-in);
+}
+
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).tab-autohide.mod-macos.is-hidden-frameless:not(.is-fullscreen)
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace
+  > .mod-left-split
+  .mod-top-left-space
+  .workspace-tab-header-container,
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).tab-autohide.mod-macos.is-hidden-frameless:not(.is-fullscreen)
+  > .titlebar:hover
+  ~ .app-container
+  > .horizontal-main-container
+  > .workspace:not(.is-left-sidedock-open)
+  .sidebar-toggle-button.mod-left,
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).tab-autohide.mod-macos.is-hidden-frameless:not(.is-fullscreen)
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  )
+  > .mod-left-split
+  .mod-top-left-space
+  .workspace-tab-header-container,
+body:not(.is-mobile):not(
+    .is-popout-window
+  ).tab-autohide.mod-macos.is-hidden-frameless:not(.is-fullscreen)
+  > .app-container
+  > .horizontal-main-container
+  > .workspace:has(
+    > .workspace-split .mod-top > .workspace-tab-header-container:hover
+  ):not(.is-left-sidedock-open)
+  .sidebar-toggle-button.mod-left {
+  transition:
+    height var(--anim-in),
+    opacity var(--anim-in),
+    margin-left var(--anim-out);
+}
+
+/* hider plugin*/
+.hider-sidebar-buttons.mod-macos .sidebar-toggle-button.mod-left {
+  display: unset;
+  -webkit-app-region: drag;
+}
+
+.hider-sidebar-buttons.mod-macos
+  .sidebar-toggle-button.mod-left
+  > .clickable-icon {
+  display: none;
+}
+
+/*nav header autohide*/
+body:not(.is-mobile).nav-header-autohide
+  :is(.workspace-leaf-content, .view-content)
+  > .nav-header
+  .nav-buttons-container {
+  height: 8px;
+  opacity: 0;
+  transition:
+    height var(--anim-out),
+    opacity var(--anim-out);
+}
+
+body:not(.is-mobile).nav-header-autohide
+  :is(.workspace-leaf-content, .view-content)
+  > .nav-header:hover
+  .nav-buttons-container,
+body:not(.is-mobile).nav-header-autohide
+  .workspace-tab-header-container:hover
+  ~ .workspace-tab-container
+  :is(.workspace-leaf-content, .view-content)
+  > .nav-header
+  .nav-buttons-container,
+body:not(.is-mobile).tab-title-bar-autohide.nav-header-autohide
+  .mod-root
+  .workspace-leaf-content[data-type="backlink"]
+  .view-header:hover
+  ~ .view-content
+  > .nav-header
+  .nav-buttons-container {
+  height: 32px;
+  opacity: 1;
+  transition:
+    height var(--anim-in),
+    opacity var(--anim-in);
+}
+
+body:not(.is-mobile).nav-header-autohide
+  :is(.workspace-leaf-content, .view-content)
+  > .nav-header
+  .search-input-container {
+  height: 0px;
+  opacity: 0;
+  margin: 0px auto;
+  transition:
+    height var(--anim-out),
+    opacity var(--anim-out),
+    margin var(--anim-out);
+}
+
+body:not(.is-mobile).nav-header-autohide
+  :is(.workspace-leaf-content, .view-content)
+  > .nav-header:hover
+  .search-input-container,
+body:not(.is-mobile).nav-header-autohide
+  .workspace-tab-header-container:hover
+  ~ .workspace-tab-container
+  :is(.workspace-leaf-content, .view-content)
+  > .nav-header
+  .search-input-container,
+body:not(.is-mobile).tab-title-bar-autohide.nav-header-autohide
+  .mod-root
+  .workspace-leaf-content[data-type="backlink"]
+  .view-header:hover
+  ~ .view-content
+  > .nav-header
+  .search-input-container {
+  height: 30px;
+  opacity: 1;
+  margin: 6px auto 4px;
+  transition:
+    height var(--anim-in),
+    opacity var(--anim-in),
+    margin var(--anim-in);
+}
+
+/*view-header autohide */
+
+body:not(.is-mobile).tab-title-bar-autohide .view-header::after {
+  width: 100%;
+  content: " ";
+  background-color: transparent;
+  height: var(--size-4-4);
+  position: absolute;
+  z-index: -9;
+  top: 1px;
+  right: 0;
+}
+
+body:not(.is-mobile).tab-title-bar-autohide .workspace-leaf .view-header {
+  height: 0;
+  margin-top: -1px;
+  opacity: 0;
+  transition:
+    height var(--anim-out),
+    margin var(--anim-out),
+    opacity var(--anim-out);
+}
+
+body:not(.is-mobile).tab-title-bar-autohide
+  .workspace-leaf
+  .view-header:focus-within,
+body:not(.is-mobile).tab-title-bar-autohide .workspace-leaf .view-header:hover,
+body:not(.is-mobile).tab-title-bar-autohide
+  .workspace-tab-header-container:hover
+  ~ .workspace-tab-container
+  .view-header {
+  height: var(--header-height);
+  margin-top: 0px;
+  opacity: 1;
+  transition:
+    height var(--anim-in),
+    margin var(--anim-in),
+    opacity var(--anim-in);
+}
+
+/*view-header*/
+
+body:not(.is-mobile) .view-header {
+  padding: 0 6px;
+  border: 0;
+}
+
+body:not(.is-mobile) .view-header > * {
+  padding-top: var(--size-2-3);
+  padding-bottom: var(--size-2-1);
+  --icon-size: var(--icon-m);
+  --icon-stroke: var(--icon-m-stroke-width);
+}
+
+/* vault profile */
+
+body:not(.is-mobile) .workspace-split.mod-left-split {
+  position: relative;
+}
+
+body:not(.is-mobile)
+  .workspace-split.mod-left-split
+  .workspace-tabs:last-of-type
+  .workspace-tab-container {
+  padding-bottom: 44px;
+}
+
+body:not(.is-mobile)
+  .workspace-split.mod-left-split
+  .workspace-sidedock-vault-profile {
+  padding: 6px;
+  background-color: transparent;
+  position: absolute;
+  bottom: 0;
+  z-index: 10;
+  height: 44px;
+}
+
+body:not(.is-mobile)
+  .workspace-split.mod-left-split
+  .workspace-sidedock-vault-profile
+  .workspace-drawer-vault-switcher {
+  height: 32px;
+  cursor: pointer;
+}
+
+body:not(.is-mobile)
+  .workspace-split.mod-left-split
+  .workspace-sidedock-vault-profile
+  .workspace-drawer-vault-actions {
+  gap: var(--size-2-1);
+}
+
+/* vault profile autohide*/
+body:not(.is-mobile).vault-profile-autohide
+  .workspace-split.mod-left-split
+  .workspace-sidedock-vault-profile {
+  height: 16px;
+  border-top: 0 solid transparent;
+  opacity: 0;
+  transition:
+    height var(--anim-out),
+    border-top var(--anim-out),
+    opacity var(--anim-out);
+}
+
+body:not(.is-mobile).vault-profile-autohide
+  .workspace-split.mod-left-split
+  .workspace-sidedock-vault-profile:hover {
+  height: 44px;
+  border-top: var(--tab-outline-width) solid var(--tab-outline-color);
+  opacity: 1;
+  transition:
+    height var(--anim-in),
+    border-top var(--anim-in),
+    opacity var(--anim-in);
+}
+
+body:not(.is-mobile).vault-profile-autohide
+  .workspace-split.mod-left-split
+  .workspace-tabs:last-of-type
+  .workspace-tab-container {
+  padding-bottom: 0px;
+  transition: padding-bottom var(--anim-out);
+}
+
+body:not(.is-mobile).vault-profile-autohide
+  .workspace-sidedock-vault-profile:hover
+  ~ .workspace-tabs:last-of-type
+  .workspace-tab-container {
+  padding-bottom: 44px;
+  transition: padding-bottom var(--anim-in);
+}
+
+.tab-autohide .notice-container {
+  top: 6px;
+}
+
+/*====== new tab ======*/
+body:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action-list {
+  display: flex;
+  gap: 0px;
+  border-radius: var(--radius-s);
+  box-shadow: var(--input-shadow);
+  overflow: hidden;
+}
+
+body.is-mobile:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action-list {
+  gap: 24px;
+  overflow: visible;
+}
+
+body:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action {
+  font-size: 0;
+  background-color: transparent !important;
+  color: var(--icon-color);
+  cursor: var(--cursor-link);
+  height: 40px;
+  width: 44px;
+  padding: 10px 12px;
+  border-radius: 0;
+}
+
+body.is-mobile:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action {
+  height: var(--touch-size-m);
+  width: var(--touch-size-m);
+  padding: var(--size-2-2);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--clickable-icon-radius);
+  background: var(--raised-background);
+  backdrop-filter: var(--raised-blur);
+  box-shadow: var(--raised-shadow);
+  background-clip: padding-box;
+  border: var(--raised-mask-border-width) solid transparent;
+}
+
+body:not(.new-tab-text-btn-restore, .is-mobile)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action:nth-child(1),
+body:not(.new-tab-text-btn-restore, .is-mobile)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action:nth-child(2),
+body:not(.new-tab-text-btn-restore, .is-mobile)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action:nth-child(3):not(:last-child) {
+  box-shadow: inset -1px 0px 0px var(--divider-color);
+}
+
+body:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action:hover {
+  background-color: var(--background-modifier-hover) !important;
+  color: var(--text-normal);
+  --icon-color: var(--text-normal);
+}
+
+body.is-mobile:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action:before {
+  height: 24px !important;
+  width: 24px !important;
+  -webkit-mask-size: cover;
+  -webkit-mask-repeat: no-repeat;
+}
+
+body:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action:nth-child(1):before {
+  content: " ";
+  display: block;
+  height: 20px;
+  width: 20px;
+  background-color: var(--icon-color);
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><defs><style>.cls-1{fill:none;}</style></defs><path d="M15,19.17H3.33c-1.38,0-2.5-1.12-2.5-2.5V5c0-1.38,1.12-2.5,2.5-2.5h5.83c.46,0,.83,.37,.83,.83s-.37,.83-.83,.83H3.33c-.46,0-.83,.37-.83,.83v11.67c0,.46,.37,.83,.83,.83H15c.46,0,.83-.37,.83-.83v-5.83c0-.46,.37-.83,.83-.83s.83,.37,.83,.83v5.83c0,1.38-1.12,2.5-2.5,2.5Z"/><path d="M6.67,14.17c-.22,0-.43-.09-.59-.24-.21-.21-.29-.51-.22-.79l.83-3.33c.04-.15,.11-.28,.22-.39L14.83,1.49h0c1.01-1.01,2.66-1.01,3.68,0,.49,.49,.76,1.14,.76,1.84s-.27,1.35-.76,1.84l-7.92,7.92c-.11,.11-.24,.18-.39,.22l-3.33,.83c-.07,.02-.13,.03-.2,.03Zm1.59-3.74l-.44,1.76,1.76-.44,7.75-7.75c.18-.18,.27-.41,.27-.66s-.1-.48-.27-.66c-.36-.36-.96-.36-1.32,0l-7.75,7.75Z"/><rect class="cls-1" width="20" height="20"/></svg>');
+}
+
+body:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action:nth-child(2):before {
+  content: " ";
+  display: block;
+  height: 20px;
+  width: 20px;
+  background-color: var(--icon-color);
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><defs><style>.cls-1{fill:none;}</style></defs><g><path d="M17.26,5.66L12.67,1.08c-.16-.16-.37-.24-.59-.24H5c-1.38,0-2.5,1.12-2.5,2.5v2.5c0,.46,.37,.83,.83,.83s.83-.37,.83-.83V3.33c0-.46,.37-.83,.83-.83h5.83V6.67c0,.46,.37,.83,.83,.83h4.17v9.17c0,.46-.37,.83-.83,.83H3.33c-.46,0-.83,.37-.83,.83s.37,.83,.83,.83H15c1.38,0,2.5-1.12,2.5-2.5V6.25c0-.22-.09-.43-.24-.59Zm-4.76-2.4l2.57,2.57h-2.57V3.26Z"/><path d="M5.85,14.53l1.06,1.06c.16,.16,.38,.24,.59,.24s.43-.08,.59-.24c.33-.33,.33-.85,0-1.18l-1.06-1.06c.29-.5,.47-1.07,.47-1.68,0-1.84-1.5-3.33-3.33-3.33s-3.33,1.49-3.33,3.33,1.5,3.33,3.33,3.33c.62,0,1.19-.18,1.68-.47Zm-3.35-2.86c0-.92,.75-1.67,1.67-1.67s1.67,.75,1.67,1.67-.75,1.67-1.67,1.67-1.67-.75-1.67-1.67Z"/></g><rect class="cls-1" width="20" height="20"/></svg>');
+}
+
+body:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action:nth-child(3):before {
+  content: " ";
+  display: block;
+  height: 20px;
+  width: 20px;
+  background-color: var(--icon-color);
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 20 20'%3e%3cg stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.667' clip-path='url(%23a)'%3e%3cpath d='M17.95 12.5h-3.783a1.666 1.666 0 0 0-1.667 1.667v3.783M5.833 2.783v1.384a2.5 2.5 0 0 0 2.5 2.5A1.667 1.667 0 0 1 10 8.333a1.667 1.667 0 1 0 3.333 0c0-.916.75-1.666 1.667-1.666h2.642M9.167 18.292V15A1.667 1.667 0 0 0 7.5 13.333a1.667 1.667 0 0 1-1.667-1.666v-.834a1.667 1.667 0 0 0-1.666-1.666H1.708'/%3e%3cpath d='M10 18.333a8.333 8.333 0 1 0 0-16.666 8.333 8.333 0 0 0 0 16.666Z'/%3e%3c/g%3e%3cdefs%3e%3cclipPath id='a'%3e%3cpath fill='white' d='M0 0h20v20H0z'/%3e%3c/clipPath%3e%3c/defs%3e%3c/svg%3e");
+}
+
+body:not(.new-tab-text-btn-restore)
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-action:is(.mod-close, :nth-child(3).mod-close):before {
+  content: " ";
+  display: block;
+  height: 20px;
+  width: 20px;
+  background-color: var(--icon-color);
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg id="svg0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><defs><style>.cls-1{fill:none;}</style></defs><path d="M11.18,10l5.24-5.24c.33-.33,.33-.85,0-1.18s-.85-.33-1.18,0l-5.24,5.24L4.76,3.58c-.33-.33-.85-.33-1.18,0s-.33,.85,0,1.18l5.24,5.24L3.58,15.24c-.33,.33-.33,.85,0,1.18,.16,.16,.38,.24,.59,.24s.43-.08,.59-.24l5.24-5.24,5.24,5.24c.16,.16,.38,.24,.59,.24s.43-.08,.59-.24c.33-.33,.33-.85,0-1.18l-5.24-5.24Z"/><rect class="cls-1" width="20" height="20"/></svg>');
+}
+
+/*new tab image*/
+.workspace-leaf-content[data-type="empty"] .empty-state::before {
+  content: "";
+  width: 100%;
+  height: 30%;
+  background-color: var(--icon-color);
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22none%22%20viewBox%3D%220%200%2080%2080%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.1%22%20fill-rule%3D%22evenodd%22%20d%3D%22M41.025%2044.046c-1.565-4.198-2.066-7.455-1.95-10.13.126-2.9.975-5.058%201.89-6.923.243-.495.485-.96.717-1.406.66-1.27%201.243-2.393%201.57-3.657.398-1.537.4-3.279-.519-5.633a3.197%203.197%200%200%200-3.486.523l-9.875%208.884a3.197%203.197%200%200%200-1.023%201.9c-.118.78-.259%201.752-.404%202.757-.25%201.72-.512%203.537-.7%204.67%202.313%201.47%205.437%203.94%207.093%207.98.226.553.424%201.132.589%201.74%202.033-.46%204.085-.765%206.098-.705Zm1.587.128c.957.129%201.901.355%202.827.701%203.307%201.238%206.25%203.964%208.665%208.966l.08-.12a139.935%20139.935%200%200%200%204.196-6.627%201.618%201.618%200%200%200-.122-1.797c-1.03-1.364-3-4.138-4.074-6.706-1.104-2.64-1.269-6.74-1.278-8.736a3.406%203.406%200%200%200-.714-2.097l-7.383-9.38a9.237%209.237%200%200%201-.165%203.912c-.371%201.437-1.062%202.763-1.744%204.075a60.2%2060.2%200%200%200-.644%201.26c-.87%201.771-1.631%203.728-1.745%206.353-.111%202.562.393%205.815%202.101%2010.196Zm4.66%2019.708c2.13.59%204.273-1.12%204.567-3.31.218-1.618.633-3.462%201.408-5.16-2.394-5.402-5.261-8.05-8.312-9.19-2.97-1.112-6.244-.85-9.698-.068.666%203.863.018%208.748-3%2014.906.158.036.32.06.483.072l4.844.367c2.362.182%204.92.956%207.328%201.684.816.246%201.613.488%202.38.7Zm-16.329-3.449c3.777-7.702%203.612-13.101%202.065-16.876-1.404-3.426-3.996-5.637-6.134-7.054-.91%202.125-5.19%2011.535-5.19%2011.535a3.196%203.196%200%200%200%20.622%203.535l8.348%208.597c.091.094.188.182.29.263Z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.new-tab-image-old
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' fill='none' viewBox='0 0 240 240'%3e%3cg fill='black' clip-path='url(%23a)'%3e%3cpath fill-opacity='.25' fill-rule='evenodd' d='M67.793 61.072A80.673 80.673 0 0 1 95.85 45.667v32.798H75.54l-7.748-17.393Zm-28.703 58.26a3.98 3.98 0 0 0 2.737-.18l4.546-2.025 7.425 52.553C44.474 156.487 39 140.377 39 123c0-1.23.03-2.453.09-3.668Zm60.322 73.005h-21.3c12.038 7.29 26.13 11.535 41.198 11.655-8.453-.24-15.81-4.852-19.898-11.655Zm62.476 0c-12.038 7.29-26.131 11.535-41.198 11.655 8.453-.24 15.81-4.852 19.898-11.655h21.3Zm28.049-28.454C196.972 151.883 201 137.91 201 123c0-1.747-.053-3.472-.165-5.19l-14.918-5.43v9.293h3.128c3.622 0 6.405 3.202 5.895 6.787l-5.003 35.423Zm-22.312-85.418H147.15v-31.8a80.945 80.945 0 0 1 26.385 15.548l-5.91 16.252Z' clip-rule='evenodd'/%3e%3cpath fill-opacity='.4' d='M185.917 112.38v9.293H100.83a5.96 5.96 0 0 1-5.895-5.115l-1.47-10.403a5.947 5.947 0 0 0-5.895-5.115h-5.31a3.954 3.954 0 0 0 1.215-4.748L75.54 78.466h20.31v17.46a3.945 3.945 0 0 0 3.945 3.945h43.41a3.945 3.945 0 0 0 3.945-3.945v-17.46h20.475l-7.237 19.882-.173.48a3.936 3.936 0 0 0 2.355 5.055l23.347 8.498Zm-67.312-57.855s-4.23-8.648-5.76-12.21c-.277-.637-.465-1.117-.525-1.35 0 0-.285-.72-1.298-.72-1.012 0-1.267.645-1.267.645-.083.3-.36.968-.765 1.86-1.74 3.833-5.745 11.775-5.745 11.775-.36.742-1.245 1.44-1.245 1.943 0 .412.217.532.817.532h2.04c.6 0 .84-.12.84-.532 0-.503-.84-1.178-.84-1.943l1.321-2.76h6.697l1.32 2.76c0 .765-.84 1.44-.84 1.943 0 .412.21.532.84.532h4.823c.6 0 .839-.12.839-.532 0-.503-.915-1.2-1.252-1.943ZM106.822 50.4l2.693-5.737 2.708 5.737h-5.401Z'/%3e%3cg fill-opacity='.1'%3e%3cpath d='M135.315 40.958V29.123h-35.52a3.945 3.945 0 0 0-3.945 3.945v62.857a3.945 3.945 0 0 0 3.945 3.945h43.41a3.945 3.945 0 0 0 3.945-3.945V40.958h-11.835Zm-32.07 13.567s4.005-7.942 5.745-11.775c.405-.892.683-1.56.765-1.86 0 0 .263-.645 1.268-.645s1.297.72 1.297.72c.06.232.248.712.525 1.35 1.53 3.563 5.76 12.21 5.76 12.21.338.742 1.253 1.44 1.253 1.943 0 .412-.24.532-.84.532h-4.823c-.63 0-.84-.12-.84-.532 0-.503.84-1.178.84-1.943l-1.32-2.76h-6.697l-1.32 2.76c0 .765.839 1.44.839 1.943 0 .412-.239.532-.839.532h-2.04c-.6 0-.818-.12-.818-.532 0-.503.885-1.2 1.245-1.943ZM141 93h-39v-2.25h39V93Zm0-9h-39v-2.25h39V84Zm0-9h-39v-2.25h39V75Zm0-9h-39v-2.25h39V66Zm0-9h-18v-2.25h18V57Zm0-9h-18v-2.25h18V48Z'/%3e%3cpath d='m109.515 44.663-2.693 5.737h5.401l-2.708-5.737Z'/%3e%3c/g%3e%3cpath fill-opacity='.3' d='m67.823 76.245-4.808-10.808-3.428-7.694a4.49 4.49 0 0 0-2.505-2.37 4.458 4.458 0 0 0-3.442.09L26.235 67.665a4.51 4.51 0 0 0-2.28 5.94l8.235 18.502a4.502 4.502 0 0 0 5.94 2.28l7.402-3.292L57 85.987l8.543-3.802a4.492 4.492 0 0 0 2.647-3.72 4.43 4.43 0 0 0-.367-2.22Zm-5.715-7.313 1.83 4.118-8.91 3.96-.66-1.485-1.17-2.625 4.957-2.205 3.945-1.762h.008Zm-2.753-6.165 1.83 4.11-8.903 3.968-1.83-4.11 8.903-3.968Zm-8.212 11.048 1.71 3.855.12.255-.405.18L43.38 82.2l-1.83-4.11 9.593-4.275Zm-10.508 2.22-1.83-4.11 9.593-4.275 1.83 4.11-9.593 4.275Zm13.92-18.517c.292-.128.608-.196.915-.196.278 0 .547.053.81.15a2.22 2.22 0 0 1 1.245 1.185l.915 2.056-8.902 3.967-1.83-4.118 6.847-3.044Zm-8.91 3.967 1.837 4.11-9.592 4.275-1.837-4.118 9.592-4.267ZM26.01 72.69a2.236 2.236 0 0 1-.045-1.718 2.258 2.258 0 0 1 1.185-1.252l6.848-3.052 1.837 4.117-8.91 3.968-.915-2.063Zm1.83 4.118 8.91-3.968 1.83 4.11-8.91 3.968-1.83-4.11Zm4.575 10.274-1.83-4.11 8.91-3.967 1.83 4.11-8.91 3.968Zm4.8 5.25a2.235 2.235 0 0 1-1.718.046 2.258 2.258 0 0 1-1.252-1.186l-.915-2.054 8.91-3.968 1.83 4.11-6.855 3.052Zm9.712-4.327-.802.36-1.83-4.11 6.12-2.722 3.473-1.553 1.83 4.117-8.79 3.908Zm18.998-9.54a2.224 2.224 0 0 1-1.297 1.665l-6.855 3.053-.383-.863-1.447-3.255 8.91-3.96.915 2.055c.187.428.232.877.157 1.305Z'/%3e%3cpath fill-opacity='.2' d='M57.525 58.657a2.22 2.22 0 0 0-1.245-1.184 2.313 2.313 0 0 0-.81-.15c-.307 0-.623.067-.915.194l-6.847 3.045 1.83 4.118 8.902-3.968-.915-2.055Zm-21.472 7.095 1.837 4.118 9.593-4.275-1.838-4.11-9.593 4.267ZM27.15 69.72c-.547.248-.967.69-1.185 1.252a2.236 2.236 0 0 0 .045 1.718l.915 2.063 8.91-3.968-1.837-4.117-6.848 3.052Z'/%3e%3cpath fill-opacity='.1' d='M83.475 96.293 75.54 78.465l-7.748-17.393-6.675-15-10.814 4.816-4.816-10.816-32.444 14.445a3.943 3.943 0 0 0-1.995 5.205l25.567 57.428a3.957 3.957 0 0 0 2.475 2.183c.87.255 1.837.217 2.737-.181l4.546-2.024-.893-6.308-4.133 1.838-.922-2.055 4.733-2.108-.098-.667c-.503-3.585 2.273-6.788 5.895-6.788h10.95l14.153-6.3.914 2.055-9.532 4.245h14.82a3.954 3.954 0 0 0 1.215-4.748Zm-65.01-35.018L41.078 51.21l.914 2.055L19.38 63.33l-.915-2.055Zm17.842 33.503a4.502 4.502 0 0 1-4.117-2.67l-8.235-18.503a4.51 4.51 0 0 1 2.28-5.94L53.64 55.462a4.458 4.458 0 0 1 3.443-.09 4.49 4.49 0 0 1 2.505 2.37l3.427 7.696 4.808 10.807a4.43 4.43 0 0 1 .367 2.22 4.492 4.492 0 0 1-2.647 3.72L57 85.987l-11.468 5.108-7.402 3.293c-.585.262-1.2.39-1.823.39ZM57 95.835l-15.443 6.877-3.877 1.726-.915-2.056 5.587-2.49L57 93.376l15.397-6.855.915 2.055L57 95.835Z'/%3e%3cpath fill-opacity='.05' d='m36.746 72.85-8.907 3.965 1.83 4.111 8.907-3.965-1.83-4.111Zm11.648-5.192L38.8 71.93l1.83 4.11 9.593-4.27-1.83-4.11Zm10.965-4.89-8.907 3.966 1.83 4.11 8.907-3.965-1.83-4.11ZM53.197 72.9l1.17 2.625.66 1.485 8.91-3.96-1.83-4.117H62.1l-3.945 1.762-4.958 2.205Zm-.629 5.205.404-.18-.12-.255-1.71-3.855-9.592 4.275 1.83 4.11 9.188-4.088v-.007Zm-13.08.91-8.907 3.966 1.83 4.11 8.908-3.965-1.83-4.11Zm2.752 6.155-8.91 3.968.915 2.054c.248.548.69.968 1.253 1.186.562.217 1.17.195 1.717-.046l6.855-3.052-1.83-4.11Zm8.175-3.645v.008l-6.12 2.722 1.83 4.11.803-.352v-.008l8.79-3.907-1.83-4.118-3.473 1.545Zm6.975.795.383.863 6.854-3.053a2.224 2.224 0 0 0 1.298-1.665c.075-.427.03-.877-.157-1.305l-.915-2.055-8.91 3.96 1.447 3.255Z'/%3e%3cpath fill-opacity='.1' d='m216.098 60.667 4.042-11.122-33.368-12.15a3.954 3.954 0 0 0-5.062 2.355l-3.78 10.388-4.395 12.075-5.91 16.252-7.237 19.882-.173.48a3.936 3.936 0 0 0 2.355 5.055l23.347 8.498 14.918 5.43 2.52.915a3.946 3.946 0 0 0 5.063-2.355l.172-.48 17.55-48.203 1.08-2.97-11.122-4.05ZM185.977 46.02l25.373 9.232-.773 2.115-25.372-9.232.772-2.115Zm17.663 65.49-3.653-1.328-14.07-5.122-18.922-6.885.765-2.115 18.157 6.607 13.62 4.951 4.875 1.777-.772 2.115Zm11.505-31.598-7.118 19.545a3.89 3.89 0 0 1-4.995 2.333l-5.407-1.965-11.708-4.267-12.202-4.44a3.884 3.884 0 0 1-2.333-4.995l2.783-7.658 4.223-11.603.105-.284a3.894 3.894 0 0 1 5.002-2.333l29.317 10.672a3.897 3.897 0 0 1 2.333 4.995Zm3.63-9.982L182.13 56.595l.765-2.115 36.653 13.335-.773 2.115Z'/%3e%3cpath fill-opacity='.25' d='m212.813 74.918-29.318-10.673a3.894 3.894 0 0 0-5.002 2.332l-.105.285-4.223 11.603-2.782 7.657a3.884 3.884 0 0 0 2.332 4.996l12.203 4.44 11.707 4.26 5.407 1.972a3.891 3.891 0 0 0 4.996-2.333l7.117-19.544a3.896 3.896 0 0 0-2.332-4.995Zm-31.763-3.953c.037-.105.083-.21.128-.308.037-.075.067-.15.112-.217.045-.082.09-.157.143-.233 0 0 .022-.03.03-.044.03-.045.06-.09.097-.128a2.55 2.55 0 0 1 .225-.255c.053-.06.113-.12.173-.165.052-.06.112-.105.172-.15.18-.135.375-.255.593-.36.825-.36 1.635-.398 2.49-.083.15.053.3.12.435.195.082.038.157.083.225.128.165.097.314.21.449.338a3.19 3.19 0 0 1 .586.712c.052.098.105.195.157.3.368.818.405 1.635.09 2.49-.308.855-.862 1.455-1.672 1.852-.053.023-.113.045-.165.068-.008.007-.015.007-.03.007-.068.03-.128.053-.196.076-.127.037-.247.075-.382.09-.09.022-.187.037-.277.044-.473.053-.945-.014-1.44-.195-.855-.307-1.455-.862-1.853-1.672-.367-.825-.405-1.635-.09-2.49Zm23.317 27.157-8.295-3.014-10.154-3.698-10.868-3.953 1.417-3.914 6.893-4.006.127-.075.593.66.593.66 2.752 3.068 2.76-1.313 10.635-5.07 6.863 11.543-3.316 9.112Z'/%3e%3cpath fill-opacity='.05' d='m207.682 89.01-3.315 9.112-8.295-3.014-10.155-3.698-10.867-3.953 1.417-3.914 6.893-4.006.127-.075.593.66.592.66 2.753 3.068 2.76-1.313 10.635-5.07 6.862 11.543Zm-20.527-15.825c-.308.855-.863 1.455-1.673 1.852-.052.023-.112.045-.165.068-.007.007-.015.007-.03.007-.067.03-.127.053-.195.076-.127.037-.247.075-.382.09-.09.022-.188.037-.278.044-.472.053-.945-.014-1.44-.195-.855-.307-1.455-.862-1.852-1.672-.368-.825-.405-1.635-.09-2.49.037-.105.082-.21.127-.308.03-.075.068-.15.113-.217.045-.082.09-.157.142-.233 0 0 .023-.03.03-.044.03-.045.06-.09.098-.128.067-.09.142-.172.225-.255.052-.06.112-.12.172-.165.053-.052.113-.105.173-.15.18-.135.375-.255.592-.36.825-.36 1.635-.398 2.49-.083.15.053.3.12.435.195.083.038.158.083.225.128.165.097.315.21.45.338.075.067.143.134.21.21.135.15.255.322.375.502.053.098.105.195.158.3.367.818.405 1.635.09 2.49Z'/%3e%3cpath fill-opacity='.3' d='M147.15 40.958h-11.835V29.13l11.835 11.828Zm-96.847 9.929 10.815-4.815-15.63-6 4.815 10.815ZM227.22 64.718l-11.122-4.05 4.042-11.123 7.08 15.172Z'/%3e%3cpath fill-opacity='.15' d='m194.94 128.46-5.002 35.422-3.3 23.333a5.949 5.949 0 0 1-5.895 5.123h-40.156c.12-.203.24-.398.353-.608A23.85 23.85 0 0 0 144 180c0-13.26-10.747-24-24-24s-24 10.74-24 24c0 4.26 1.11 8.265 3.06 11.73.112.21.233.405.352.608H62.167a5.96 5.96 0 0 1-5.895-5.123l-2.474-17.535-7.425-52.553-.893-6.307-.322-2.325-.098-.667c-.503-3.585 2.273-6.788 5.895-6.788H87.57a5.947 5.947 0 0 1 5.895 5.115l1.47 10.403a5.959 5.959 0 0 0 5.895 5.114h88.215c3.622 0 6.405 3.203 5.895 6.788Z'/%3e%3cpath fill-opacity='.4' d='M120 156c-13.253 0-24 10.74-24 24 0 4.26 1.11 8.265 3.06 11.73.112.21.233.405.352.608 4.088 6.802 11.446 11.414 19.898 11.654h1.38c8.452-.24 15.81-4.852 19.897-11.654.12-.203.24-.398.353-.608A23.85 23.85 0 0 0 144 180c0-13.26-10.747-24-24-24Zm13.65 35.73c-.173.21-.36.413-.547.608A17.928 17.928 0 0 1 120 198a17.908 17.908 0 0 1-13.095-5.662 8.574 8.574 0 0 1-.555-.608A17.935 17.935 0 0 1 102 180c0-9.945 8.062-18 18-18s18 8.055 18 18c0 4.485-1.635 8.58-4.35 11.73Z'/%3e%3cpath fill-opacity='.5' d='M120 162c-9.938 0-18 8.055-18 18 0 4.485 1.643 8.58 4.35 11.73.173.21.36.413.555.608A17.92 17.92 0 0 0 120 198a17.94 17.94 0 0 0 13.103-5.662c.187-.195.374-.398.547-.608A17.893 17.893 0 0 0 138 180c0-9.945-8.055-18-18-18Zm7.5 19.5h-6v6c0 .825-.675 1.5-1.5 1.5s-1.5-.675-1.5-1.5v-6h-6c-.825 0-1.5-.675-1.5-1.5s.675-1.5 1.5-1.5h6v-6a1.5 1.5 0 1 1 3 0v6h6a1.5 1.5 0 1 1 0 3Z'/%3e%3c/g%3e%3cdefs%3e%3cclipPath id='a'%3e%3cpath fill='white' d='M0 0h240v240H0z'/%3e%3c/clipPath%3e%3c/defs%3e%3c/svg%3e");
+}
+
+.new-tab-image-customize
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state::before {
+  background-color: unset;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: var(--new-tab-image);
+  -webkit-mask: unset;
+}
+
+.new-tab-image-none
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state::before {
+  display: none;
+}
+
+.new-tab-image-none
+  .workspace-leaf-content[data-type="empty"]
+  .empty-state-title {
+  display: block;
+}
+
+body {
+  --clickable-icon-radius: 6px;
+  --new-tab-image: none;
+}
+
+.workspace-leaf-content[data-type="empty"] .empty-state-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+.workspace-leaf-content[data-type="empty"] .empty-state-title {
+  display: none;
+}
+
+.is-mobile .workspace-leaf-content[data-type="empty"] .empty-state-action-list,
+.workspace-leaf-content[data-type="empty"] .empty-state-action-list {
+  margin-top: 0px;
+}
+
+.workspace-leaf-content[data-type="empty"]
+  .empty-state-container
+  div:has(+ .empty-state-action-list) {
+  margin-bottom: 20px;
+}
+
+.is-mobile .workspace-leaf-content[data-type="empty"] .empty-state-action {
+  margin: 12px 0;
+  padding: 4px 24px;
+}
+
+body:not(.new-tab-image-customize) .setting-item[data-id="new-tab-image"] {
+  display: none;
+}
+
+/* =============================================================
+   Card layout (desktop) — adapted from Border, palette-neutral.
+   Geometry/shadows resolve from Poimandres base variables; no
+   Border palette colors are introduced. Opt-in per mode via the
+   card-layout-open-light / card-layout-open-dark toggles.
+   ============================================================= */
+body {
+  --card-border-radius-light: 8px;
+  --card-border-radius-dark: 8px;
+  --card-shadow-light:
+    0 0 0 1px
+      var(--background-modifier-border-muted, var(--background-modifier-border)),
+    0 0 6px var(--background-modifier-border);
+  --card-shadow-dark:
+    0 -1px 0 0 var(--background-modifier-border),
+    0 0 0 1px var(--background-modifier-border);
+  --card-gap: 16px;
+  --card-padding: 16px;
+
+  /* Per-split card surfaces (palette neutral, Border semantics). Each
+     split reads its own --background-mod-*-split variable so every side
+     surface is isolated. Defaults to the primary surface. */
+  --background-mod-left-split: var(--background-primary);
+  --background-mod-right-split: var(--background-primary);
+  --background-mod-root-split: var(--background-primary);
+  --background-mod-left-split-light: var(--background-primary);
+  --background-mod-left-split-dark: var(--background-primary);
+  --background-mod-right-split-light: var(--background-primary);
+  --background-mod-right-split-dark: var(--background-primary);
+  --background-mod-root-split-light: var(--background-primary);
+  --background-mod-root-split-dark: var(--background-primary);
+}
+
+/* Underlying desktop surface + transparent chrome while in card mode */
+body:not(.is-mobile).card-layout-open-light.theme-light,
+body:not(.is-mobile).card-layout-open-dark.theme-dark {
+  background-color: var(--background-secondary);
+  --titlebar-background: var(--background-secondary);
+  --titlebar-background-focused: var(--background-secondary);
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .app-container,
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace,
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace
+  > .workspace-split,
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace-ribbon,
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace-ribbon::before,
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace-tabs:not(.mod-stacked)
+  .workspace-leaf,
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace-tabs:not(.mod-stacked)
+  .workspace-leaf-content,
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .view-header:not(.animate),
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .view-content:not(.animate) {
+  background-color: transparent !important;
+}
+
+/* Card mode hides the core workspace pseudo-backdrop and makes
+   workspace dividers transparent (matches Border semantics). */
+body:not(.is-mobile).card-layout-open-light.theme-light .workspace::before,
+body:not(.is-mobile).card-layout-open-dark.theme-dark .workspace::before {
+  display: none;
+}
+body:not(.is-mobile).card-layout-open-light.theme-light,
+body:not(.is-mobile).card-layout-open-dark.theme-dark {
+  --workspace-divider-color: transparent;
+}
+
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .horizontal-main-container {
+  padding-bottom: calc(var(--card-gap) + 8px);
+  transition: padding-bottom var(--anim-in);
+}
+
+/* Composed bottom inset: when the status bar autohides, the card row
+   settles into the reduced space (and back out on hover) so the reveal
+   never clips the floating cards. Popout windows need no extra clearance. */
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  ).status-bar-autohide
+  .horizontal-main-container {
+  padding-bottom: var(--card-gap);
+  transition: padding-bottom var(--anim-out);
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  ).status-bar-autohide
+  > .app-container
+  > .horizontal-main-container:has(~ .status-bar:hover) {
+  padding-bottom: calc(var(--card-gap) + 8px);
+  transition: padding-bottom var(--anim-in);
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  ).is-popout-window
+  .horizontal-main-container {
+  padding-bottom: var(--card-gap);
+  transition: padding-bottom var(--anim-in);
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace {
+  margin-right: var(--card-gap);
+  position: relative;
+  overflow: visible;
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  ).is-popout-window
+  .workspace {
+  margin-left: var(--card-gap);
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace.is-left-sidedock-open
+  .workspace-split.mod-horizontal.mod-left-split {
+  margin-right: var(--card-gap);
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace.is-right-sidedock-open
+  .workspace-split.mod-horizontal.mod-right-split {
+  margin-left: var(--card-gap);
+}
+body:not(.is-mobile).card-layout-open-light.theme-light .workspace-tabs,
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-tab-header-container,
+body:not(.is-mobile).card-layout-open-dark.theme-dark .workspace-tabs,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-tab-header-container {
+  background-color: transparent !important;
+}
+
+/* =============================================================
+   Per-split card surface routing (palette neutral, per light/dark
+   mode). Each split reads its own --background-mod-*-split variable
+   so left/right/root surfaces are isolated. The active option is
+   selected via Style Settings class toggles; `transparent` only takes
+   effect while card layout is active (matches Border semantics).
+   ============================================================= */
+
+/* left split */
+body.theme-light.mod-left-split-background-primary-light,
+body.theme-dark.mod-left-split-background-primary-dark {
+  --background-mod-left-split: var(--background-primary) !important;
+}
+body.theme-light.mod-left-split-background-secondary-light,
+body.theme-dark.mod-left-split-background-secondary-dark {
+  --background-mod-left-split: var(--background-secondary) !important;
+}
+body.theme-light.mod-left-split-background-transparent-light.card-layout-open-light,
+body.theme-dark.mod-left-split-background-transparent-dark.card-layout-open-dark {
+  --background-mod-left-split: transparent !important;
+}
+body.theme-light.mod-left-split-background-customize-light {
+  --background-mod-left-split: var(
+    --background-mod-left-split-light
+  ) !important;
+}
+body.theme-dark.mod-left-split-background-customize-dark {
+  --background-mod-left-split: var(--background-mod-left-split-dark) !important;
+}
+/* right split */
+body.theme-light.mod-right-split-background-primary-light,
+body.theme-dark.mod-right-split-background-primary-dark {
+  --background-mod-right-split: var(--background-primary) !important;
+}
+body.theme-light.mod-right-split-background-secondary-light,
+body.theme-dark.mod-right-split-background-secondary-dark {
+  --background-mod-right-split: var(--background-secondary) !important;
+}
+body.theme-light.mod-right-split-background-transparent-light.card-layout-open-light,
+body.theme-dark.mod-right-split-background-transparent-dark.card-layout-open-dark {
+  --background-mod-right-split: transparent !important;
+}
+body.theme-light.mod-right-split-background-customize-light {
+  --background-mod-right-split: var(
+    --background-mod-right-split-light
+  ) !important;
+}
+body.theme-dark.mod-right-split-background-customize-dark {
+  --background-mod-right-split: var(
+    --background-mod-right-split-dark
+  ) !important;
+}
+/* root split */
+body.theme-light.mod-root-split-background-primary-light,
+body.theme-dark.mod-root-split-background-primary-dark {
+  --background-mod-root-split: var(--background-primary) !important;
+}
+body.theme-light.mod-root-split-background-secondary-light,
+body.theme-dark.mod-root-split-background-secondary-dark {
+  --background-mod-root-split: var(--background-secondary) !important;
+}
+body.theme-light.mod-root-split-background-transparent-light.card-layout-open-light,
+body.theme-dark.mod-root-split-background-transparent-dark.card-layout-open-dark {
+  --background-mod-root-split: transparent !important;
+}
+body.theme-light.mod-root-split-background-customize-light {
+  --background-mod-root-split: var(
+    --background-mod-root-split-light
+  ) !important;
+}
+body.theme-dark.mod-root-split-background-customize-dark {
+  --background-mod-root-split: var(--background-mod-root-split-dark) !important;
+}
+
+/* Apply each routed surface to that split's card, only in card mode. */
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace-split.mod-left-split
+  .workspace-tab-container {
+  background-color: var(--background-mod-left-split) !important;
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace-split.mod-right-split
+  .workspace-tab-container {
+  background-color: var(--background-mod-right-split) !important;
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace-split.mod-root
+  .workspace-tab-container {
+  background-color: var(--background-mod-root-split) !important;
+}
+
+/* Transparent surfaces suppress the card shadow so only the reveal
+   shows on the underlying chrome. Stacked root cards keep their own
+   shadow (their surface stays opaque via the fallback below). */
+body:not(
+    .is-mobile
+  ).card-layout-open-light.mod-left-split-background-transparent-light.theme-light
+  .workspace-split.mod-left-split
+  .workspace-tab-container,
+body:not(
+    .is-mobile
+  ).card-layout-open-dark.mod-left-split-background-transparent-dark.theme-dark
+  .workspace-split.mod-left-split
+  .workspace-tab-container,
+body:not(
+    .is-mobile
+  ).card-layout-open-light.mod-right-split-background-transparent-light.theme-light
+  .workspace-split.mod-right-split
+  .workspace-tab-container,
+body:not(
+    .is-mobile
+  ).card-layout-open-dark.mod-right-split-background-transparent-dark.theme-dark
+  .workspace-split.mod-right-split
+  .workspace-tab-container,
+body:not(
+    .is-mobile
+  ).card-layout-open-light.mod-root-split-background-transparent-light.theme-light
+  .workspace-split.mod-root
+  .workspace-tabs:not(.mod-stacked)
+  .workspace-tab-container,
+body:not(
+    .is-mobile
+  ).card-layout-open-dark.mod-root-split-background-transparent-dark.theme-dark
+  .workspace-split.mod-root
+  .workspace-tabs:not(.mod-stacked)
+  .workspace-tab-container {
+  --card-shadow-light: transparent;
+  --card-shadow-dark: transparent;
+}
+
+/* Cards float: rounded, shadowed, separated, chrome never clips them */
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-tab-container,
+body:not(.is-mobile).card-layout-open-dark.theme-dark .workspace-tab-container {
+  border-radius: var(--card-border-radius-light) !important;
+  overflow: hidden !important;
+  box-shadow: var(--card-shadow-light);
+}
+body:not(.is-mobile).card-layout-open-dark.theme-dark .workspace-tab-container {
+  border-radius: var(--card-border-radius-dark) !important;
+  overflow: hidden !important;
+  box-shadow: var(
+    --card-shadow-dark,
+    0 0 0 1px var(--background-modifier-border)
+  );
+}
+body:not(.is-mobile).card-layout-open-light.theme-light .workspace-tabs,
+body:not(.is-mobile).card-layout-open-light.theme-light .workspace-split,
+body:not(.is-mobile).card-layout-open-dark.theme-dark .workspace-tabs,
+body:not(.is-mobile).card-layout-open-dark.theme-dark .workspace-split {
+  overflow: visible !important;
+}
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-split.mod-vertical,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-split.mod-vertical {
+  gap: var(--card-gap);
+}
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container {
+  border-top: 0;
+}
+
+/* Card highlight: outline the active stacked card */
+body:not(.is-mobile).card-highlight-light.card-layout-open-light.theme-light
+  .mod-root:has(.workspace-tabs + .workspace-tabs)
+  .workspace-tabs.mod-active
+  .workspace-tab-container,
+body:not(.is-mobile).card-highlight-dark.card-layout-open-dark.theme-dark
+  .mod-root:has(.workspace-tabs + .workspace-tabs)
+  .workspace-tabs.mod-active
+  .workspace-tab-container {
+  outline-offset: 0;
+  outline: 2px solid var(--interactive-accent);
+}
+
+/* =============================================================
+   Stacked root, collapsed side docks, and tab-autohide integration.
+   All selectors stay inside card mode and resolve from Poimandres
+   base/divider variables only.
+   ============================================================= */
+
+/* Stacked root: header/editor surfaces track the routed root surface so
+   the whole stacked card reads as one surface. */
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace-split.mod-root
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container
+  :is(
+    .workspace-tab-header,
+    .workspace-tab-header-inner,
+    .view-header,
+    .view-content
+  ) {
+  background-color: var(--background-mod-root-split);
+}
+
+/* Opaque stacked-root fallback: a transparent root still keeps stacked
+   cards on the primary surface (Border semantics). A customize-color root
+   keeps the user's root color on the stacked cards. */
+body:not(.is-mobile).theme-light.card-layout-open-light:is(
+    .mod-root-split-background-transparent-light
+  )
+  .workspace-tabs.mod-stacked,
+body:not(.is-mobile).theme-dark.card-layout-open-dark:is(
+    .mod-root-split-background-transparent-dark
+  )
+  .workspace-tabs.mod-stacked {
+  --background-mod-root-split: var(--background-primary) !important;
+}
+
+/* Stacked card header semantics: a leading divider and top-left radius
+   per mode; the first header drops the divider and squares up unless it
+   spans a full-width (left dock closed) window. */
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-split.mod-root
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container
+  .workspace-tab-header-inner,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-split.mod-root
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container
+  .workspace-tab-header-inner {
+  border-left: 1px solid var(--divider-color);
+  border-top-left-radius: var(--card-border-radius-light);
+  box-shadow: var(--tab-stacked-shadow);
+}
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-split.mod-root
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container
+  .workspace-tab-header-inner {
+  border-top-left-radius: var(--card-border-radius-dark);
+}
+body:not(.is-mobile):is(
+    .card-layout-open-light.theme-light,
+    .card-layout-open-dark.theme-dark
+  )
+  .workspace-split.mod-root
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner {
+  border-left: none;
+}
+/* First stacked header squares up in the remaining states: a detached
+   popout window, no top-left space, or an open left side dock. */
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-split.mod-root.workspace-window
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-split.mod-root.workspace-window
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner,
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-split.mod-root
+  .workspace-tabs.mod-stacked:not(.mod-top-left-space)
+  .workspace-tab-container
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-split.mod-root
+  .workspace-tabs.mod-stacked:not(.mod-top-left-space)
+  .workspace-tab-container
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner {
+  border-top-left-radius: 0px;
+  border-left: none;
+}
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace.is-left-sidedock-open
+  .mod-stacked
+  .workspace-tab-header:first-of-type,
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace.is-left-sidedock-open
+  .mod-stacked
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace.is-left-sidedock-open
+  .mod-stacked
+  .workspace-tab-header:first-of-type,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace.is-left-sidedock-open
+  .mod-stacked
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner {
+  border-top-left-radius: 0px !important;
+  border-left: none;
+}
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace:not(.is-left-sidedock-open)
+  .workspace-split.mod-root:not(.workspace-window)
+  .workspace-tabs.mod-stacked.mod-top-left-space
+  .workspace-tab-container
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace:not(.is-left-sidedock-open)
+  .workspace-split.mod-root:not(.workspace-window)
+  .workspace-tabs.mod-stacked.mod-top-left-space
+  .workspace-tab-container
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner {
+  border-top-left-radius: var(--card-border-radius-light);
+}
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace:not(.is-left-sidedock-open)
+  .workspace-split.mod-root:not(.workspace-window)
+  .workspace-tabs.mod-stacked.mod-top-left-space
+  .workspace-tab-container
+  .workspace-tab-header:first-of-type
+  .workspace-tab-header-inner {
+  border-top-left-radius: var(--card-border-radius-dark);
+}
+
+/* Collapsed side docks hide their remaining chrome in card mode, and
+   entirely when the root split is routed transparent. */
+body:not(
+    .is-mobile
+  ).card-layout-open-light.theme-light.mod-root-split-background-transparent-light
+  .is-sidedock-collapsed,
+body:not(
+    .is-mobile
+  ).card-layout-open-dark.theme-dark.mod-root-split-background-transparent-dark
+  .is-sidedock-collapsed,
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .is-sidedock-collapsed
+  :is(
+    .mod-top-left-space .workspace-tab-header-container,
+    .workspace-sidedock-vault-profile
+  ),
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .is-sidedock-collapsed
+  :is(
+    .mod-top-left-space .workspace-tab-header-container,
+    .workspace-sidedock-vault-profile
+  ) {
+  visibility: hidden;
+}
+
+/* Tab-autohide + transparent card: restore a flush top divider and square
+   the top corners so the revealed tab row sits exactly at the card edge.
+   Scoped per split so only a transparent surface changes. */
+body:not(
+    .is-mobile
+  ).theme-light.card-layout-open-light.mod-left-split-background-transparent-light.tab-autohide
+  .workspace-split.mod-left-split
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container
+  > .workspace-leaf,
+body:not(
+    .is-mobile
+  ).theme-dark.card-layout-open-dark.mod-left-split-background-transparent-dark.tab-autohide
+  .workspace-split.mod-left-split
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container
+  > .workspace-leaf,
+body:not(
+    .is-mobile
+  ).theme-light.card-layout-open-light.mod-right-split-background-transparent-light.tab-autohide
+  .workspace-split.mod-right-split
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container
+  > .workspace-leaf,
+body:not(
+    .is-mobile
+  ).theme-dark.card-layout-open-dark.mod-right-split-background-transparent-dark.tab-autohide
+  .workspace-split.mod-right-split
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container
+  > .workspace-leaf,
+body:not(
+    .is-mobile
+  ).theme-light.card-layout-open-light.mod-root-split-background-transparent-light.tab-autohide
+  .workspace-split.mod-root
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container
+  > .workspace-leaf,
+body:not(
+    .is-mobile
+  ).theme-dark.card-layout-open-dark.mod-root-split-background-transparent-dark.tab-autohide
+  .workspace-split.mod-root
+  .workspace-tabs:not(.mod-top)
+  .workspace-tab-container
+  > .workspace-leaf {
+  box-shadow: inset 0 1px 0 var(--divider-color);
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+/* Stacked-scroll compatibility: cards scroll horizontally in place */
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container {
+  overflow-x: auto !important;
+}
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container::-webkit-scrollbar-button,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container::-webkit-scrollbar-button {
+  width: 2px !important;
+}
+body:not(.is-mobile).card-layout-open-light.theme-light
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container::-webkit-scrollbar-track,
+body:not(.is-mobile).card-layout-open-dark.theme-dark
+  .workspace-tabs.mod-stacked
+  .workspace-tab-container::-webkit-scrollbar-track {
+  display: none;
+}
+
+/* =============================================================
+   Card layout (pad / tablet) — independent toggle.
+   `card-layout-pad-open` applies to the tablet layout regardless of
+   the light/dark card toggles. Uses the shared card vars.
+   ============================================================= */
+.card-layout-pad-open.is-tablet {
+  --titlebar-background: var(--background-secondary);
+  --titlebar-background-focused: var(--background-secondary);
+}
+.card-layout-pad-open.is-tablet,
+.card-layout-pad-open.is-tablet .app-container,
+.card-layout-pad-open.is-tablet .workspace,
+.card-layout-pad-open.is-tablet .horizontal-main-container {
+  background-color: var(--background-secondary) !important;
+}
+.card-layout-pad-open.is-tablet .workspace {
+  gap: var(--card-gap);
+  padding: var(--card-padding);
+  padding-top: 8px;
+  padding-bottom: calc(var(--card-padding) + 8px);
+}
+.card-layout-pad-open.is-tablet
+  .app-container:has(> .mobile-toolbar)
+  .workspace {
+  padding-bottom: 8px;
+}
+.card-layout-pad-open.is-tablet .workspace-drawer {
+  padding-top: 0;
+  background-color: var(--background-primary);
+  border-radius: var(--card-border-radius-light) !important;
+  overflow: hidden !important;
+  margin: var(--card-padding);
+  margin-top: 32px;
+  margin-bottom: calc(var(--card-padding) + 8px);
+}
+.card-layout-pad-open.is-tablet.theme-dark .workspace-drawer {
+  border-radius: var(--card-border-radius-dark) !important;
+}
+.card-layout-pad-open.is-tablet .workspace-split.mod-root {
+  border-radius: var(--card-border-radius-light) !important;
+  overflow: hidden !important;
+  background-color: var(--background-primary) !important;
+  box-shadow:
+    0 0 6px rgba(var(--fg_dark_x), 0.25),
+    0 0 2px rgba(var(--fg_dark_x), 0.15),
+    0 0 0 1px var(--background-modifier-border);
+}
+.card-layout-pad-open.is-tablet.theme-dark .workspace-split.mod-root {
+  border-radius: var(--card-border-radius-dark) !important;
+  box-shadow: 0 0 0 1px var(--background-modifier-border);
+}
+.card-layout-pad-open.is-tablet .workspace-drawer.is-pinned {
+  border-right: none;
+  border-left: none;
+  border-radius: var(--card-border-radius-light) !important;
+  margin: 0;
+  box-shadow:
+    0 0 6px rgba(var(--fg_dark_x), 0.25),
+    0 0 2px rgba(var(--fg_dark_x), 0.15),
+    0 0 0 1px var(--background-modifier-border);
+}
+.card-layout-pad-open.is-tablet.theme-dark .workspace-drawer.is-pinned {
+  border-radius: var(--card-border-radius-dark) !important;
+  box-shadow: 0 0 0 1px var(--background-modifier-border);
+}
+.card-layout-pad-open.is-tablet .workspace-drawer-inner {
+  padding-top: 8px;
+}
+.card-layout-pad-open.is-tablet .workspace-drawer-ribbon {
+  border-right: 1px solid var(--background-modifier-border);
+}
+
+/* Tablet surface normalization (Border semantics, scoped to pad).
+   The right drawer claims the primary sidebar surface via
+   --mobile-sidebar-background, and its nested header/inner/tab/leaf
+   containers plus the root tab header/view are normalized to primary
+   so the align under the card without secondary bleed-through. */
+.card-layout-pad-open.is-tablet .workspace-drawer.mod-right {
+  --mobile-sidebar-background: var(--background-primary);
+}
+.card-layout-pad-open.is-tablet .workspace-drawer.mod-right,
+.card-layout-pad-open.is-tablet
+  .workspace-drawer.mod-right
+  .workspace-drawer-header,
+.card-layout-pad-open.is-tablet .workspace-drawer.mod-right .view-header,
+.card-layout-pad-open.is-tablet .workspace-drawer.mod-right .view-content,
+.card-layout-pad-open.is-tablet
+  .workspace-drawer.mod-right
+  .workspace-drawer-inner,
+.card-layout-pad-open.is-tablet
+  .workspace-drawer.mod-right
+  .workspace-drawer-inner
+  .workspace-drawer-tab-container,
+.card-layout-pad-open.is-tablet
+  .workspace-drawer.mod-right
+  .workspace-drawer-inner
+  .workspace-drawer-tab-container
+  .workspace-leaf-content,
+.card-layout-pad-open.is-tablet.theme-dark .vertical-tab-content,
+.card-layout-pad-open.is-tablet .workspace-tab-header-container,
+.card-layout-pad-open.is-tablet .workspace-split.mod-root .view-content {
+  background-color: var(--background-primary);
+}
+
+/* Tablet companion selectors (Border): normalized seams on the root
+   tab container and the drawer nav header. */
+.card-layout-pad-open.is-tablet .workspace-tab-container {
+  border-top: 1px solid var(--background-modifier-border);
+}
+.card-layout-pad-open.is-tablet .workspace-drawer .nav-header {
+  border-top: var(--border-width) solid transparent;
+}
+
+/* =============================================================
+   Line hover indicator (live preview) — enabled by default.
+   Disabled only by the `line-hover-indicator-off` class.
+   Color derives from --hover-indicator-color (Poimandres vars).
+   ============================================================= */
+.theme-light {
+  --hover-indicator-color: var(--text-faint);
+}
+.theme-dark {
+  --hover-indicator-color: var(--text-faint);
+}
+
+body:not(.line-hover-indicator-off)
+  .workspace-leaf-content[data-type="markdown"]
+  .markdown-source-view
+  .cm-content
+  > div {
+  position: relative;
+}
+body:not(.line-hover-indicator-off)
+  .workspace-leaf-content[data-type="markdown"]
+  .markdown-source-view
+  .cm-content
+  > div::after {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 3px;
+  width: 3px;
+  height: 0;
+  border-radius: 10px;
+  background: var(--hover-indicator-color);
+  opacity: 1;
+}
+body:not(.line-hover-indicator-off)
+  .workspace-leaf-content[data-type="markdown"]
+  .markdown-source-view
+  .cm-content
+  > .HyperMD-quote::after {
+  left: calc(-20px - var(--blockquote-padding, 16px));
+}
+body:not(.line-hover-indicator-off)
+  .workspace-leaf-content[data-type="markdown"]
+  .markdown-source-view
+  .cm-content
+  > div:hover::after {
+  height: calc(100% - 6px);
+}
+
+/* Active line always shows the indicator in the palette accent */
+body:not(.line-hover-indicator-off)
+  .workspace-leaf-content[data-type="markdown"]
+  .markdown-source-view
+  .cm-content
+  > .cm-active::after {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 3px;
+  width: 3px;
+  height: calc(100% - 6px);
+  border-radius: 10px;
+  background: var(--interactive-accent);
+  opacity: 1;
+}
+body:not(.line-hover-indicator-off)
+  .workspace-leaf-content[data-type="markdown"]
+  .markdown-source-view
+  .cm-content
+  > .cm-active.HyperMD-quote::after {
+  left: calc(-20px - var(--blockquote-padding, 16px));
+}
+
+/* List level / codeblock line-number indicators (opt-in) */
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line::after,
+body:not(.line-hover-indicator-off).focus-indicator-codeblock-line-number
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-codeblock:not(.HyperMD-codeblock-begin):not(
+    .HyperMD-codeblock-end
+  )::after {
+  background: unset !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  left: -20px !important;
+  top: 0 !important;
+  height: 100% !important;
+  width: 3px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  color: var(--hover-indicator-color);
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line:hover::after,
+body:not(.line-hover-indicator-off).focus-indicator-codeblock-line-number
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-codeblock:not(.HyperMD-codeblock-begin):not(
+    .HyperMD-codeblock-end
+  ):hover::after {
+  opacity: 1 !important;
+}
+
+/* Codeblock: count lines after the fence opener */
+body:not(.line-hover-indicator-off).focus-indicator-codeblock-line-number
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer,
+body:not(.line-hover-indicator-off).focus-indicator-codeblock-line-number
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-codeblock-end {
+  counter-reset: code-line;
+}
+body:not(.line-hover-indicator-off).focus-indicator-codeblock-line-number
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-codeblock:not(.HyperMD-codeblock-begin):not(
+    .HyperMD-codeblock-end
+  )::after {
+  counter-increment: code-line;
+  content: counter(code-line) !important;
+}
+
+/* List: show the nesting level for hovered lines */
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line::after {
+  content: "";
+  text-indent: 0 !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-1::after {
+  content: "1" !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-2::after {
+  content: "2" !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-3::after {
+  content: "3" !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-4::after {
+  content: "4" !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-5::after {
+  content: "5" !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-6::after {
+  content: "6" !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-7::after {
+  content: "7" !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-8::after {
+  content: "8" !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-9::after {
+  content: "9" !important;
+}
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-line.HyperMD-list-line.HyperMD-list-line-10::after {
+  content: "10" !important;
+}
+
+/* Active list/code lines keep the accent color */
+body:not(.line-hover-indicator-off).focus-indicator-list-level
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-active.HyperMD-list-line::after,
+body:not(.line-hover-indicator-off).focus-indicator-codeblock-line-number
+  .workspace-leaf-content[data-type="markdown"]
+  .cm-contentContainer
+  .cm-active.HyperMD-codeblock:not(.HyperMD-codeblock-begin):not(
+    .HyperMD-codeblock-end
+  )::after {
+  opacity: 1 !important;
+  color: var(--interactive-accent) !important;
 }
 
 /* Style Settings Plugin */
@@ -1170,6 +4832,19 @@ settings:
     type: class-toggle
     class: pm-variant-storm
     default: false
+
+  - id: section-animations
+    title: Animations
+    type: heading
+    level: 2
+  - id: anim-speed
+    title: Animation speed
+    description: Multiplier for interface animation durations
+    type: variable-number-slider
+    default: 1
+    min: 0.1
+    max: 3
+    step: 0.1
 
   - id: section-headings
     title: Headings
@@ -1402,21 +5077,243 @@ settings:
     type: variable-themed-color
     format: rgb
     opacity: true
-    default-light: 'rgb(113, 124, 180)'
-    default-dark: 'rgb(113, 124, 180)'
+    default-light: 'rgba(113, 124, 180, 0.15)'
+    default-dark: 'rgba(113, 124, 180, 0.15)'
 
   - id: section-code
     title: Code
     type: heading
     level: 2
-  - id: code-background
-    title: Code background
-    description: Inline and block code background color
+  - id: codeblock-style-select
+    title: Codeblock theme
+    description: Alternate code block palettes; Customize (default) keeps the Poimandres palette
+    type: class-select
+    allowEmpty: false
+    default: codeblock-style-customize
+    options:
+      -   label: Poimandres (default)
+          value: codeblock-style-customize
+      -   label: 'Dark: Ayu'
+          value: codeblock-style-ayu-dark
+      -   label: 'Dark: Ayu mirage'
+          value: codeblock-style-ayu-mirage
+      -   label: 'Dark: Catppuccin frappe'
+          value: codeblock-style-catppuccin-frappe
+      -   label: 'Dark: Catppuccin macchiato'
+          value: codeblock-style-catppuccin-macchiato
+      -   label: 'Dark: Catppuccin mocha'
+          value: codeblock-style-catppuccin-mocha
+      -   label: 'Dark: Dracula'
+          value: codeblock-style-dracula
+      -   label: 'Dark: Everforest'
+          value: codeblock-style-everforest-dark
+      -   label: 'Dark: GitHub'
+          value: codeblock-style-github-dark
+      -   label: 'Dark: Gruvbox'
+          value: codeblock-style-gruvbox-dark
+      -   label: 'Dark: Kanagawa dragon'
+          value: codeblock-style-kanagawa-dragon
+      -   label: 'Dark: Kanagawa wave'
+          value: codeblock-style-kanagawa-wave
+      -   label: 'Dark: Monokai'
+          value: codeblock-style-monokai
+      -   label: 'Dark: Night owl'
+          value: codeblock-style-night-owl
+      -   label: 'Dark: Nord'
+          value: codeblock-style-nord
+      -   label: 'Dark: One dark'
+          value: codeblock-style-one-dark
+      -   label: 'Dark: One dark pro'
+          value: codeblock-style-one-dark-pro
+      -   label: 'Dark: Rosé Pine'
+          value: codeblock-style-rose-pine
+      -   label: 'Dark: Rosé Pine moon'
+          value: codeblock-style-rose-pine-moon
+      -   label: 'Dark: Solarized'
+          value: codeblock-style-solarized-dark
+      -   label: 'Dark: Tokyo night'
+          value: codeblock-style-tokyo-night
+      -   label: 'Dark: Tokyo night storm'
+          value: codeblock-style-tokyo-night-storm
+      -   label: 'Light: Atom one light'
+          value: codeblock-style-atom-one-light
+      -   label: 'Light: Ayu'
+          value: codeblock-style-ayu-light
+      -   label: 'Light: Catppuccin latte'
+          value: codeblock-style-catppuccin-latte
+      -   label: 'Light: Everforest'
+          value: codeblock-style-everforest-light
+      -   label: 'Light: GitHub'
+          value: codeblock-style-github-light
+      -   label: 'Light: Gruvbox'
+          value: codeblock-style-gruvbox-light
+      -   label: 'Light: Kanagawa lotus'
+          value: codeblock-style-kanagawa-lotus
+      -   label: 'Light: Rosé Pine dawn'
+          value: codeblock-style-rose-pine-dawn
+      -   label: 'Light: Solarized'
+          value: codeblock-style-solarized-light
+      -   label: 'Light: Tokyo night light'
+          value: codeblock-style-tokyo-night-light
+  - id: code-background-light
+    title: Code block background (light mode)
+    description: Any CSS background value; visible while "Customize" is active
+    type: variable-text
+    default: ''
+  - id: code-border-light
+    title: Code block border (light mode)
+    description: Any CSS border value
+    type: variable-text
+    default: ''
+  - id: code-background-dark
+    title: Code block background (dark mode)
+    description: Any CSS background value
+    type: variable-text
+    default: ''
+  - id: code-border-dark
+    title: Code block border (dark mode)
+    description: Any CSS border value
+    type: variable-text
+    default: ''
+  - id: code-normal
+    title: code-normal
+    type: variable-text
+    default: 'var(--text-muted)'
+  - id: code-comment
+    title: code-comment
+    type: variable-text
+    default: 'var(--fg_dark)'
+  - id: code-function
+    title: code-function
+    type: variable-text
+    default: 'var(--blue)'
+  - id: code-important
+    title: code-important
+    type: variable-text
+    default: 'var(--red1)'
+  - id: code-keyword
+    title: code-keyword
+    type: variable-text
+    default: 'var(--fg)'
+  - id: code-operator
+    title: code-operator
+    type: variable-text
+    default: 'var(--blue)'
+  - id: code-property
+    title: code-property
+    type: variable-text
+    default: 'var(--blue)'
+  - id: code-punctuation
+    title: code-punctuation
+    type: variable-text
+    default: 'var(--fg)'
+  - id: code-string
+    title: code-string
+    type: variable-text
+    default: 'var(--green)'
+  - id: code-tag
+    title: code-tag
+    type: variable-text
+    default: 'var(--green)'
+  - id: code-value
+    title: code-value
+    type: variable-text
+    default: 'var(--green)'
+
+  - id: section-inline-code
+    title: Inline code
+    type: heading
+    level: 2
+  - id: inline-code-normal
+    title: Inline code text color
+    type: variable-text
+    default: 'var(--color-pink)'
+  - id: inline-code-background-light
+    title: Inline code background (light mode)
+    type: variable-text
+    default: 'var(--background-primary-alt)'
+  - id: inline-code-background-dark
+    title: Inline code background (dark mode)
+    type: variable-text
+    default: 'var(--background-primary-alt)'
+
+  - id: section-callouts
+    title: Callouts
+    type: heading
+    level: 2
+  - id: callout-style-select
+    title: Callout style
+    description: Border-style layouts; Customize exposes the structural options below
+    type: class-select
+    allowEmpty: false
+    default: callout-style-customize
+    options:
+      -   label: Customize (default)
+          value: callout-style-customize
+      -   label: Style 1
+          value: callout-style-1
+      -   label: Style 2
+          value: callout-style-2
+      -   label: Style 3
+          value: callout-style-3
+      -   label: Style 4
+          value: callout-style-4
+  - id: callout-border-width
+    title: Callout border width
+    description: Any CSS border-width value
+    type: variable-text
+    default: '0px'
+  - id: callout-border-opacity
+    title: Callout border opacity
+    type: variable-number-slider
+    default: 0.25
+    min: 0
+    max: 1
+    step: 0.05
+  - id: callout-padding
+    title: Callout padding
+    description: Any CSS padding value
+    type: variable-text
+    default: 'var(--size-4-3) var(--size-4-3) var(--size-4-3) var(--size-4-6)'
+  - id: callout-radius
+    title: Callout radius
+    description: Any CSS border-radius value
+    type: variable-text
+    default: 'var(--radius-s)'
+  - id: callout-title-color
+    title: Callout title color
     type: variable-themed-color
-    format: rgb
+    format: hex
     opacity: true
-    default-light: 'rgb(230, 233, 239)'
-    default-dark: 'rgb(22, 25, 33)'
+    default-light: '#'
+    default-dark: '#'
+  - id: callout-title-padding
+    title: Callout title padding
+    description: Any CSS padding value
+    type: variable-text
+    default: '0'
+  - id: callout-title-size
+    title: Callout title font size
+    description: Any CSS font-size value
+    type: variable-text
+    default: 'inherit'
+  - id: callout-content-padding
+    title: Callout content padding
+    description: Any CSS padding value
+    type: variable-text
+    default: '0'
+  - id: callout-content-background
+    title: Callout content background
+    type: variable-themed-color
+    format: hex
+    opacity: true
+    default-light: '#'
+    default-dark: '#'
+  - id: callout-content-radius
+    title: Callout content radius
+    description: Any CSS border-radius value
+    type: variable-text
+    default: '0px'
 
   - id: section-links-tags
     title: Links & tags
@@ -1479,8 +5376,21 @@ settings:
     max: 20
     step: 1
     format: px
-  - id: table-width
+  - id: table-width-select
     title: Table width
+    description: Table width behavior
+    type: class-select
+    allowEmpty: false
+    default: table-width-default
+    options:
+        - label: Fit content (default)
+          value: table-width-default
+        - label: Obsidian default
+          value: table-width-obsidian-default
+        - label: Custom width
+          value: table-width-customized
+  - id: table-width
+    title: Custom table width
     description: Max table width in container query width units
     type: variable-number-slider
     default: 88
@@ -1505,20 +5415,316 @@ settings:
     format: rgb
     opacity: true
     default-light: 'rgb(254, 254, 255)'
-    default-dark: 'rgb(27, 30, 40)'
+    default-dark: 'rgb(23, 25, 30)'
   - id: scrollbar-thumb-bg
     title: Thumb color
     type: variable-themed-color
     format: rgb
     opacity: true
-    default-light: 'rgb(108, 111, 133)'
-    default-dark: 'rgb(118, 124, 157)'
+    default-light: 'rgba(108, 111, 133, 0.35)'
+    default-dark: 'rgba(118, 124, 157, 0.35)'
   - id: scrollbar-active-thumb-bg
     title: Thumb hover color
     type: variable-themed-color
     format: rgb
     opacity: true
-    default-light: 'rgb(108, 111, 133)'
-    default-dark: 'rgb(118, 124, 157)'
+    default-light: 'rgba(108, 111, 133, 0.5)'
+    default-dark: 'rgba(118, 124, 157, 0.5)'
+
+  - id: section-checkboxes
+    title: Checkboxes
+    type: heading
+    level: 2
+    collapsed: true
+  - id: disable-alternative-checkboxes
+    title: Disable Alternative Checkboxes
+    description: Disable this if you are using your own implementation via a CSS Snippet.
+    type: class-toggle
+  - id: section-autohide
+    title: Auto hide
+    type: heading
+    level: 2
+    collapsed: true
+  - id: tab-autohide
+    title: Auto hide tab bar
+    description: Mac users can adjust the position of the traffic light using the 'Electron Window Tweaker' plugin
+    type: class-toggle
+    class: tab-autohide
+    default: false
+  - id: status-bar-autohide
+    title: Auto hide bottom status bar
+    type: class-toggle
+    class: status-bar-autohide
+    default: false
+  - id: ribbon-autohide
+    title: Auto hide left ribbon menu
+    type: class-toggle
+    class: ribbon-autohide
+    default: false
+  - id: nav-header-autohide
+    title: Auto hide header icons in sidepane
+    type: class-toggle
+    class: nav-header-autohide
+    default: false
+  - id: tab-title-bar-autohide
+    title: Auto hide tab title bar
+    type: class-toggle
+    class: tab-title-bar-autohide
+    default: false
+  - id: vault-profile-autohide
+    title: Auto hide vault profile
+    type: class-toggle
+    class: vault-profile-autohide
+    default: false
+
+  - id: section-newtab
+    title: New tab
+    type: heading
+    level: 2
+    collapsed: true
+  - id: new-tab-btn-select
+    title: New tab buttons
+    type: class-select
+    allowEmpty: false
+    default: new-tab-btn-default
+    options:
+        - label: text buttons (obsidian default)
+          value: new-tab-text-btn-restore
+        - label: default
+          value: new-tab-btn-default
+  - id: new-tab-image-select
+    title: New tab image
+    type: class-select
+    allowEmpty: false
+    default: new-tab-image-default
+    options:
+        - label: none
+          value: new-tab-image-none
+        - label: obsidian logo
+          value: new-tab-image-default
+        - label: old default
+          value: new-tab-image-old
+        - label: customize image
+          value: new-tab-image-customize
+  - id: new-tab-image
+    title: Customize new tab image
+    description: Enter a complete CSS image value, e.g. url("https://example.com/image.png"). A bare URL without the url() wrapper will not render.
+    type: variable-text
+    default: "none"
+
+  - id: section-card-layout
+    title: Card layout
+    type: heading
+    level: 2
+  - id: card-layout-open-light
+    title: Card layout (light mode)
+    description: Floating rounded workspace cards [light mode]
+    type: class-toggle
+    class: card-layout-open-light
+    default: false
+  - id: card-layout-open-dark
+    title: Card layout (dark mode)
+    description: Floating rounded workspace cards [dark mode]
+    type: class-toggle
+    class: card-layout-open-dark
+    default: false
+  - id: card-highlight-light
+    title: Highlight active card (light mode)
+    description: Outlines the active stacked card [light mode]
+    type: class-toggle
+    class: card-highlight-light
+    default: false
+  - id: card-highlight-dark
+    title: Highlight active card (dark mode)
+    description: Outlines the active stacked card [dark mode]
+    type: class-toggle
+    class: card-highlight-dark
+    default: false
+  - id: section-card-surface
+    title: Split surfaces
+    description: Per-split card background routing. Transparent options apply only while card layout is on and suppress that split's card shadow.
+    type: heading
+    level: 3
+  - id: mod-left-split-background-select-light
+    title: Left split background (light mode)
+    type: class-select
+    allowEmpty: false
+    default: mod-left-split-background-primary-light
+    options:
+        - label: background-primary (default)
+          value: mod-left-split-background-primary-light
+        - label: background-secondary
+          value: mod-left-split-background-secondary-light
+        - label: transparent (card layout only)
+          value: mod-left-split-background-transparent-light
+        - label: customize color
+          value: mod-left-split-background-customize-light
+  - id: background-mod-left-split-light
+    title: Left split custom color (light mode)
+    description: Any CSS color for the left split when customize is selected
+    type: variable-text
+    default: 'var(--background-primary)'
+  - id: mod-left-split-background-select-dark
+    title: Left split background (dark mode)
+    type: class-select
+    allowEmpty: false
+    default: mod-left-split-background-primary-dark
+    options:
+        - label: background-primary (default)
+          value: mod-left-split-background-primary-dark
+        - label: background-secondary
+          value: mod-left-split-background-secondary-dark
+        - label: transparent (card layout only)
+          value: mod-left-split-background-transparent-dark
+        - label: customize color
+          value: mod-left-split-background-customize-dark
+  - id: background-mod-left-split-dark
+    title: Left split custom color (dark mode)
+    description: Any CSS color for the left split when customize is selected
+    type: variable-text
+    default: 'var(--background-primary)'
+  - id: mod-right-split-background-select-light
+    title: Right split background (light mode)
+    type: class-select
+    allowEmpty: false
+    default: mod-right-split-background-primary-light
+    options:
+        - label: background-primary (default)
+          value: mod-right-split-background-primary-light
+        - label: background-secondary
+          value: mod-right-split-background-secondary-light
+        - label: transparent (card layout only)
+          value: mod-right-split-background-transparent-light
+        - label: customize color
+          value: mod-right-split-background-customize-light
+  - id: background-mod-right-split-light
+    title: Right split custom color (light mode)
+    description: Any CSS color for the right split when customize is selected
+    type: variable-text
+    default: 'var(--background-primary)'
+  - id: mod-right-split-background-select-dark
+    title: Right split background (dark mode)
+    type: class-select
+    allowEmpty: false
+    default: mod-right-split-background-primary-dark
+    options:
+        - label: background-primary (default)
+          value: mod-right-split-background-primary-dark
+        - label: background-secondary
+          value: mod-right-split-background-secondary-dark
+        - label: transparent (card layout only)
+          value: mod-right-split-background-transparent-dark
+        - label: customize color
+          value: mod-right-split-background-customize-dark
+  - id: background-mod-right-split-dark
+    title: Right split custom color (dark mode)
+    description: Any CSS color for the right split when customize is selected
+    type: variable-text
+    default: 'var(--background-primary)'
+  - id: mod-root-split-background-select-light
+    title: Root split background (light mode)
+    type: class-select
+    allowEmpty: false
+    default: mod-root-split-background-primary-light
+    options:
+        - label: background-primary (default)
+          value: mod-root-split-background-primary-light
+        - label: background-secondary
+          value: mod-root-split-background-secondary-light
+        - label: transparent (card layout only)
+          value: mod-root-split-background-transparent-light
+        - label: customize color
+          value: mod-root-split-background-customize-light
+  - id: background-mod-root-split-light
+    title: Root split custom color (light mode)
+    description: Any CSS color for the root split when customize is selected
+    type: variable-text
+    default: 'var(--background-primary)'
+  - id: mod-root-split-background-select-dark
+    title: Root split background (dark mode)
+    type: class-select
+    allowEmpty: false
+    default: mod-root-split-background-primary-dark
+    options:
+        - label: background-primary (default)
+          value: mod-root-split-background-primary-dark
+        - label: background-secondary
+          value: mod-root-split-background-secondary-dark
+        - label: transparent (card layout only)
+          value: mod-root-split-background-transparent-dark
+        - label: customize color
+          value: mod-root-split-background-customize-dark
+  - id: background-mod-root-split-dark
+    title: Root split custom color (dark mode)
+    description: Any CSS color for the root split when customize is selected
+    type: variable-text
+    default: 'var(--background-primary)'
+  - id: card-gap
+    title: Card spacing
+    description: Gap between floating cards (any CSS length)
+    type: variable-text
+    default: 16px
+  - id: card-padding
+    title: Pad layout inset
+    description: Workspace padding in the pad/tablet card layout
+    type: variable-text
+    default: 16px
+  - id: card-border-radius-light
+    title: Card border radius (light mode)
+    description: Any CSS border-radius value
+    type: variable-text
+    default: 8px
+  - id: card-border-radius-dark
+    title: Card border radius (dark mode)
+    description: Any CSS border-radius value
+    type: variable-text
+    default: 8px
+  - id: card-shadow-light
+    title: Card shadow (light mode)
+    description: Any CSS box-shadow value
+    type: variable-text
+    default: '0 0 0 1px var(--background-modifier-border-muted, var(--background-modifier-border)), 0 0 6px var(--background-modifier-border)'
+  - id: card-shadow-dark
+    title: Card shadow (dark mode)
+    description: Any CSS box-shadow value
+    type: variable-text
+    default: '0 -1px 0 0 var(--background-modifier-border), 0 0 0 1px var(--background-modifier-border)'
+  - id: card-layout-pad-open
+    title: Card layout (pad only)
+    description: Tablet card layout, independent of the light/dark toggles
+    type: class-toggle
+    class: card-layout-pad-open
+    default: false
+
+  - id: section-line-indicator
+    title: Line hover indicator
+    type: heading
+    level: 2
+  - id: line-hover-indicator-off
+    title: Disable line hover indicator
+    description: Turns off the vertical focus indicator in live preview (on by default)
+    type: class-toggle
+    class: line-hover-indicator-off
+    default: false
+  - id: focus-indicator-list-level
+    title: Indicate list level
+    description: Show the nesting level for hovered list lines
+    type: class-toggle
+    class: focus-indicator-list-level
+    default: false
+  - id: focus-indicator-codeblock-line-number
+    title: Indicate code block line number
+    description: Show the line number for hovered code lines
+    type: class-toggle
+    class: focus-indicator-codeblock-line-number
+    default: false
+  - id: hover-indicator-color
+    title: Indicator color
+    description: Color of the hovered-line indicator (active line uses the accent)
+    type: variable-themed-color
+    format: hex
+    opacity: true
+    default-light: '#'
+    default-dark: '#'
 
 */
