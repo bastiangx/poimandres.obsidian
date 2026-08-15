@@ -52,7 +52,8 @@
   --green0: rgb(var(--green0_x));
   --green_x: 93, 228, 199;
   --green: rgb(var(--green_x));
-  --teal_x: 66, 103, 90;
+  --teal_x: 95, 179, 161; /* #5fb3a1 — canonical poimandres teal; the old
+  #42675a was near-invisible on the dark bg, breaking the success callout */
   --teal: rgb(var(--teal_x));
   --red_x: 208, 103, 157;
   --red: rgb(var(--red_x));
@@ -849,6 +850,24 @@ body:not(.table-width-obsidian-default)
 .mod-cm6 .HyperMD-list-line.cm-line {
   padding-top: 0;
   padding-bottom: 0;
+}
+
+/* Ordered list numbers use the theme green instead of the faint default
+   marker color (reading view via ::marker, live preview via the cm6
+   HyperMD-list-line-N counter pseudo-elements) */
+.markdown-rendered ol > li::marker,
+.markdown-preview-view ol > li::marker,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-1::before,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-2::before,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-3::before,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-4::before,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-5::before,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-6::before,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-7::before,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-8::before,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-9::before,
+.cm-s-obsidian .HyperMD-list-line.HyperMD-list-line-10::before {
+  color: var(--green);
 }
 
 /* Strikethrough links keep their line-through in source mode */
