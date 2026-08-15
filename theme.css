@@ -295,12 +295,15 @@
   --flashing-background: rgba(var(--blue0_x), 0.3);
 
   --code-normal: var(--text-muted);
-  /* Codeblock background/border are resolved per theme below so that
-     alternate codeblock themes can override them per mode. */
-  --code-background-light: var(--background-primary-alt);
-  --code-background-dark: var(--background-primary-alt);
-  --code-border-light: 1px solid rgba(var(--fg_dark_x), 0.16);
-  --code-border-dark: 1px solid rgba(var(--fg_dark_x), 0.16);
+  /* The default code-block surface is composed from typed Style Settings
+     controls. Alternate code-block themes still override the complete
+     --code-background / --code-border values locally on each block. */
+  --code-background: var(--background-primary-alt);
+  --code-border-width: 1px;
+  --code-border-style: solid;
+  --code-border-color: rgba(var(--fg_dark_x), 0.16);
+  --code-border: var(--code-border-width) var(--code-border-style)
+    var(--code-border-color);
   --code-comment: var(--fg_dark);
   --code-function: var(--blue);
   --code-important: var(--red1);
@@ -344,10 +347,12 @@
     var(--size-4-6);
   --callout-radius: var(--radius-s);
   --callout-title-color: inherit;
+  --callout-title-custom-color: var(--text-normal);
   --callout-title-padding: 0;
   --callout-title-size: inherit;
   --callout-content-padding: 0;
   --callout-content-background: transparent;
+  --callout-content-custom-background: transparent;
   --callout-content-radius: 0px;
 
   --icon-color-hover: var(--blue);
@@ -407,16 +412,10 @@
   --code-operator: var(--blue);
   --code-property: var(--blue);
   --code-punctuation: var(--fg);
-
-  --code-background: var(--code-background-light);
-  --code-border: var(--code-border-light);
 }
 
 .theme-dark {
   --text-selection: rgba(113, 124, 180, 0.15);
-
-  --code-background: var(--code-background-dark);
-  --code-border: var(--code-border-dark);
 }
 
 :is(.markdown-rendered h1, .HyperMD-header-1, .cm-header-1) {
@@ -996,8 +995,7 @@ body:not(.table-width-obsidian-default)
    a subtle background. */
 body {
   --inline-code-normal: var(--text-muted);
-  --inline-code-background-light: var(--background-primary-alt);
-  --inline-code-background-dark: var(--background-primary-alt);
+  --inline-code-background: var(--background-primary-alt);
   --code-white-space: pre-wrap;
   --code-radius: var(--radius-s);
   --code-size: 0.875em;
@@ -1015,7 +1013,7 @@ body {
   ),
 .theme-light .cm-s-obsidian span.cm-inline-code,
 .theme-light :not(pre) > code {
-  background: var(--inline-code-background-light);
+  background: var(--inline-code-background);
 }
 
 .theme-dark
@@ -1025,7 +1023,7 @@ body {
   ),
 .theme-dark .cm-s-obsidian span.cm-inline-code,
 .theme-dark :not(pre) > code {
-  background: var(--inline-code-background-dark);
+  background: var(--inline-code-background);
 }
 
 .theme-light
@@ -2285,6 +2283,21 @@ body {
    Content panels reproduce Border's flat light #FFFFFFBF / dark #00000040
    so folded and expanded callouts stay coherent in both modes. */
 
+/* The default Customize style exposes semantic color modes instead of
+   asking users to type `inherit`, `transparent`, or raw CSS colors. */
+body.callout-title-color-custom {
+  --callout-title-color: var(--callout-title-custom-color);
+}
+body.callout-content-background-subtle.theme-light {
+  --callout-content-background: rgba(255, 255, 255, 0.75);
+}
+body.callout-content-background-subtle.theme-dark {
+  --callout-content-background: rgba(0, 0, 0, 0.25);
+}
+body.callout-content-background-custom {
+  --callout-content-background: var(--callout-content-custom-background);
+}
+
 /* style 1 */
 .callout-style-1 .callout,
 .callout[data-callout-metadata~="style-1"],
@@ -2380,11 +2393,16 @@ body {
 /* Hide per-mode / structural "Customize" controls when an alternate
    callout or codeblock theme is active (same behaviour as Border). */
 body:not(.codeblock-style-customize)
+  .setting-item[data-id="section-code-colors"],
+body:not(.codeblock-style-customize)
+  .setting-item[data-id="section-code-colors"]
+  + .style-settings-container,
+body:not(.codeblock-style-customize)
   .setting-item:is(
-    [data-id="code-background-light"],
-    [data-id="code-background-dark"],
-    [data-id="code-border-light"],
-    [data-id="code-border-dark"],
+    [data-id="code-background"],
+    [data-id="code-border-width"],
+    [data-id="code-border-style"],
+    [data-id="code-border-color"],
     [data-id="code-normal"],
     [data-id="code-comment"],
     [data-id="code-function"],
@@ -2395,10 +2413,7 @@ body:not(.codeblock-style-customize)
     [data-id="code-punctuation"],
     [data-id="code-string"],
     [data-id="code-tag"],
-    [data-id="code-value"],
-    [data-id="inline-code-normal"],
-    [data-id="inline-code-background-light"],
-    [data-id="inline-code-background-dark"]
+    [data-id="code-value"]
   ),
 body:not(.callout-style-customize)
   .setting-item:is(
@@ -2406,12 +2421,29 @@ body:not(.callout-style-customize)
     [data-id="callout-border-opacity"],
     [data-id="callout-padding"],
     [data-id="callout-radius"],
-    [data-id="callout-title-color"],
+    [data-id="callout-title-color-mode"],
+    [data-id="callout-title-custom-color"],
     [data-id="callout-title-padding"],
     [data-id="callout-title-size"],
     [data-id="callout-content-padding"],
-    [data-id="callout-content-background"],
+    [data-id="callout-content-background-mode"],
+    [data-id="callout-content-custom-background"],
     [data-id="callout-content-radius"]
+  ),
+body:not(.callout-title-color-custom)
+  .setting-item[data-id="callout-title-custom-color"],
+body:not(.callout-content-background-custom)
+  .setting-item[data-id="callout-content-custom-background"],
+body:not(:is(.mod-left-split-background-customize-light, .mod-left-split-background-customize-dark))
+  .setting-item[data-id="card-left-custom-color"],
+body:not(:is(.mod-right-split-background-customize-light, .mod-right-split-background-customize-dark))
+  .setting-item[data-id="card-right-custom-color"],
+body:not(:is(.mod-root-split-background-customize-light, .mod-root-split-background-customize-dark))
+  .setting-item[data-id="card-root-custom-color"],
+body:not(.card-shadow-custom)
+  .setting-item:is(
+    [data-id="card-shadow-custom-light"],
+    [data-id="card-shadow-custom-dark"]
   ) {
   display: none;
 }
@@ -3939,8 +3971,45 @@ body:not(.new-tab-image-customize) .setting-item[data-id="new-tab-image"] {
    card-layout-open-light / card-layout-open-dark toggles.
    ============================================================= */
 body {
-  --card-border-radius-light: 8px;
-  --card-border-radius-dark: 8px;
+  /* Public card variables retain their existing names for snippet
+     compatibility; typed Style Settings feed them through private values. */
+  --card-radius: 8px;
+  --card-border-radius-light: var(--card-radius);
+  --card-border-radius-dark: var(--card-radius);
+  --card-shadow-custom-light:
+    0 0 0 1px
+      var(--background-modifier-border-muted, var(--background-modifier-border)),
+    0 0 6px var(--background-modifier-border);
+  --card-shadow-custom-dark:
+    0 -1px 0 0 var(--background-modifier-border),
+    0 0 0 1px var(--background-modifier-border);
+  --card-shadow-light: var(--card-shadow-custom-light);
+  --card-shadow-dark: var(--card-shadow-custom-dark);
+  --card-gap-size: 16px;
+  --card-gap: var(--card-gap-size);
+  --card-inset-size: 16px;
+  --card-padding: var(--card-inset-size);
+
+  /* Custom colors remain private until the matching Custom color surface
+     mode is selected. This preserves dynamic theme surfaces by default. */
+  --card-left-custom-color: var(--background-primary);
+  --card-right-custom-color: var(--background-primary);
+  --card-root-custom-color: var(--background-primary);
+  --background-mod-left-split: var(--background-primary);
+  --background-mod-right-split: var(--background-primary);
+  --background-mod-root-split: var(--background-primary);
+}
+
+body.card-shadow-none {
+  --card-shadow-light: none;
+  --card-shadow-dark: none;
+}
+body.card-shadow-outline {
+  --card-shadow-light: 0 0 0 1px
+    var(--background-modifier-border-muted, var(--background-modifier-border));
+  --card-shadow-dark: 0 0 0 1px var(--background-modifier-border);
+}
+body.card-shadow-subtle {
   --card-shadow-light:
     0 0 0 1px
       var(--background-modifier-border-muted, var(--background-modifier-border)),
@@ -3948,21 +4017,19 @@ body {
   --card-shadow-dark:
     0 -1px 0 0 var(--background-modifier-border),
     0 0 0 1px var(--background-modifier-border);
-  --card-gap: 16px;
-  --card-padding: 16px;
-
-  /* Per-split card surfaces (palette neutral, Border semantics). Each
-     split reads its own --background-mod-*-split variable so every side
-     surface is isolated. Defaults to the primary surface. */
-  --background-mod-left-split: var(--background-primary);
-  --background-mod-right-split: var(--background-primary);
-  --background-mod-root-split: var(--background-primary);
-  --background-mod-left-split-light: var(--background-primary);
-  --background-mod-left-split-dark: var(--background-primary);
-  --background-mod-right-split-light: var(--background-primary);
-  --background-mod-right-split-dark: var(--background-primary);
-  --background-mod-root-split-light: var(--background-primary);
-  --background-mod-root-split-dark: var(--background-primary);
+}
+body.card-shadow-elevated {
+  --card-shadow-light:
+    0 0 0 1px
+      var(--background-modifier-border-muted, var(--background-modifier-border)),
+    0 8px 24px rgba(59, 62, 72, 0.16);
+  --card-shadow-dark:
+    0 0 0 1px var(--background-modifier-border),
+    0 8px 24px rgba(0, 0, 0, 0.32);
+}
+body.card-shadow-custom {
+  --card-shadow-light: var(--card-shadow-custom-light);
+  --card-shadow-dark: var(--card-shadow-custom-dark);
 }
 
 /* Underlying desktop surface + transparent chrome while in card mode */
@@ -4133,13 +4200,9 @@ body.theme-light.mod-left-split-background-transparent-light.card-layout-open-li
 body.theme-dark.mod-left-split-background-transparent-dark.card-layout-open-dark {
   --background-mod-left-split: transparent !important;
 }
-body.theme-light.mod-left-split-background-customize-light {
-  --background-mod-left-split: var(
-    --background-mod-left-split-light
-  ) !important;
-}
+body.theme-light.mod-left-split-background-customize-light,
 body.theme-dark.mod-left-split-background-customize-dark {
-  --background-mod-left-split: var(--background-mod-left-split-dark) !important;
+  --background-mod-left-split: var(--card-left-custom-color) !important;
 }
 /* right split */
 body.theme-light.mod-right-split-background-primary-light,
@@ -4154,15 +4217,9 @@ body.theme-light.mod-right-split-background-transparent-light.card-layout-open-l
 body.theme-dark.mod-right-split-background-transparent-dark.card-layout-open-dark {
   --background-mod-right-split: transparent !important;
 }
-body.theme-light.mod-right-split-background-customize-light {
-  --background-mod-right-split: var(
-    --background-mod-right-split-light
-  ) !important;
-}
+body.theme-light.mod-right-split-background-customize-light,
 body.theme-dark.mod-right-split-background-customize-dark {
-  --background-mod-right-split: var(
-    --background-mod-right-split-dark
-  ) !important;
+  --background-mod-right-split: var(--card-right-custom-color) !important;
 }
 /* root split */
 body.theme-light.mod-root-split-background-primary-light,
@@ -4177,13 +4234,9 @@ body.theme-light.mod-root-split-background-transparent-light.card-layout-open-li
 body.theme-dark.mod-root-split-background-transparent-dark.card-layout-open-dark {
   --background-mod-root-split: transparent !important;
 }
-body.theme-light.mod-root-split-background-customize-light {
-  --background-mod-root-split: var(
-    --background-mod-root-split-light
-  ) !important;
-}
+body.theme-light.mod-root-split-background-customize-light,
 body.theme-dark.mod-root-split-background-customize-dark {
-  --background-mod-root-split: var(--background-mod-root-split-dark) !important;
+  --background-mod-root-split: var(--card-root-custom-color) !important;
 }
 
 /* Apply each routed surface to that split's card, only in card mode. */
@@ -4925,23 +4978,50 @@ settings:
     default: false
   - id: h1-font
     title: H1 font
-    type: variable-text
+    type: variable-select
     default: 'var(--font-text)'
+    options:
+      - label: Body font (default)
+        value: 'var(--font-text)'
+      - label: Interface font
+        value: 'var(--font-interface)'
+      - label: Monospace font
+        value: 'var(--font-monospace)'
   - id: h1-size
     title: H1 font size
-    description: Any CSS font-size value
-    type: variable-text
-    default: '2em'
+    description: Relative to the body text size
+    type: variable-number-slider
+    default: 2
+    min: 0.75
+    max: 3
+    step: 0.01
+    format: em
   - id: h1-weight
     title: H1 font weight
-    description: 100-900, use 700 for bold
-    type: variable-text
+    type: variable-select
     default: '700'
+    options:
+      - label: Light
+        value: '300'
+      - label: Regular
+        value: '400'
+      - label: Medium
+        value: '500'
+      - label: Semi-bold
+        value: '600'
+      - label: Bold
+        value: '700'
+      - label: Extra bold
+        value: '800'
   - id: h1-style
     title: H1 font style
-    description: normal or italic
-    type: variable-text
+    type: variable-select
     default: normal
+    options:
+      - label: Normal
+        value: normal
+      - label: Italic
+        value: italic
   - id: h1-color
     title: H1 color
     type: variable-themed-color
@@ -4961,23 +5041,50 @@ settings:
     default: false
   - id: h2-font
     title: H2 font
-    type: variable-text
+    type: variable-select
     default: 'var(--font-text)'
+    options:
+      - label: Body font (default)
+        value: 'var(--font-text)'
+      - label: Interface font
+        value: 'var(--font-interface)'
+      - label: Monospace font
+        value: 'var(--font-monospace)'
   - id: h2-size
     title: H2 font size
-    description: Any CSS font-size value
-    type: variable-text
-    default: '1.6em'
+    description: Relative to the body text size
+    type: variable-number-slider
+    default: 1.6
+    min: 0.75
+    max: 3
+    step: 0.01
+    format: em
   - id: h2-weight
     title: H2 font weight
-    description: 100-900, use 600 for bold
-    type: variable-text
+    type: variable-select
     default: '600'
+    options:
+      - label: Light
+        value: '300'
+      - label: Regular
+        value: '400'
+      - label: Medium
+        value: '500'
+      - label: Semi-bold
+        value: '600'
+      - label: Bold
+        value: '700'
+      - label: Extra bold
+        value: '800'
   - id: h2-style
     title: H2 font style
-    description: normal or italic
-    type: variable-text
+    type: variable-select
     default: normal
+    options:
+      - label: Normal
+        value: normal
+      - label: Italic
+        value: italic
   - id: h2-color
     title: H2 color
     type: variable-themed-color
@@ -4997,23 +5104,50 @@ settings:
     default: false
   - id: h3-font
     title: H3 font
-    type: variable-text
+    type: variable-select
     default: 'var(--font-text)'
+    options:
+      - label: Body font (default)
+        value: 'var(--font-text)'
+      - label: Interface font
+        value: 'var(--font-interface)'
+      - label: Monospace font
+        value: 'var(--font-monospace)'
   - id: h3-size
     title: H3 font size
-    description: Any CSS font-size value
-    type: variable-text
-    default: '1.37em'
+    description: Relative to the body text size
+    type: variable-number-slider
+    default: 1.37
+    min: 0.75
+    max: 3
+    step: 0.01
+    format: em
   - id: h3-weight
     title: H3 font weight
-    description: 100-900, use 600 for bold
-    type: variable-text
+    type: variable-select
     default: '600'
+    options:
+      - label: Light
+        value: '300'
+      - label: Regular
+        value: '400'
+      - label: Medium
+        value: '500'
+      - label: Semi-bold
+        value: '600'
+      - label: Bold
+        value: '700'
+      - label: Extra bold
+        value: '800'
   - id: h3-style
     title: H3 font style
-    description: normal or italic
-    type: variable-text
+    type: variable-select
     default: normal
+    options:
+      - label: Normal
+        value: normal
+      - label: Italic
+        value: italic
   - id: h3-color
     title: H3 color
     type: variable-themed-color
@@ -5033,23 +5167,50 @@ settings:
     default: false
   - id: h4-font
     title: H4 font
-    type: variable-text
+    type: variable-select
     default: 'var(--font-text)'
+    options:
+      - label: Body font (default)
+        value: 'var(--font-text)'
+      - label: Interface font
+        value: 'var(--font-interface)'
+      - label: Monospace font
+        value: 'var(--font-monospace)'
   - id: h4-size
     title: H4 font size
-    description: Any CSS font-size value
-    type: variable-text
-    default: '1.25em'
+    description: Relative to the body text size
+    type: variable-number-slider
+    default: 1.25
+    min: 0.75
+    max: 3
+    step: 0.01
+    format: em
   - id: h4-weight
     title: H4 font weight
-    description: 100-900, use 600 for bold
-    type: variable-text
+    type: variable-select
     default: '600'
+    options:
+      - label: Light
+        value: '300'
+      - label: Regular
+        value: '400'
+      - label: Medium
+        value: '500'
+      - label: Semi-bold
+        value: '600'
+      - label: Bold
+        value: '700'
+      - label: Extra bold
+        value: '800'
   - id: h4-style
     title: H4 font style
-    description: normal or italic
-    type: variable-text
+    type: variable-select
     default: normal
+    options:
+      - label: Normal
+        value: normal
+      - label: Italic
+        value: italic
   - id: h4-color
     title: H4 color
     type: variable-themed-color
@@ -5069,23 +5230,50 @@ settings:
     default: false
   - id: h5-font
     title: H5 font
-    type: variable-text
+    type: variable-select
     default: 'var(--font-text)'
+    options:
+      - label: Body font (default)
+        value: 'var(--font-text)'
+      - label: Interface font
+        value: 'var(--font-interface)'
+      - label: Monospace font
+        value: 'var(--font-monospace)'
   - id: h5-size
     title: H5 font size
-    description: Any CSS font-size value
-    type: variable-text
-    default: '1.12em'
+    description: Relative to the body text size
+    type: variable-number-slider
+    default: 1.12
+    min: 0.75
+    max: 3
+    step: 0.01
+    format: em
   - id: h5-weight
     title: H5 font weight
-    description: 100-900, use 600 for bold-ish
-    type: variable-text
+    type: variable-select
     default: '600'
+    options:
+      - label: Light
+        value: '300'
+      - label: Regular
+        value: '400'
+      - label: Medium
+        value: '500'
+      - label: Semi-bold
+        value: '600'
+      - label: Bold
+        value: '700'
+      - label: Extra bold
+        value: '800'
   - id: h5-style
     title: H5 font style
-    description: normal or italic
-    type: variable-text
+    type: variable-select
     default: normal
+    options:
+      - label: Normal
+        value: normal
+      - label: Italic
+        value: italic
   - id: h5-color
     title: H5 color
     type: variable-themed-color
@@ -5105,23 +5293,50 @@ settings:
     default: false
   - id: h6-font
     title: H6 font
-    type: variable-text
+    type: variable-select
     default: 'var(--font-text)'
+    options:
+      - label: Body font (default)
+        value: 'var(--font-text)'
+      - label: Interface font
+        value: 'var(--font-interface)'
+      - label: Monospace font
+        value: 'var(--font-monospace)'
   - id: h6-size
     title: H6 font size
-    description: Any CSS font-size value
-    type: variable-text
-    default: '1.12em'
+    description: Relative to the body text size
+    type: variable-number-slider
+    default: 1.12
+    min: 0.75
+    max: 3
+    step: 0.01
+    format: em
   - id: h6-weight
     title: H6 font weight
-    description: 100-900, use 600 for bold-ish
-    type: variable-text
+    type: variable-select
     default: '600'
+    options:
+      - label: Light
+        value: '300'
+      - label: Regular
+        value: '400'
+      - label: Medium
+        value: '500'
+      - label: Semi-bold
+        value: '600'
+      - label: Bold
+        value: '700'
+      - label: Extra bold
+        value: '800'
   - id: h6-style
     title: H6 font style
-    description: normal or italic
-    type: variable-text
+    type: variable-select
     default: normal
+    options:
+      - label: Normal
+        value: normal
+      - label: Italic
+        value: italic
   - id: h6-color
     title: H6 color
     type: variable-themed-color
@@ -5144,239 +5359,361 @@ settings:
     default-dark: 'rgba(113, 124, 180, 0.15)'
 
   - id: section-code
-    title: Code
+    title: Code blocks
     type: heading
     level: 2
   - id: codeblock-style-select
-    title: Codeblock theme
-    description: Alternate code block palettes; Customize (default) keeps the Poimandres palette
+    title: Color theme
+    description: The color controls below apply to Poimandres; presets provide their own colors
     type: class-select
     allowEmpty: false
     default: codeblock-style-customize
     options:
-      -   label: Poimandres (default)
-          value: codeblock-style-customize
-      -   label: ' Ayu'
-          value: codeblock-style-ayu-dark
-      -   label: ' Ayu mirage'
-          value: codeblock-style-ayu-mirage
-      -   label: ' Catppuccin frappe'
-          value: codeblock-style-catppuccin-frappe
-      -   label: ' Catppuccin macchiato'
-          value: codeblock-style-catppuccin-macchiato
-      -   label: ' Catppuccin mocha'
-          value: codeblock-style-catppuccin-mocha
-      -   label: ' Dracula'
-          value: codeblock-style-dracula
-      -   label: ' Everforest'
-          value: codeblock-style-everforest-dark
-      -   label: ' GitHub'
-          value: codeblock-style-github-dark
-      -   label: ' Gruvbox'
-          value: codeblock-style-gruvbox-dark
-      -   label: ' Kanagawa dragon'
-          value: codeblock-style-kanagawa-dragon
-      -   label: ' Kanagawa wave'
-          value: codeblock-style-kanagawa-wave
-      -   label: ' Monokai'
-          value: codeblock-style-monokai
-      -   label: ' Night owl'
-          value: codeblock-style-night-owl
-      -   label: ' Nord'
-          value: codeblock-style-nord
-      -   label: ' One dark'
-          value: codeblock-style-one-dark
-      -   label: ' One dark pro'
-          value: codeblock-style-one-dark-pro
-      -   label: ' Rosé Pine'
-          value: codeblock-style-rose-pine
-      -   label: ' Rosé Pine moon'
-          value: codeblock-style-rose-pine-moon
-      -   label: ' Solarized'
-          value: codeblock-style-solarized-dark
-      -   label: ' Tokyo night'
-          value: codeblock-style-tokyo-night
-      -   label: ' Tokyo night storm'
-          value: codeblock-style-tokyo-night-storm
-      -   label: 'Light: Atom one light'
-          value: codeblock-style-atom-one-light
-      -   label: 'Light: Ayu'
-          value: codeblock-style-ayu-light
-      -   label: 'Light: Catppuccin latte'
-          value: codeblock-style-catppuccin-latte
-      -   label: 'Light: Everforest'
-          value: codeblock-style-everforest-light
-      -   label: 'Light: GitHub'
-          value: codeblock-style-github-light
-      -   label: 'Light: Gruvbox'
-          value: codeblock-style-gruvbox-light
-      -   label: 'Light: Kanagawa lotus'
-          value: codeblock-style-kanagawa-lotus
-      -   label: 'Light: Rosé Pine dawn'
-          value: codeblock-style-rose-pine-dawn
-      -   label: 'Light: Solarized'
-          value: codeblock-style-solarized-light
-      -   label: 'Light: Tokyo night light'
-          value: codeblock-style-tokyo-night-light
-  - id: code-background-light
-    title: Code block background (light mode)
-    description: Any CSS background value; visible while "Customize" is active
-    type: variable-text
-    default: ''
-  - id: code-border-light
-    title: Code block border (light mode)
-    description: Any CSS border value
-    type: variable-text
-    default: ''
-  - id: code-background-dark
-    title: Code block background (dark mode)
-    description: Any CSS background value
-    type: variable-text
-    default: ''
-  - id: code-border-dark
-    title: Code block border (dark mode)
-    description: Any CSS border value
-    type: variable-text
-    default: ''
+      - label: Poimandres (default)
+        value: codeblock-style-customize
+      - label: Ayu (dark)
+        value: codeblock-style-ayu-dark
+      - label: Ayu Mirage (dark)
+        value: codeblock-style-ayu-mirage
+      - label: Catppuccin Frappé (dark)
+        value: codeblock-style-catppuccin-frappe
+      - label: Catppuccin Macchiato (dark)
+        value: codeblock-style-catppuccin-macchiato
+      - label: Catppuccin Mocha (dark)
+        value: codeblock-style-catppuccin-mocha
+      - label: Dracula (dark)
+        value: codeblock-style-dracula
+      - label: Everforest (dark)
+        value: codeblock-style-everforest-dark
+      - label: GitHub (dark)
+        value: codeblock-style-github-dark
+      - label: Gruvbox (dark)
+        value: codeblock-style-gruvbox-dark
+      - label: Kanagawa Dragon (dark)
+        value: codeblock-style-kanagawa-dragon
+      - label: Kanagawa Wave (dark)
+        value: codeblock-style-kanagawa-wave
+      - label: Monokai (dark)
+        value: codeblock-style-monokai
+      - label: Night Owl (dark)
+        value: codeblock-style-night-owl
+      - label: Nord (dark)
+        value: codeblock-style-nord
+      - label: One Dark
+        value: codeblock-style-one-dark
+      - label: One Dark Pro
+        value: codeblock-style-one-dark-pro
+      - label: Rosé Pine (dark)
+        value: codeblock-style-rose-pine
+      - label: Rosé Pine Moon (dark)
+        value: codeblock-style-rose-pine-moon
+      - label: Solarized (dark)
+        value: codeblock-style-solarized-dark
+      - label: Tokyo Night (dark)
+        value: codeblock-style-tokyo-night
+      - label: Tokyo Night Storm (dark)
+        value: codeblock-style-tokyo-night-storm
+      - label: Atom One Light
+        value: codeblock-style-atom-one-light
+      - label: Ayu (light)
+        value: codeblock-style-ayu-light
+      - label: Catppuccin Latte (light)
+        value: codeblock-style-catppuccin-latte
+      - label: Everforest (light)
+        value: codeblock-style-everforest-light
+      - label: GitHub (light)
+        value: codeblock-style-github-light
+      - label: Gruvbox (light)
+        value: codeblock-style-gruvbox-light
+      - label: Kanagawa Lotus (light)
+        value: codeblock-style-kanagawa-lotus
+      - label: Rosé Pine Dawn (light)
+        value: codeblock-style-rose-pine-dawn
+      - label: Solarized (light)
+        value: codeblock-style-solarized-light
+      - label: Tokyo Night (light)
+        value: codeblock-style-tokyo-night-light
+  - id: code-background
+    title: Background color
+    type: variable-themed-color
+    format: hex
+    opacity: true
+    default-light: '#E6E9EF'
+    default-dark: '#131417'
+  - id: code-border-width
+    title: Border width
+    type: variable-number-slider
+    default: 1
+    min: 0
+    max: 6
+    step: 1
+    format: px
+  - id: code-border-style
+    title: Border style
+    type: variable-select
+    default: solid
+    options:
+      - label: None
+        value: none
+      - label: Solid (default)
+        value: solid
+      - label: Dashed
+        value: dashed
+      - label: Dotted
+        value: dotted
+  - id: code-border-color
+    title: Border color
+    type: variable-themed-color
+    format: rgb
+    opacity: true
+    default-light: 'rgba(108, 111, 133, 0.16)'
+    default-dark: 'rgba(118, 124, 157, 0.16)'
+  - id: section-code-colors
+    title: Syntax colors
+    description: Customize the Poimandres syntax palette
+    type: heading
+    level: 3
+    collapsed: true
   - id: code-normal
-    title: code-normal
-    type: variable-text
-    default: 'var(--text-muted)'
+    title: Plain text
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#6C6F85'
+    default-dark: '#767C9D'
   - id: code-comment
-    title: code-comment
-    type: variable-text
-    default: 'var(--fg_dark)'
+    title: Comments
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#6C6F85'
+    default-dark: '#767C9D'
   - id: code-function
-    title: code-function
-    type: variable-text
-    default: 'var(--blue)'
+    title: Functions
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#0EBFFF'
+    default-dark: '#ADD7FF'
   - id: code-important
-    title: code-important
-    type: variable-text
-    default: 'var(--red1)'
+    title: Important values
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#FF2090'
+    default-dark: '#D0679D'
   - id: code-keyword
-    title: code-keyword
-    type: variable-text
-    default: 'var(--fg)'
+    title: Keywords
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#3B3E48'
+    default-dark: '#A6ACCD'
   - id: code-operator
-    title: code-operator
-    type: variable-text
-    default: 'var(--blue)'
+    title: Operators
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#0EBFFF'
+    default-dark: '#ADD7FF'
   - id: code-property
-    title: code-property
-    type: variable-text
-    default: 'var(--blue)'
+    title: Properties
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#0EBFFF'
+    default-dark: '#ADD7FF'
   - id: code-punctuation
-    title: code-punctuation
-    type: variable-text
-    default: 'var(--fg)'
+    title: Punctuation
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#3B3E48'
+    default-dark: '#A6ACCD'
   - id: code-string
-    title: code-string
-    type: variable-text
-    default: 'var(--green)'
+    title: Strings
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#01DAB2'
+    default-dark: '#5DE4C7'
   - id: code-tag
-    title: code-tag
-    type: variable-text
-    default: 'var(--green)'
+    title: Tags
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#01DAB2'
+    default-dark: '#5DE4C7'
   - id: code-value
-    title: code-value
-    type: variable-text
-    default: 'var(--green)'
+    title: Values
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#01DAB2'
+    default-dark: '#5DE4C7'
 
   - id: section-inline-code
     title: Inline code
     type: heading
     level: 2
   - id: inline-code-normal
-    title: Inline code text color
-    type: variable-text
-    default: 'var(--text-muted)'
-  - id: inline-code-background-light
-    title: Inline code background (light mode)
-    type: variable-text
-    default: 'var(--background-primary-alt)'
-  - id: inline-code-background-dark
-    title: Inline code background (dark mode)
-    type: variable-text
-    default: 'var(--background-primary-alt)'
+    title: Text color
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#6C6F85'
+    default-dark: '#767C9D'
+  - id: inline-code-background
+    title: Background color
+    type: variable-themed-color
+    format: hex
+    opacity: true
+    default-light: '#E6E9EF'
+    default-dark: '#131417'
 
   - id: section-callouts
     title: Callouts
     type: heading
     level: 2
   - id: callout-style-select
-    title: Callout style
-    description: Border-style layouts; Customize exposes the structural options below
+    title: Layout
+    description: Presets provide their own structure; the controls below apply to Poimandres
     type: class-select
     allowEmpty: false
     default: callout-style-customize
     options:
-      -   label: Customize (default)
-          value: callout-style-customize
-      -   label: Style 1
-          value: callout-style-1
-      -   label: Style 2
-          value: callout-style-2
-      -   label: Style 3
-          value: callout-style-3
-      -   label: Style 4
-          value: callout-style-4
+      - label: Poimandres (default)
+        value: callout-style-customize
+      - label: Framed
+        value: callout-style-1
+      - label: Inset panel
+        value: callout-style-2
+      - label: Accent bar
+        value: callout-style-3
+      - label: Accent panel
+        value: callout-style-4
   - id: callout-border-width
-    title: Callout border width
-    description: Any CSS border-width value
-    type: variable-text
-    default: '0px'
+    title: Border width
+    type: variable-number-slider
+    default: 0
+    min: 0
+    max: 8
+    step: 1
+    format: px
   - id: callout-border-opacity
-    title: Callout border opacity
+    title: Border opacity
     type: variable-number-slider
     default: 0.25
     min: 0
     max: 1
     step: 0.05
   - id: callout-padding
-    title: Callout padding
-    description: Any CSS padding value
-    type: variable-text
+    title: Outer spacing
+    type: variable-select
     default: 'var(--size-4-3) var(--size-4-3) var(--size-4-3) var(--size-4-6)'
+    options:
+      - label: Compact
+        value: '8px 8px 8px 16px'
+      - label: Comfortable (default)
+        value: 'var(--size-4-3) var(--size-4-3) var(--size-4-3) var(--size-4-6)'
+      - label: Spacious
+        value: '16px 16px 16px 28px'
   - id: callout-radius
-    title: Callout radius
-    description: Any CSS border-radius value
-    type: variable-text
+    title: Corner shape
+    type: variable-select
     default: 'var(--radius-s)'
-  - id: callout-title-color
-    title: Callout title color
+    options:
+      - label: Square
+        value: '0px'
+      - label: Small radius (default)
+        value: 'var(--radius-s)'
+      - label: Medium radius
+        value: 'var(--radius-m)'
+      - label: Large radius
+        value: 'var(--radius-l)'
+  - id: callout-title-color-mode
+    title: Title color
+    type: class-select
+    allowEmpty: false
+    default: callout-title-color-theme
+    options:
+      - label: Match callout type (default)
+        value: callout-title-color-theme
+      - label: Custom color
+        value: callout-title-color-custom
+  - id: callout-title-custom-color
+    title: Custom title color
+    description: Used when Title color is set to Custom color
     type: variable-themed-color
     format: hex
-    opacity: true
-    default-light: '#'
-    default-dark: '#'
+    opacity: false
+    default-light: '#3B3E48'
+    default-dark: '#A6ACCD'
   - id: callout-title-padding
-    title: Callout title padding
-    description: Any CSS padding value
-    type: variable-text
+    title: Title spacing
+    type: variable-select
     default: '0'
+    options:
+      - label: None (default)
+        value: '0'
+      - label: Compact
+        value: '4px 8px'
+      - label: Comfortable
+        value: '8px 16px'
   - id: callout-title-size
-    title: Callout title font size
-    description: Any CSS font-size value
-    type: variable-text
-    default: 'inherit'
+    title: Title size
+    type: variable-select
+    default: inherit
+    options:
+      - label: Match body text (default)
+        value: inherit
+      - label: Small
+        value: '0.875em'
+      - label: Medium
+        value: '1em'
+      - label: Large
+        value: '1.125em'
   - id: callout-content-padding
-    title: Callout content padding
-    description: Any CSS padding value
-    type: variable-text
+    title: Content spacing
+    type: variable-select
     default: '0'
-  - id: callout-content-background
-    title: Callout content background
+    options:
+      - label: None (default)
+        value: '0'
+      - label: Compact
+        value: '4px 12px'
+      - label: Comfortable
+        value: '8px 16px'
+      - label: Spacious
+        value: '12px 20px'
+  - id: callout-content-background-mode
+    title: Content background
+    type: class-select
+    allowEmpty: false
+    default: callout-content-background-transparent
+    options:
+      - label: Transparent (default)
+        value: callout-content-background-transparent
+      - label: Subtle tint
+        value: callout-content-background-subtle
+      - label: Custom color
+        value: callout-content-background-custom
+  - id: callout-content-custom-background
+    title: Custom content background
+    description: Used when Content background is set to Custom color
     type: variable-themed-color
-    format: hex
+    format: rgb
     opacity: true
-    default-light: '#'
-    default-dark: '#'
+    default-light: 'rgba(255, 255, 255, 0.75)'
+    default-dark: 'rgba(0, 0, 0, 0.25)'
   - id: callout-content-radius
-    title: Callout content radius
-    description: Any CSS border-radius value
-    type: variable-text
-    default: '0px'
+    title: Content corner radius
+    type: variable-number-slider
+    default: 0
+    min: 0
+    max: 16
+    step: 1
+    format: px
 
   - id: section-links-tags
     title: Links & tags
@@ -5387,29 +5724,29 @@ settings:
     type: variable-themed-color
     format: hex
     opacity: false
-    default-light: '#0EBFFF'
-    default-dark: '#ADD7FF'
+    default-light: '#00B3FF'
+    default-dark: '#80D5FF'
   - id: link-color-hover
     title: Link hover color
     type: variable-themed-color
     format: hex
     opacity: false
-    default-light: '#FFD467'
-    default-dark: '#ADD7FF'
+    default-light: '#1686B9'
+    default-dark: '#8EC5EC'
   - id: tag-color
     title: Tag text color
     type: variable-themed-color
     format: hex
     opacity: false
     default-light: '#62AA9B'
-    default-dark: '#89DDFF'
+    default-dark: '#5FB3A1'
   - id: tag-background
     title: Tag background color
     type: variable-themed-color
     format: rgb
     opacity: true
-    default-light: 'rgb(192, 208, 223)'
-    default-dark: 'rgb(137, 221, 255)'
+    default-light: 'rgba(98, 170, 155, 0.25)'
+    default-dark: 'rgba(95, 179, 161, 0.25)'
 
   - id: section-ui
     title: UI
@@ -5580,184 +5917,207 @@ settings:
     type: heading
     level: 2
   - id: card-layout-open-light
-    title: Card layout (light mode)
-    description: Floating rounded workspace cards [light mode]
+    title: Enable in light mode
+    description: Display workspace areas as floating cards
     type: class-toggle
     class: card-layout-open-light
     default: false
   - id: card-layout-open-dark
-    title: Card layout (dark mode)
-    description: Floating rounded workspace cards [dark mode]
+    title: Enable in dark mode
+    description: Display workspace areas as floating cards
     type: class-toggle
     class: card-layout-open-dark
     default: false
+  - id: card-layout-pad-open
+    title: Enable on tablets
+    description: Tablet layout is independent of the light and dark desktop options
+    type: class-toggle
+    class: card-layout-pad-open
+    default: false
   - id: card-highlight-light
-    title: Highlight active card (light mode)
-    description: Outlines the active stacked card [light mode]
+    title: Highlight active card in light mode
+    description: Outline the active card in a stacked group
     type: class-toggle
     class: card-highlight-light
     default: false
   - id: card-highlight-dark
-    title: Highlight active card (dark mode)
-    description: Outlines the active stacked card [dark mode]
+    title: Highlight active card in dark mode
+    description: Outline the active card in a stacked group
     type: class-toggle
     class: card-highlight-dark
     default: false
+
   - id: section-card-surface
-    title: Split surfaces
-    description: Per-split card background routing. Transparent options apply only while card layout is on and suppress that split's card shadow.
+    title: Surfaces
+    description: Choose a theme surface or a custom color for each workspace area
     type: heading
     level: 3
+    collapsed: true
   - id: mod-left-split-background-select-light
-    title: Left split background (light mode)
+    title: Left sidebar · light mode
     type: class-select
     allowEmpty: false
     default: mod-left-split-background-primary-light
     options:
-        - label: background-primary (default)
-          value: mod-left-split-background-primary-light
-        - label: background-secondary
-          value: mod-left-split-background-secondary-light
-        - label: transparent (card layout only)
-          value: mod-left-split-background-transparent-light
-        - label: customize color
-          value: mod-left-split-background-customize-light
-  - id: background-mod-left-split-light
-    title: Left split custom color (light mode)
-    description: Any CSS color for the left split when customize is selected
-    type: variable-text
-    default: 'var(--background-primary)'
+      - label: Theme primary (default)
+        value: mod-left-split-background-primary-light
+      - label: Theme secondary
+        value: mod-left-split-background-secondary-light
+      - label: Transparent
+        value: mod-left-split-background-transparent-light
+      - label: Custom color
+        value: mod-left-split-background-customize-light
   - id: mod-left-split-background-select-dark
-    title: Left split background (dark mode)
+    title: Left sidebar · dark mode
     type: class-select
     allowEmpty: false
     default: mod-left-split-background-primary-dark
     options:
-        - label: background-primary (default)
-          value: mod-left-split-background-primary-dark
-        - label: background-secondary
-          value: mod-left-split-background-secondary-dark
-        - label: transparent (card layout only)
-          value: mod-left-split-background-transparent-dark
-        - label: customize color
-          value: mod-left-split-background-customize-dark
-  - id: background-mod-left-split-dark
-    title: Left split custom color (dark mode)
-    description: Any CSS color for the left split when customize is selected
-    type: variable-text
-    default: 'var(--background-primary)'
+      - label: Theme primary (default)
+        value: mod-left-split-background-primary-dark
+      - label: Theme secondary
+        value: mod-left-split-background-secondary-dark
+      - label: Transparent
+        value: mod-left-split-background-transparent-dark
+      - label: Custom color
+        value: mod-left-split-background-customize-dark
+  - id: card-left-custom-color
+    title: Left sidebar custom color
+    description: Used in modes where the left sidebar surface is set to Custom color
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#FEFEFF'
+    default-dark: '#17191E'
   - id: mod-right-split-background-select-light
-    title: Right split background (light mode)
+    title: Right sidebar · light mode
     type: class-select
     allowEmpty: false
     default: mod-right-split-background-primary-light
     options:
-        - label: background-primary (default)
-          value: mod-right-split-background-primary-light
-        - label: background-secondary
-          value: mod-right-split-background-secondary-light
-        - label: transparent (card layout only)
-          value: mod-right-split-background-transparent-light
-        - label: customize color
-          value: mod-right-split-background-customize-light
-  - id: background-mod-right-split-light
-    title: Right split custom color (light mode)
-    description: Any CSS color for the right split when customize is selected
-    type: variable-text
-    default: 'var(--background-primary)'
+      - label: Theme primary (default)
+        value: mod-right-split-background-primary-light
+      - label: Theme secondary
+        value: mod-right-split-background-secondary-light
+      - label: Transparent
+        value: mod-right-split-background-transparent-light
+      - label: Custom color
+        value: mod-right-split-background-customize-light
   - id: mod-right-split-background-select-dark
-    title: Right split background (dark mode)
+    title: Right sidebar · dark mode
     type: class-select
     allowEmpty: false
     default: mod-right-split-background-primary-dark
     options:
-        - label: background-primary (default)
-          value: mod-right-split-background-primary-dark
-        - label: background-secondary
-          value: mod-right-split-background-secondary-dark
-        - label: transparent (card layout only)
-          value: mod-right-split-background-transparent-dark
-        - label: customize color
-          value: mod-right-split-background-customize-dark
-  - id: background-mod-right-split-dark
-    title: Right split custom color (dark mode)
-    description: Any CSS color for the right split when customize is selected
-    type: variable-text
-    default: 'var(--background-primary)'
+      - label: Theme primary (default)
+        value: mod-right-split-background-primary-dark
+      - label: Theme secondary
+        value: mod-right-split-background-secondary-dark
+      - label: Transparent
+        value: mod-right-split-background-transparent-dark
+      - label: Custom color
+        value: mod-right-split-background-customize-dark
+  - id: card-right-custom-color
+    title: Right sidebar custom color
+    description: Used in modes where the right sidebar surface is set to Custom color
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#FEFEFF'
+    default-dark: '#17191E'
   - id: mod-root-split-background-select-light
-    title: Root split background (light mode)
+    title: Main workspace · light mode
     type: class-select
     allowEmpty: false
     default: mod-root-split-background-primary-light
     options:
-        - label: background-primary (default)
-          value: mod-root-split-background-primary-light
-        - label: background-secondary
-          value: mod-root-split-background-secondary-light
-        - label: transparent (card layout only)
-          value: mod-root-split-background-transparent-light
-        - label: customize color
-          value: mod-root-split-background-customize-light
-  - id: background-mod-root-split-light
-    title: Root split custom color (light mode)
-    description: Any CSS color for the root split when customize is selected
-    type: variable-text
-    default: 'var(--background-primary)'
+      - label: Theme primary (default)
+        value: mod-root-split-background-primary-light
+      - label: Theme secondary
+        value: mod-root-split-background-secondary-light
+      - label: Transparent
+        value: mod-root-split-background-transparent-light
+      - label: Custom color
+        value: mod-root-split-background-customize-light
   - id: mod-root-split-background-select-dark
-    title: Root split background (dark mode)
+    title: Main workspace · dark mode
     type: class-select
     allowEmpty: false
     default: mod-root-split-background-primary-dark
     options:
-        - label: background-primary (default)
-          value: mod-root-split-background-primary-dark
-        - label: background-secondary
-          value: mod-root-split-background-secondary-dark
-        - label: transparent (card layout only)
-          value: mod-root-split-background-transparent-dark
-        - label: customize color
-          value: mod-root-split-background-customize-dark
-  - id: background-mod-root-split-dark
-    title: Root split custom color (dark mode)
-    description: Any CSS color for the root split when customize is selected
-    type: variable-text
-    default: 'var(--background-primary)'
-  - id: card-gap
-    title: Card spacing
-    description: Gap between floating cards (any CSS length)
-    type: variable-text
-    default: 16px
-  - id: card-padding
-    title: Pad layout inset
-    description: Workspace padding in the pad/tablet card layout
-    type: variable-text
-    default: 16px
-  - id: card-border-radius-light
-    title: Card border radius (light mode)
-    description: Any CSS border-radius value
-    type: variable-text
-    default: 8px
-  - id: card-border-radius-dark
-    title: Card border radius (dark mode)
-    description: Any CSS border-radius value
-    type: variable-text
-    default: 8px
-  - id: card-shadow-light
-    title: Card shadow (light mode)
-    description: Any CSS box-shadow value
+      - label: Theme primary (default)
+        value: mod-root-split-background-primary-dark
+      - label: Theme secondary
+        value: mod-root-split-background-secondary-dark
+      - label: Transparent
+        value: mod-root-split-background-transparent-dark
+      - label: Custom color
+        value: mod-root-split-background-customize-dark
+  - id: card-root-custom-color
+    title: Main workspace custom color
+    description: Used in modes where the main workspace surface is set to Custom color
+    type: variable-themed-color
+    format: hex
+    opacity: false
+    default-light: '#FEFEFF'
+    default-dark: '#17191E'
+
+  - id: section-card-appearance
+    title: Appearance
+    type: heading
+    level: 3
+    collapsed: true
+  - id: card-gap-size
+    title: Space between cards
+    type: variable-number-slider
+    default: 16
+    min: 0
+    max: 40
+    step: 1
+    format: px
+  - id: card-inset-size
+    title: Tablet workspace inset
+    description: Space around cards in the tablet layout
+    type: variable-number-slider
+    default: 16
+    min: 0
+    max: 40
+    step: 1
+    format: px
+  - id: card-radius
+    title: Corner radius
+    type: variable-number-slider
+    default: 8
+    min: 0
+    max: 32
+    step: 1
+    format: px
+  - id: card-shadow-style-select
+    title: Shadow style
+    type: class-select
+    allowEmpty: false
+    default: card-shadow-subtle
+    options:
+      - label: None
+        value: card-shadow-none
+      - label: Outline
+        value: card-shadow-outline
+      - label: Subtle (default)
+        value: card-shadow-subtle
+      - label: Elevated
+        value: card-shadow-elevated
+      - label: Custom CSS (advanced)
+        value: card-shadow-custom
+  - id: card-shadow-custom-light
+    title: Custom shadow · light mode
+    description: Advanced CSS box-shadow value
     type: variable-text
     default: '0 0 0 1px var(--background-modifier-border-muted, var(--background-modifier-border)), 0 0 6px var(--background-modifier-border)'
-  - id: card-shadow-dark
-    title: Card shadow (dark mode)
-    description: Any CSS box-shadow value
+  - id: card-shadow-custom-dark
+    title: Custom shadow · dark mode
+    description: Advanced CSS box-shadow value
     type: variable-text
     default: '0 -1px 0 0 var(--background-modifier-border), 0 0 0 1px var(--background-modifier-border)'
-  - id: card-layout-pad-open
-    title: Card layout (pad only)
-    description: Tablet card layout, independent of the light/dark toggles
-    type: class-toggle
-    class: card-layout-pad-open
-    default: false
 
   - id: section-line-indicator
     title: Line hover indicator
@@ -5787,7 +6147,7 @@ settings:
     type: variable-themed-color
     format: hex
     opacity: true
-    default-light: '#'
-    default-dark: '#'
+    default-light: '#C0D0DF'
+    default-dark: '#767C9D'
 
 */
