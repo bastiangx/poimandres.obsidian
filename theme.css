@@ -26,7 +26,7 @@
   --fg: rgb(var(--fg_x));
   --fg_dark_x: 118, 124, 157;
   --fg_dark: rgb(var(--fg_dark_x));
-  --bold-color: rgba(var(--green0_x), 0.65);
+  --bold-color: var(--green0);
   --bold-italic-color: rgba(var(--blue0_x), 0.65);
 
   --comment_x: 118, 124, 157;
@@ -84,7 +84,7 @@
   --fg: rgb(var(--fg_x));
   --fg_dark_x: 108, 111, 133;
   --fg_dark: rgb(var(--fg_dark_x));
-  --bold-color: rgba(var(--green0_x), 0.72);
+  --bold-color: var(--green0);
   --bold-italic-color: rgba(var(--blue0_x), 0.72);
   --comment_x: 192, 208, 223;
   --comment: rgb(var(--comment_x));
@@ -136,7 +136,7 @@
   --terminal_black: rgb(var(--terminal_black_x));
   --fg_dark_x: 134, 140, 173;
   --fg_dark: rgb(var(--fg_dark_x));
-  --bold-color: rgba(var(--green0_x), 0.65);
+  --bold-color: var(--green0);
   --comment_x: 134, 140, 173;
   --comment: rgb(var(--comment_x));
 }
@@ -973,10 +973,10 @@ body:not(.table-width-obsidian-default)
 
 /* Inline code: separate --inline-code-* variables (Border) so the
    alternate codeblock themes, which only re-declare block-scoped --code-*
-   roles, can never recolor inline code. Inline code keeps the Poimandres
-   color and subtle background. */
+   roles, can never recolor inline code. Inline code uses muted fg and
+   a subtle background. */
 body {
-  --inline-code-normal: var(--color-pink);
+  --inline-code-normal: var(--text-muted);
   --inline-code-background-light: var(--background-primary-alt);
   --inline-code-background-dark: var(--background-primary-alt);
   --code-white-space: pre-wrap;
@@ -5271,7 +5271,7 @@ settings:
   - id: inline-code-normal
     title: Inline code text color
     type: variable-text
-    default: 'var(--color-pink)'
+    default: 'var(--text-muted)'
   - id: inline-code-background-light
     title: Inline code background (light mode)
     type: variable-text
