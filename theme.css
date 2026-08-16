@@ -52,8 +52,7 @@
   --green0: rgb(var(--green0_x));
   --green_x: 93, 228, 199;
   --green: rgb(var(--green_x));
-  --teal_x: 95, 179, 161; /* #5fb3a1 — canonical poimandres teal; the old
-  #42675a was near-invisible on the dark bg, breaking the success callout */
+  --teal_x: 95, 179, 161;
   --teal: rgb(var(--teal_x));
   --red_x: 208, 103, 157;
   --red: rgb(var(--red_x));
@@ -163,6 +162,46 @@
   --color-orange: var(--orange);
   --color_pink_rgb: var(--magenta_x);
   --color-pink: var(--magenta);
+  --color-red-muted: color-mix(
+    in srgb,
+    var(--color-red) 25%,
+    var(--background-modifier-border)
+  );
+  --color-orange-muted: color-mix(
+    in srgb,
+    var(--color-orange) 25%,
+    var(--background-modifier-border)
+  );
+  --color-yellow-muted: color-mix(
+    in srgb,
+    var(--color-yellow) 25%,
+    var(--background-modifier-border)
+  );
+  --color-green-muted: color-mix(
+    in srgb,
+    var(--color-green) 25%,
+    var(--background-modifier-border)
+  );
+  --color-cyan-muted: color-mix(
+    in srgb,
+    var(--color-cyan) 25%,
+    var(--background-modifier-border)
+  );
+  --color-blue-muted: color-mix(
+    in srgb,
+    var(--color-blue) 25%,
+    var(--background-modifier-border)
+  );
+  --color-purple-muted: color-mix(
+    in srgb,
+    var(--color-purple) 25%,
+    var(--background-modifier-border)
+  );
+  --color-pink-muted: color-mix(
+    in srgb,
+    var(--color-pink) 25%,
+    var(--background-modifier-border)
+  );
 
   --background-primary: var(--bg);
   --background-primary-alt: var(--bg_dark);
@@ -249,6 +288,7 @@
   --heading-divider-opacity: 0.72;
   --heading-divider-height: 2px;
   --heading-divider-fade: 72%;
+  --heading-divider-spacing: 0.2em;
 
   --inline-title-color: var(--h1-color);
   --hr-color: var(--background-modifier-border);
@@ -491,109 +531,78 @@ body:not(.heading-indicator-off)
   position: relative;
 }
 
-/* Heading dividers (opt-in per level via body.hN-divider-on): the ::after
-   gradient at bottom:0 anchored to the heading color, fading to transparent
-   over --heading-divider-fade. Blocks 1-6 are structurally identical. */
+/* Heading dividers are opt-in per level via body.hN-divider-on. The
+   Style Settings classes supply shared rendering and palette tokens; every
+   enabled level uses the same pseudo-element structure. */
 body.h1-divider-on
   :is(
     .markdown-preview-sizer > div > h1,
     .markdown-rendered > h1,
     .HyperMD-header-1
-  )::after {
-  content: "";
-  position: absolute;
-  height: var(--heading-divider-height);
-  width: 100%;
-  right: 0px;
-  opacity: var(--heading-divider-opacity);
-  bottom: 0;
-  background-image: linear-gradient(
-    to left,
-    var(--h1-color) 30%,
-    transparent var(--heading-divider-fade)
-  );
-}
-
+  ),
 body.h2-divider-on
   :is(
     .markdown-preview-sizer > div > h2,
     .markdown-rendered > h2,
     .HyperMD-header-2
-  )::after {
-  content: "";
-  position: absolute;
-  height: var(--heading-divider-height);
-  width: 100%;
-  right: 0px;
-  opacity: var(--heading-divider-opacity);
-  bottom: 0;
-  background-image: linear-gradient(
-    to left,
-    var(--h2-color) 30%,
-    transparent var(--heading-divider-fade)
-  );
-}
-
+  ),
 body.h3-divider-on
   :is(
     .markdown-preview-sizer > div > h3,
     .markdown-rendered > h3,
     .HyperMD-header-3
-  )::after {
-  content: "";
-  position: absolute;
-  height: var(--heading-divider-height);
-  width: 100%;
-  right: 0px;
-  opacity: var(--heading-divider-opacity);
-  bottom: 0;
-  background-image: linear-gradient(
-    to left,
-    var(--h3-color) 30%,
-    transparent var(--heading-divider-fade)
-  );
-}
-
+  ),
 body.h4-divider-on
   :is(
     .markdown-preview-sizer > div > h4,
     .markdown-rendered > h4,
     .HyperMD-header-4
-  )::after {
-  content: "";
-  position: absolute;
-  height: var(--heading-divider-height);
-  width: 100%;
-  right: 0px;
-  opacity: var(--heading-divider-opacity);
-  bottom: 0;
-  background-image: linear-gradient(
-    to left,
-    var(--h4-color) 30%,
-    transparent var(--heading-divider-fade)
-  );
-}
-
+  ),
 body.h5-divider-on
   :is(
     .markdown-preview-sizer > div > h5,
     .markdown-rendered > h5,
     .HyperMD-header-5
-  )::after {
-  content: "";
-  position: absolute;
-  height: var(--heading-divider-height);
-  width: 100%;
-  right: 0px;
-  opacity: var(--heading-divider-opacity);
-  bottom: 0;
-  background-image: linear-gradient(
-    to left,
-    var(--h5-color) 30%,
-    transparent var(--heading-divider-fade)
-  );
+  ),
+body.h6-divider-on
+  :is(
+    .markdown-preview-sizer > div > h6,
+    .markdown-rendered > h6,
+    .HyperMD-header-6
+  ) {
+  padding-bottom: var(--heading-divider-spacing);
 }
 
+body.h1-divider-on
+  :is(
+    .markdown-preview-sizer > div > h1,
+    .markdown-rendered > h1,
+    .HyperMD-header-1
+  )::after,
+body.h2-divider-on
+  :is(
+    .markdown-preview-sizer > div > h2,
+    .markdown-rendered > h2,
+    .HyperMD-header-2
+  )::after,
+body.h3-divider-on
+  :is(
+    .markdown-preview-sizer > div > h3,
+    .markdown-rendered > h3,
+    .HyperMD-header-3
+  )::after,
+body.h4-divider-on
+  :is(
+    .markdown-preview-sizer > div > h4,
+    .markdown-rendered > h4,
+    .HyperMD-header-4
+  )::after,
+body.h5-divider-on
+  :is(
+    .markdown-preview-sizer > div > h5,
+    .markdown-rendered > h5,
+    .HyperMD-header-5
+  )::after,
 body.h6-divider-on
   :is(
     .markdown-preview-sizer > div > h6,
@@ -601,17 +610,331 @@ body.h6-divider-on
     .HyperMD-header-6
   )::after {
   content: "";
+  display: block;
   position: absolute;
-  height: var(--heading-divider-height);
-  width: 100%;
-  right: 0px;
+  height: var(--heading-divider-render-height, var(--heading-divider-height));
+  width: var(--heading-divider-render-width, 100%);
+  right: var(--heading-divider-render-right, 0px);
   opacity: var(--heading-divider-opacity);
   bottom: 0;
-  background-image: linear-gradient(
+  color: var(--heading-divider-color, var(--background-modifier-border));
+  border-bottom: var(--heading-divider-border, 0);
+  background: var(
+    --heading-divider-background,
+    linear-gradient(
+      to left,
+      currentColor 30%,
+      transparent var(--heading-divider-fade)
+    )
+  );
+  background-position: var(--heading-divider-background-position, center);
+  background-repeat: var(--heading-divider-background-repeat, no-repeat);
+  background-size: var(--heading-divider-background-size, 100% 100%);
+  transform: var(--heading-divider-transform, none);
+}
+
+body.heading-divider-color-muted {
+  --heading-divider-color: var(--background-modifier-border);
+}
+
+body.heading-divider-color-red {
+  --heading-divider-color: var(--color-red);
+}
+
+body.heading-divider-color-orange {
+  --heading-divider-color: var(--color-orange);
+}
+
+body.heading-divider-color-yellow {
+  --heading-divider-color: var(--color-yellow);
+}
+
+body.heading-divider-color-green {
+  --heading-divider-color: var(--color-green);
+}
+
+body.heading-divider-color-cyan {
+  --heading-divider-color: var(--color-cyan);
+}
+
+body.heading-divider-color-blue {
+  --heading-divider-color: var(--color-blue);
+}
+
+body.heading-divider-color-purple {
+  --heading-divider-color: var(--color-purple);
+}
+
+body.heading-divider-color-pink {
+  --heading-divider-color: var(--color-pink);
+}
+
+body.heading-divider-color-red-muted {
+  --heading-divider-color: var(--color-red-muted);
+}
+
+body.heading-divider-color-orange-muted {
+  --heading-divider-color: var(--color-orange-muted);
+}
+
+body.heading-divider-color-yellow-muted {
+  --heading-divider-color: var(--color-yellow-muted);
+}
+
+body.heading-divider-color-green-muted {
+  --heading-divider-color: var(--color-green-muted);
+}
+
+body.heading-divider-color-cyan-muted {
+  --heading-divider-color: var(--color-cyan-muted);
+}
+
+body.heading-divider-color-blue-muted {
+  --heading-divider-color: var(--color-blue-muted);
+}
+
+body.heading-divider-color-purple-muted {
+  --heading-divider-color: var(--color-purple-muted);
+}
+
+body.heading-divider-color-pink-muted {
+  --heading-divider-color: var(--color-pink-muted);
+}
+
+body.heading-divider-solid {
+  --heading-divider-background: currentColor;
+}
+
+body.heading-divider-dashed {
+  --heading-divider-render-height: 0px;
+  --heading-divider-border: 2px dashed currentColor;
+  --heading-divider-background: none;
+}
+
+body.heading-divider-dotted {
+  --heading-divider-render-height: 0px;
+  --heading-divider-border: 2px dotted currentColor;
+  --heading-divider-background: none;
+}
+
+body.heading-divider-double {
+  --heading-divider-render-height: 0px;
+  --heading-divider-border: 3px double currentColor;
+  --heading-divider-background: none;
+}
+
+body.heading-divider-center-fade {
+  --heading-divider-background: linear-gradient(
+    to right,
+    transparent,
+    currentColor 50%,
+    transparent
+  );
+}
+
+body.heading-divider-beaded {
+  --heading-divider-render-height: 8px;
+  --heading-divider-background: radial-gradient(
+    circle,
+    currentColor 1.5px,
+    transparent 1.5px
+  );
+  --heading-divider-background-position: left center;
+  --heading-divider-background-repeat: repeat-x;
+  --heading-divider-background-size: 12px 8px;
+}
+
+body.heading-divider-diamond {
+  --heading-divider-render-height: 8px;
+  --heading-divider-render-width: 8px;
+  --heading-divider-render-right: calc(50% - 4px);
+  --heading-divider-background: currentColor;
+  --heading-divider-transform: rotate(45deg);
+}
+
+body.hr-color-muted {
+  --hr-color: var(--background-modifier-border);
+}
+
+body.hr-color-red {
+  --hr-color: var(--color-red);
+}
+
+body.hr-color-orange {
+  --hr-color: var(--color-orange);
+}
+
+body.hr-color-yellow {
+  --hr-color: var(--color-yellow);
+}
+
+body.hr-color-green {
+  --hr-color: var(--color-green);
+}
+
+body.hr-color-cyan {
+  --hr-color: var(--color-cyan);
+}
+
+body.hr-color-blue {
+  --hr-color: var(--color-blue);
+}
+
+body.hr-color-purple {
+  --hr-color: var(--color-purple);
+}
+
+body.hr-color-pink {
+  --hr-color: var(--color-pink);
+}
+
+body.hr-color-red-muted {
+  --hr-color: var(--color-red-muted);
+}
+
+body.hr-color-orange-muted {
+  --hr-color: var(--color-orange-muted);
+}
+
+body.hr-color-yellow-muted {
+  --hr-color: var(--color-yellow-muted);
+}
+
+body.hr-color-green-muted {
+  --hr-color: var(--color-green-muted);
+}
+
+body.hr-color-cyan-muted {
+  --hr-color: var(--color-cyan-muted);
+}
+
+body.hr-color-blue-muted {
+  --hr-color: var(--color-blue-muted);
+}
+
+body.hr-color-purple-muted {
+  --hr-color: var(--color-purple-muted);
+}
+
+body.hr-color-pink-muted {
+  --hr-color: var(--color-pink-muted);
+}
+
+/* Horizontal-rule color classes override Obsidian's native --hr-color token,
+   so they apply to default and custom rules. Custom styles replace only the
+   rendered rule in reading view and the CM6 live-preview widget. "Match
+   heading divider" maps the active heading class onto private rendering
+   tokens without coupling the two selectors. */
+body.hr-style-match-heading,
+body.hr-style-gradient {
+  --hr-divider-height: var(--hr-thickness);
+  --hr-divider-border: 0;
+  --hr-divider-background: linear-gradient(
     to left,
-    var(--h6-color) 30%,
+    currentColor 30%,
     transparent var(--heading-divider-fade)
   );
+}
+
+body.hr-style-solid,
+body.hr-style-match-heading.heading-divider-solid {
+  --hr-divider-height: var(--hr-thickness);
+  --hr-divider-border: 0;
+  --hr-divider-background: currentColor;
+}
+
+body.hr-style-dashed,
+body.hr-style-match-heading.heading-divider-dashed {
+  --hr-divider-height: 0px;
+  --hr-divider-border: 2px dashed currentColor;
+  --hr-divider-background: none;
+}
+
+body.hr-style-dotted,
+body.hr-style-match-heading.heading-divider-dotted {
+  --hr-divider-height: 0px;
+  --hr-divider-border: 2px dotted currentColor;
+  --hr-divider-background: none;
+}
+
+body.hr-style-double,
+body.hr-style-match-heading.heading-divider-double {
+  --hr-divider-height: 0px;
+  --hr-divider-border: 3px double currentColor;
+  --hr-divider-background: none;
+}
+
+body.hr-style-center-fade,
+body.hr-style-match-heading.heading-divider-center-fade {
+  --hr-divider-height: var(--hr-thickness);
+  --hr-divider-border: 0;
+  --hr-divider-background: linear-gradient(
+    to right,
+    transparent,
+    currentColor 50%,
+    transparent
+  );
+}
+
+body.hr-style-beaded,
+body.hr-style-match-heading.heading-divider-beaded {
+  --hr-divider-height: 8px;
+  --hr-divider-border: 0;
+  --hr-divider-background: radial-gradient(
+      circle,
+      currentColor 1.5px,
+      transparent 1.5px
+    )
+    left center / 12px 8px repeat-x;
+}
+
+body.hr-style-diamond,
+body.hr-style-match-heading.heading-divider-diamond {
+  --hr-divider-height: 8px;
+  --hr-divider-border: 0;
+  --hr-divider-background:
+    linear-gradient(currentColor, currentColor) left center / calc(50% - 8px)
+      1px no-repeat,
+    linear-gradient(currentColor, currentColor) right center / calc(50% - 8px)
+      1px no-repeat;
+}
+
+body:is(
+    .hr-style-match-heading,
+    .hr-style-gradient,
+    .hr-style-solid,
+    .hr-style-dashed,
+    .hr-style-dotted,
+    .hr-style-double,
+    .hr-style-center-fade,
+    .hr-style-beaded,
+    .hr-style-diamond
+  )
+  :is(.markdown-rendered, .markdown-source-view.mod-cm6)
+  hr {
+  position: relative;
+  height: var(--hr-divider-height);
+  color: var(--hr-color);
+  border: 0;
+  border-bottom: var(--hr-divider-border);
+  background: var(--hr-divider-background);
+  overflow: visible;
+}
+
+body.hr-style-diamond
+  :is(.markdown-rendered, .markdown-source-view.mod-cm6)
+  hr::after,
+body.hr-style-match-heading.heading-divider-diamond
+  :is(.markdown-rendered, .markdown-source-view.mod-cm6)
+  hr::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: 50%;
+  top: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .inline-title {
@@ -2434,11 +2757,26 @@ body:not(.callout-title-color-custom)
   .setting-item[data-id="callout-title-custom-color"],
 body:not(.callout-content-background-custom)
   .setting-item[data-id="callout-content-custom-background"],
-body:not(:is(.mod-left-split-background-customize-light, .mod-left-split-background-customize-dark))
+body:not(
+    :is(
+      .mod-left-split-background-customize-light,
+      .mod-left-split-background-customize-dark
+    )
+  )
   .setting-item[data-id="card-left-custom-color"],
-body:not(:is(.mod-right-split-background-customize-light, .mod-right-split-background-customize-dark))
+body:not(
+    :is(
+      .mod-right-split-background-customize-light,
+      .mod-right-split-background-customize-dark
+    )
+  )
   .setting-item[data-id="card-right-custom-color"],
-body:not(:is(.mod-root-split-background-customize-light, .mod-root-split-background-customize-dark))
+body:not(
+    :is(
+      .mod-root-split-background-customize-light,
+      .mod-root-split-background-customize-dark
+    )
+  )
   .setting-item[data-id="card-root-custom-color"],
 body:not(.card-shadow-custom)
   .setting-item:is(
@@ -4024,8 +4362,7 @@ body.card-shadow-elevated {
       var(--background-modifier-border-muted, var(--background-modifier-border)),
     0 8px 24px rgba(59, 62, 72, 0.16);
   --card-shadow-dark:
-    0 0 0 1px var(--background-modifier-border),
-    0 8px 24px rgba(0, 0, 0, 0.32);
+    0 0 0 1px var(--background-modifier-border), 0 8px 24px rgba(0, 0, 0, 0.32);
 }
 body.card-shadow-custom {
   --card-shadow-light: var(--card-shadow-custom-light);
@@ -4749,6 +5086,7 @@ body:not(.line-hover-indicator-off)
   height: 0;
   border-radius: 10px;
   background: var(--hover-indicator-color);
+  transform: none;
   opacity: 1;
 }
 body:not(.line-hover-indicator-off)
@@ -4966,6 +5304,70 @@ settings:
     title: Headings
     type: heading
     level: 2
+  - id: heading-divider-style-select
+    title: Divider style
+    description: Applies to each enabled H1–H6 divider
+    type: class-select
+    allowEmpty: false
+    default: heading-divider-gradient
+    options:
+      - label: Gradient fade (default)
+        value: heading-divider-gradient
+      - label: Solid
+        value: heading-divider-solid
+      - label: Dashed
+        value: heading-divider-dashed
+      - label: Dotted
+        value: heading-divider-dotted
+      - label: Double
+        value: heading-divider-double
+      - label: Centered fade
+        value: heading-divider-center-fade
+      - label: Beaded
+        value: heading-divider-beaded
+      - label: Diamond ornament
+        value: heading-divider-diamond
+  - id: heading-divider-color-select
+    title: Divider color
+    description: Applies to each enabled H1–H6 divider
+    type: class-select
+    allowEmpty: false
+    default: heading-divider-color-muted
+    options:
+      - label: Muted (default)
+        value: heading-divider-color-muted
+      - label: Muted red
+        value: heading-divider-color-red-muted
+      - label: Muted orange
+        value: heading-divider-color-orange-muted
+      - label: Muted yellow
+        value: heading-divider-color-yellow-muted
+      - label: Muted green
+        value: heading-divider-color-green-muted
+      - label: Muted cyan
+        value: heading-divider-color-cyan-muted
+      - label: Muted blue
+        value: heading-divider-color-blue-muted
+      - label: Muted purple
+        value: heading-divider-color-purple-muted
+      - label: Muted pink
+        value: heading-divider-color-pink-muted
+      - label: Red
+        value: heading-divider-color-red
+      - label: Orange
+        value: heading-divider-color-orange
+      - label: Yellow
+        value: heading-divider-color-yellow
+      - label: Green
+        value: heading-divider-color-green
+      - label: Cyan
+        value: heading-divider-color-cyan
+      - label: Blue
+        value: heading-divider-color-blue
+      - label: Purple
+        value: heading-divider-color-purple
+      - label: Pink
+        value: heading-divider-color-pink
   - id: level-1-heading
     title: H1
     type: heading
@@ -5344,6 +5746,79 @@ settings:
     opacity: false
     default-light: '#62AA9B'
     default-dark: '#ADD7FF'
+
+  - id: section-horizontal-rules
+    title: Horizontal rules
+    type: heading
+    level: 2
+  - id: horizontal-rule-style-select
+    title: Divider style
+    description: Applies to Markdown horizontal rules (---)
+    type: class-select
+    allowEmpty: false
+    default: hr-style-default
+    options:
+      - label: Obsidian default
+        value: hr-style-default
+      - label: Match heading divider
+        value: hr-style-match-heading
+      - label: Gradient fade
+        value: hr-style-gradient
+      - label: Solid
+        value: hr-style-solid
+      - label: Dashed
+        value: hr-style-dashed
+      - label: Dotted
+        value: hr-style-dotted
+      - label: Double
+        value: hr-style-double
+      - label: Centered fade
+        value: hr-style-center-fade
+      - label: Beaded
+        value: hr-style-beaded
+      - label: Diamond ornament
+        value: hr-style-diamond
+  - id: horizontal-rule-color-select
+    title: Divider color
+    description: Applies to Markdown horizontal rules (---)
+    type: class-select
+    allowEmpty: false
+    default: hr-color-muted
+    options:
+      - label: Muted (default)
+        value: hr-color-muted
+      - label: Muted red
+        value: hr-color-red-muted
+      - label: Muted orange
+        value: hr-color-orange-muted
+      - label: Muted yellow
+        value: hr-color-yellow-muted
+      - label: Muted green
+        value: hr-color-green-muted
+      - label: Muted cyan
+        value: hr-color-cyan-muted
+      - label: Muted blue
+        value: hr-color-blue-muted
+      - label: Muted purple
+        value: hr-color-purple-muted
+      - label: Muted pink
+        value: hr-color-pink-muted
+      - label: Red
+        value: hr-color-red
+      - label: Orange
+        value: hr-color-orange
+      - label: Yellow
+        value: hr-color-yellow
+      - label: Green
+        value: hr-color-green
+      - label: Cyan
+        value: hr-color-cyan
+      - label: Blue
+        value: hr-color-blue
+      - label: Purple
+        value: hr-color-purple
+      - label: Pink
+        value: hr-color-pink
 
   - id: section-selection
     title: Selection color

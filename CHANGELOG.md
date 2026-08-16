@@ -20,6 +20,8 @@
 - Style settings now supports Headings customisations
   - fonts, font size, weight, style & color
 - Better default color selection for Headings
+- 8 heading divider styles with palette selectors
+- Horizontal rule style and color selectors
 - inline-code now uses theme accent colors
 #### UI
 - Animation speed multiplier (Style Settings)
