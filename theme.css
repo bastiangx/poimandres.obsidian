@@ -5,7 +5,7 @@ id: Info
 settings:
     -
         id: Extras-info
-        description: "🎨 Appearance presets: [get presets here](https://github.com/bastiangx/poimandres.obsidian), click on “Import” in the top right corner and restart obsidian. <br> <br> 📭 If you have problems, please submit [issues](https://github.com/bastiangx/poimandres.obsidian/issues) or [discuss](https://github.com/bastiangx/poimandres.obsidian/discussions) on Github<br> <br> 🔼 View recent updates: [Github Commit History](https://github.com/bastiangx/poimandres.obsidian/commits/main)"
+        description: "📭 If you have problems, please submit [issues](https://github.com/bastiangx/poimandres.obsidian/issues) or [discuss](https://github.com/bastiangx/poimandres.obsidian/discussions) on Github<br> <br> 🔼 View recent updates: [Github Commit History](https://github.com/bastiangx/poimandres.obsidian/commits/main)"
         type: info-text
         markdown: true
 */
@@ -237,18 +237,6 @@ settings:
             -   label: right
                 value: canvas-card-menu-right
     -
-        id: section-variant
-        title: Variants
-        type: heading
-        level: 2
-    -
-        id: pm-variant-storm
-        title: Storm
-        description: More vibrant palette [dark mode]
-        type: class-toggle
-        class: pm-variant-storm
-        default: false
-    -
         id: animation
         title: Animation
         type: heading
@@ -293,11 +281,6 @@ name: Appearance (light mode)
 id: Appearance-light
 settings:
     -
-        id: Presets-info-light
-        description: "[Presets (light)](https://github.com/bastiangx/poimandres.obsidian) | Before importing, it is recommended to reset this entry to default / Remove preset↗️"
-        type: info-text
-        markdown: true
-    -
         id: card-layout-open-light
         title: Enable card layout(light mode)
         type: class-toggle
@@ -310,8 +293,6 @@ settings:
         options:
             -   label: default
                 value: theme-light-background-default
-            -   label: old default
-                value: theme-light-background-old-default
             -   label: colored
                 value: theme-light-background-adapt
     -
@@ -1107,11 +1088,6 @@ name: Appearance (dark mode)
 id: Appearance-dark
 settings:
     -
-        id: Presets-info-dark
-        description: "[Presets (dark)](https://github.com/bastiangx/poimandres.obsidian) | Before importing, it is recommended to reset this entry to default / Remove preset↗️"
-        type: info-text
-        markdown: true
-    -
         id: card-layout-open-dark
         title: Enable card layout(dark mode)
         type: class-toggle
@@ -1130,6 +1106,18 @@ settings:
                 value: theme-dark-background-darker
             -   label: pure black
                 value: theme-dark-background-black
+    -
+        id: section-variant
+        title: Variants
+        type: heading
+        level: 2
+    -
+        id: pm-variant-storm
+        title: Storm
+        description: More vibrant palette [dark mode]
+        type: class-toggle
+        class: pm-variant-storm
+        default: false
     -
         id: Color-dark
         title: Color
@@ -2731,7 +2719,7 @@ settings:
     -
         id: codeblock-style-select
         title: Color theme
-        description: The color controls below apply to Poimandres; presets provide their own colors
+        description: The color controls below apply to Poimandres
         type: class-select
         allowEmpty: false
         default: codeblock-style-customize
@@ -3765,22 +3753,6 @@ body {
     0px 30px 90px rgba(0, 0, 0, 0.2);
 }
 
-.theme-light-background-old-default {
-  --background-primary: var(--color-base-00);
-  --background-primary-alt: var(--color-base-10);
-  --background-secondary: hsl(
-    var(--accent-h),
-    calc((var(--accent-s) - 12%) / 6),
-    calc(100% - (100% - var(--accent-l)) / 16)
-  );
-  --background-secondary-alt: var(--color-base-05);
-  --background-tertiary: hsl(
-    calc(var(--accent-h) - 18),
-    calc(var(--accent-s) - 4%),
-    calc(100% - (100% - var(--accent-l)) / 8)
-  );
-}
-
 .theme-light.theme-light-background-adapt {
   --color-accent-3-light: hsla(
     var(--accent-h),
@@ -4080,47 +4052,18 @@ body {
 }
 
 .theme-dark.theme-dark-background-brighter {
-  --background-primary: hsl(
-    var(--accent-h),
-    calc(var(--accent-s) / 4.2),
-    calc(1.25 * var(--accent-l) / 3.5)
+  --background-primary: var(--bg_highlight);
+  --background-primary-alt: var(--bg_highlight_dark);
+  --background-secondary: var(--bg_highlight_dark);
+  --background-secondary-alt: var(--bg_highlight);
+  --background-tertiary: var(--terminal_black);
+  --workspace-background-translucent: color-mix(
+    in srgb,
+    var(--background-tertiary) 60%,
+    transparent
   );
-  --background-primary-alt: hsl(
-    var(--accent-h),
-    calc(var(--accent-s) / 4.2),
-    calc(1.25 * var(--accent-l) / 3.1)
-  );
-  --background-secondary: hsl(
-    var(--accent-h),
-    calc(var(--accent-s) / 4.2),
-    calc(1.25 * var(--accent-l) / 4)
-  );
-  --background-secondary-alt: hsl(
-    var(--accent-h),
-    calc(var(--accent-s) / 4.2),
-    calc(1.25 * var(--accent-l) / 3.7)
-  );
-  --background-tertiary: hsl(
-    var(--accent-h),
-    calc(var(--accent-s) / 4.8),
-    calc(1.25 * var(--accent-l) / 3)
-  );
-  --workspace-background-translucent: hsla(
-    var(--accent-h),
-    calc(var(--accent-s) / 4.8),
-    calc(1.25 * var(--accent-l) / 3),
-    0.6
-  );
-  --interactive-normal: hsl(
-    var(--accent-h),
-    calc(var(--accent-s) / 5.6),
-    calc(1.25 * var(--accent-l) / 2.4)
-  );
-  --interactive-hover: hsl(
-    var(--accent-h),
-    calc(var(--accent-s) / 5.6),
-    calc(1.25 * var(--accent-l) / 2.2)
-  );
+  --interactive-normal: var(--bg_highlight);
+  --interactive-hover: var(--terminal_black);
 }
 
 .theme-dark.theme-dark-background-black {
